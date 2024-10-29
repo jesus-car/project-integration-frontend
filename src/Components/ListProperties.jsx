@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { FaEdit, FaTrash } from 'react-icons/fa';
 import { propertyService } from '../services/propertyService';
 import Spinner from './Spinner';
+import ConfirmModal from './ConfirmModal';
+import {useToast} from "../contexts/ToastContext.jsx";
 
 
 const ListProperties = () => {
@@ -9,6 +11,12 @@ const ListProperties = () => {
     const [loadingProperties, setLoadingProperties] = useState(true);
 
     const [properties, setProperties] = useState([]);
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const [selectedProperty, setSelectedProperty] = useState(null);
+
+    const toast = useToast();
 
     useEffect(() => {
         propertyService.getRandomNProperties(3).then((properties) => {
@@ -32,8 +40,23 @@ const ListProperties = () => {
     };
 
     const onDelete = (id) => {
-        // Lógica para eliminar
-        console.log(`Delete property with id: ${id}`);
+        // todo: implementar consumo de API
+        setIsModalOpen(true);
+        setSelectedProperty(id);
+    };
+
+    const confirmDelete = () => {
+        console.log("Property deleted");
+        setIsModalOpen(false);
+        let newProperties = properties.filter((item) => item.id !== selectedProperty);
+        setProperties(newProperties);
+        toast.success('Propiedad eliminada correctamente');
+        setSelectedProperty(null);
+    };
+
+    const cancelDelete = () => {
+        setIsModalOpen(false);
+        setSelectedProperty(null);
     };
 
     return (
@@ -79,6 +102,12 @@ const ListProperties = () => {
                             ))}
                         </tbody>
                     </table>
+                    <ConfirmModal
+                        question={`¿Confirmas que deseas eliminar la propiedad con ID ${selectedProperty}?`}
+                        isOpen={isModalOpen}
+                        onConfirm={confirmDelete}
+                        onCancel={cancelDelete}
+                    />
                 </div>
             )}
         </div>
