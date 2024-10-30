@@ -29,8 +29,8 @@ jobs:
         run: |
           ssh -i "primerkey.pem" -o StrictHostKeyChecking=no -t $EC2_USERNAME@$EC2_URL << 'EOF'
             echo "Conectado a EC2"
-            docker login ghcr.io -u ${{ secrets.GIT_USER }} -p ${{ secrets.GIT_TOKEN }}
-            docker pull ghcr.io/${{ secrets.GIT_USER }}/front-image:latest
-            docker stop front-container || true
-            docker run -p 80:80 front-container      
+            sudo docker login ghcr.io -u ${{ secrets.GIT_USER }} -p ${{ secrets.GIT_TOKEN }}
+            sudo docker pull ghcr.io/${{ secrets.GIT_USER }}/front-image:latest
+            sudo docker stop front-container || true
+            sudo docker run -p 80:80 front-container      
           EOF
