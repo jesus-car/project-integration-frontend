@@ -1,9 +1,9 @@
 import { Route, Routes } from 'react-router-dom';
-import ListProperties from '../components/ListProperties';
-import Sidebar from '../components/Sidebar';
+import ListProperties from '../Components/ListProperties';
+import Sidebar from '../Components/SideBar';
 
 import AddProduct from './AddProduct';
-import Toast from '../components/Toast';
+import Toast from '../Components/Toast';
 
 const Administration = () => {
   return (

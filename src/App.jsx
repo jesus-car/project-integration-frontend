@@ -4,7 +4,7 @@ import Home from './routes/Home';
 import Header from './Components/Header';
 import Administration from './routes/Administration';
 import AddProduct from './routes/AddProduct';
-import Footer from './components/Footer';
+import Footer from './Components/Footer';
 import { ToastProvider } from './contexts/ToastContext';
 
 export default function App() {
