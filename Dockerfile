@@ -1,15 +1,17 @@
 # Build
-FROM node:22-alpine as build
+FROM node:20-alpine as build
 
+RUN corepack enable && corepack prepare pnpm@latest --activate
 WORKDIR /app
 
 COPY package*.json ./
 
-RUN npm install
+RUN pnpm import
+RUN pnpm install
 
 COPY . .
 
-RUN npm run build
+RUN pnpm run build
 
 # Stage 2
 FROM nginx:1.27.2-alpine
