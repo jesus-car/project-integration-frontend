@@ -18,7 +18,7 @@ const Searcher = () => {
     };
 
     return (
-        <div className='flex flex-col items-end shadow-primary shadow-sm p-5 rounded-lg'>
+        <div className='flex flex-col items-end shadow-md p-5 rounded-lg'>
             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 w-full gap-4">
                 <InputField
                     label="Ciudad"

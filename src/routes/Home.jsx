@@ -65,7 +65,7 @@ const Home = () => {
         {loadingProperties ? (
           <Spinner />) :
           (
-            <div className='grid grid-cols-2 gap-10'>
+            <div className='grid grid-cols-2 gap-x-5 gap-y-10'>
               {properties.map((property) => (
                 <PropertyHomeCard key={property.id} property={property} />
               ))}
@@ -84,12 +84,10 @@ const Home = () => {
           (
             <div>
               <div className='grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4'>
-                <div className='h-auto bg-primary rounded-lg p-5 flex flex-col justify-evenly gap-5'>
-                  <div className='flex flex-col gap-5'>
-                    <p className='text-4xl font-semibold'>Los mejores alojamientos</p>
-                    <p>Sabemos que cada persona es diferente, por eso te ofrecemos una amplia variedad de alojamientos para que puedas escoger el que más se adapte a tus necesidades.</p>
-                  </div>
-                  <Button type='tertyari' label='Ver más' />
+                <div className='h-auto bg-primary rounded-lg p-5 flex flex-col justify-center gap-10'>
+                  <p className='text-4xl font-semibold'>Los mejores alojamientos</p>
+                  <p>Sabemos que cada persona es diferente, por eso te ofrecemos una amplia variedad de alojamientos
+                    para que puedas escoger el que más se adapte a tus necesidades.</p>
                 </div>
                 <div className='grid grid-cols-2 gap-2 md:gap-4'>
                   {categories.map((category) => (
@@ -110,7 +108,7 @@ const Home = () => {
         {loadingProperties ? (
           <Spinner />) :
           (
-            <div className='grid grid-cols-2 gap-5'>
+            <div className='grid grid-cols-2 gap-x-5 gap-y-10'>
               {recommendedProperties.map((property) => (
                 <PropertyHomeCard key={property.id} property={property} />
               ))}

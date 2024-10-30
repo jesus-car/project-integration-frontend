@@ -7,11 +7,13 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: '#8DD3BB',
-        primaryHover: '#7bb8a7',
-        secondary: '#f1f5f9',
-        secondaryHover: '#e2e8f0',
-        bgPrimary: '#f1f5f9',
+        primary: '#91b07c',
+        primaryHover: '#48653c',
+        secondary: '#E5C6A4',
+        secondaryHover: '#9E6552'
+      },
+      backgroundColor: {
+        base: '#F4F0E3'
       },
       keyframes: {
         'slide-in': {
