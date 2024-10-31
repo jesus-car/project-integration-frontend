@@ -1,11 +1,11 @@
 // todo: servicio para encapsular la interacción con la API de propiedades
-import { API_URLS } from "../utils/apiConfig";
+import {API_URLS} from "../utils/apiConfig";
 
 const API_URL = "https://api.example.com/properties";
 
 export const propertyService = {
     getProperties,
-    getRandomNProperties,
+    getFilteredProperties,
     getPropertyById,
     createProperty,
     updateProperty,
@@ -26,8 +26,9 @@ async function getProperties() {
     }
 };
 
-async function getRandomNProperties(n) {
+async function getFilteredProperties(n) {
     // todo
+
     const properties = [
         {
             id: 1,
@@ -122,7 +123,9 @@ async function getRandomNProperties(n) {
         },
     ]
 
-    return properties;
+
+   return properties
+
 }
 
 async function getPropertyById(id) {

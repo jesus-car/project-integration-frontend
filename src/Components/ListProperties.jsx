@@ -19,7 +19,7 @@ const ListProperties = () => {
     const toast = useToast();
 
     useEffect(() => {
-        propertyService.getRandomNProperties(3).then((properties) => {
+        propertyService.getFilteredProperties(3).then((properties) => {
             setProperties(properties);
             setTimeout(() => {
                 setLoadingProperties(false);

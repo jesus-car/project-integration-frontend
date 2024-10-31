@@ -8,7 +8,7 @@ const Header = () => {
     <div className="fixed top-0 left-0 right-0 z-50 shadow-md bg-base">
         <div className='flex justify-between top-0 left-0 right-0'>
           <div className="p-2">
-            <img onClick={() => navigate("/home")} className="ml-7 cursor-pointer" src="/src/assets/logo_primary_base.svg" alt="" width={80} />
+            <img onClick={() => navigate("/home")} className="ml-7 cursor-pointer" src="/images/logo_primary_base.svg" alt="" width={80} />
           </div>
             
             <div dir='rtl' className="content-center space-between">     

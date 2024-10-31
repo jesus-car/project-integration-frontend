@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import PropertyHomeCard from '../Components/PropertyHomeCard';
 import { propertyService } from '../services/propertyService';
 import Searcher from '../Components/Searcher';
-import Button from '../Components/Button';
 import CategoryHomeCard from '../Components/CategoryHomeCard';
 import Spinner from '../Components/Spinner';
 import { choiceRandomNFromList } from '../utils/utils';
@@ -35,10 +34,9 @@ const Home = () => {
 
   useEffect(() => {
     propertyService
-      .getRandomNProperties(3)
+      .getFilteredProperties(10)
       .then(properties => {
         setProperties(properties);
-        // todo: aclarar duda
         setRecommendedProperties(choiceRandomNFromList(properties, 2));
         setTimeout(() => {
           setLoadingProperties(false);
