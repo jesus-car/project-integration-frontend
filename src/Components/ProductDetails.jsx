@@ -50,21 +50,21 @@ const ProductDetails = () => {
         <>
         {loading ? 
             <Spinner /> : 
-            <>
+            <div className="px-6 flex align-center flex-col">
             <div className="relative">
                 <div className="mt-10 flex justify-between ">
-                    <h1 className="text-2xl ml-56 font-medium">{detail.title}</h1>
-                    <button><FaArrowLeftLong onClick={() => navigate("/home")} className="mr-64 w-7 h-7"/></button>
+                    <h1 className="text-2xl font-medium">{detail.title}</h1>
+                    <button><FaArrowLeftLong onClick={() => navigate("/home")} className="w-7 h-7"/></button>
                 </div> 
-                <div className="flex  mt-2 ml-56 gap-x-2">
-                    <div className="grid grid-cols-2 gap-4 w-2/5">
+                <div style={{display: "grid", gridTemplateColumns: "1fr 1fr"}} className="flex flex-wrap mt-2 gap-x-2 gap-y-2">
+                    <div className="grid grid-cols-2 gap-4">
                         <img className="col-span-2 w-full object-cover rounded-lg h-96" src={detail.imgPrincipal} alt="Principal" />
                     </div>
-                    <div className="grid  grid-cols-2 grid-rows-2 gap-2 w-2/5">
+                    <div className="grid grid-cols-2 grid-rows-2 gap-2">
                             {detail.img.map((value, index) => 
                                 <img key={index} src={value} alt="Secundary 1" className="w-96 object-cover rounded-lg h-[188px]"/>
                             )}
-                            <div onClick={handleOpenImg} className="cursor-pointer bg-white w-48 h-8 flex flex-row items-center rounded-md gap-x-4 pl-8 justify-self-end absolute bottom-5 right-72">
+                            <div onClick={handleOpenImg} style={{right: "20px"}} className="cursor-pointer bg-white w-48 h-8 flex flex-row items-center rounded-md gap-x-4 pl-8 justify-self-end absolute bottom-5">
                                 <TfiLayoutGrid2Alt/>
                                 <button >Más fotos</button>
                             </div>
@@ -77,7 +77,7 @@ const ProductDetails = () => {
                     </div>
                 </div>
             </div>
-            <div className="flex flex-col ml-56 mt-5">
+            <div className="flex flex-col mt-5">
                 <div>
                     <h1 className="text-2xl font-medium">Alojamiento en {detail.city} {detail.country}</h1>
                     <h1 className="text-2xl font-medium">{detail.price}$ Noche</h1>
@@ -89,11 +89,11 @@ const ProductDetails = () => {
                     <h4 className="font-semibold text-lg">Reseñas</h4>
                 </div>
             </div>
-            <div className="flex flex-col ml-56 mt-5">
+            <div className="flex flex-col mt-5">
                 <p className="font-semibold text-lg">Anfitrión: {detail.host}</p>
                 <p className="font-normal">{detail.yearhost} años anfitrionando</p>
             </div>
-           {detail.workarea ? <div className="flex flex-row items-center gap-x-4 ml-56 mt-14">
+           {detail.workarea ? <div className="flex flex-row items-center gap-x-4 mt-14">
                 <div>
                     <AiOutlineDesktop className="size-5"/>
                 </div>
@@ -102,7 +102,7 @@ const ProductDetails = () => {
                     <p className="font-normal">Una habitación con wifi ideal para trabajar</p>
                 </div>
             </div> : <></>}
-            {detail.petAllowed ? <div className="flex flex-row items-center gap-x-4 ml-56 mt-5">
+            {detail.petAllowed ? <div className="flex flex-row items-center gap-x-4 mt-5">
                 <div>
                     <PiPawPrintBold className="size-5"/>
                 </div>
@@ -111,8 +111,8 @@ const ProductDetails = () => {
                     <p className="font-normal">Trae tus mascotas al alojamiento</p>
                 </div>
             </div> : <></>}
-            <div className="ml-56 mt-16 text-lg">
-                <p style={{ width: '455px' }}>{detail.description}</p>
+            <div className="mt-16 text-lg">
+                <p>{detail.description}</p>
                 <button className="font-medium mt-1" onClick={handleOpen}>More +</button>
                 <Modal
                 open={open}
@@ -139,12 +139,11 @@ const ProductDetails = () => {
                 </Modal>
                 
             </div>
-            <div className="ml-56 mt-16">
-                <div >
-                    
+            <div className="mt-16">
+                <div>
                     <h3 className="font-semibold text-lg">Lo que ofrece este lugar</h3>
                 </div>
-                <div className="mt-8 flex gap-x-32">
+                <div className="mt-8 flex flex-wrap gap-x-32">
                     <div>
                         {propertyService.mountainView ? <div className="flex items-center gap-x-2.5 mt-1">
                             <IoImageOutline />
@@ -186,7 +185,7 @@ const ProductDetails = () => {
                     <div className="mt-16 flex flex-column">
                         <h2 className="text-xl font semi-bold">Agenda tus dias vacacionales</h2>
                     </div>
-                    <div className="gap-x-4 flex mt-4">
+                    <div className="gap-x-4 flex-wrap flex mt-4">
                     <div>
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DateCalendar></DateCalendar>
@@ -200,7 +199,7 @@ const ProductDetails = () => {
                     </div>
                 </div>
             </div>
-            </>
+            </div>
             }
         </>
     )
