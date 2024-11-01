@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom'; // Importa useNavigate
 import Button from './Button';
 import InputField from './InputField';
 
 const Searcher = () => {
-
+    const navigate = useNavigate(); 
     const [search, setSearch] = useState({
         city: "",
         country: ""
@@ -14,7 +15,11 @@ const Searcher = () => {
         setSearch({
             ...search,
             [e.target.name]: e.target.value
-        })
+        });
+    };
+
+    const handleSearch = () => {
+        navigate(`/properties?city=${search.city}&country=${search.country}`);
     };
 
     return (
@@ -37,9 +42,10 @@ const Searcher = () => {
                     placeholder="Busca por país"
                 />
             </div>
-            <Button type="primary" label="Buscar" icon={FaSearch} />
+            {/* <Button type="primary" label="Buscar" icon={FaSearch} onClick={handleSearch} /> Añade onClick */}
+            <button className='flex items-center justify-center gap-2 px-4 rounded font-semibold transition duration-300 h-10 w-32 bg-primary text-white hover:bg-primaryHover' onClick={handleSearch}>Buscar</button>
         </div>
-    )
-}
+    );
+};
 
-export default Searcher
+export default Searcher;

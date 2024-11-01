@@ -12,6 +12,7 @@ export const propertyService = {
     createProperty,
     updateProperty,
     deleteProperty,
+    getPaginatedProperties
 };
 
 async function getProperties() {
@@ -66,13 +67,38 @@ async function getPropertyById(id) {
 };
 
 async function createProperty(property) {
-    // todo
-};
+    const newProperty = { id: Date.now(), ...property };
+    properties.push(newProperty);
+    return newProperty;
+}
 
-async function updateProperty(id, property) {
-    // todo
-};
+async function updateProperty(id, updatedProperty) {
+    const index = properties.findIndex(x => x.id === id);
+    if (index !== -1) {
+        properties[index] = { ...properties[index], ...updatedProperty };
+        return properties[index];
+    }
+    throw new Error("Propiedad no encontrada");
+}
 
 async function deleteProperty(id) {
-    // todo
-};
+    const index = properties.findIndex(x => x.id === id);
+    if (index !== -1) {
+        const deletedProperty = properties.splice(index, 1)[0];
+        return deletedProperty;
+    }
+    throw new Error("Propiedad no encontrada");
+}
+
+async function getPaginatedProperties(page = 1, limit = 10) {
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    const paginatedProperties = properties.slice(startIndex, endIndex);
+    
+    return {
+        total: properties.length,
+        page,
+        totalPages: Math.ceil(properties.length / limit),
+        properties: paginatedProperties,
+    };
+}

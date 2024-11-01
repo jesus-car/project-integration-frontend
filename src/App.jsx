@@ -1,6 +1,7 @@
 import { Route, Routes, useLocation } from 'react-router-dom';
 import { routes } from './utils/routes';
 import Home from './routes/Home';
+import PropertiesList from './routes/Properties'
 import Header from './Components/Header';
 import Administration from './routes/Administration';
 import AddProduct from './routes/AddProduct';
@@ -20,6 +21,7 @@ export default function App() {
           <Routes>
             <Route path={routes.base} element={<Home />} />
             <Route path={routes.home} element={<Home />} />
+            <Route path={routes.properties} element={<PropertiesList />} />
             <Route path={routes.details} element={<ProductDetails/>} />
             <Route path={routes.administration} element={<Administration />} />
           </Routes>
