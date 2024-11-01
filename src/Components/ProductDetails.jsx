@@ -58,11 +58,11 @@ const ProductDetails = () => {
                 </div> 
                 <div className="flex  mt-2 ml-56 gap-x-2">
                     <div className="grid grid-cols-2 gap-4 w-2/5">
-                        <img className="col-span-2 w-full object-cover rounded-lg" src={detail.imgPrincipal} alt="Principal" />
+                        <img className="col-span-2 w-full object-cover rounded-lg h-96" src={detail.imgPrincipal} alt="Principal" />
                     </div>
                     <div className="grid  grid-cols-2 grid-rows-2 gap-2 w-2/5">
                             {detail.img.map((value, index) => 
-                                <img key={index} src={value} alt="Secundary 1" className="w-96 object-cover rounded-lg"/>
+                                <img key={index} src={value} alt="Secundary 1" className="w-96 object-cover rounded-lg h-[188px]"/>
                             )}
                             <div onClick={handleOpenImg} className="cursor-pointer bg-white w-48 h-8 flex flex-row items-center rounded-md gap-x-4 pl-8 justify-self-end absolute bottom-5 right-72">
                                 <TfiLayoutGrid2Alt/>

@@ -368,17 +368,16 @@ export const detail = {
     title: "Linda casa en la montaña",
     imgPrincipal:"../../public/images/casa1.3.jpeg",
     img: [
-        "../../public/images/casa1.4.jpeg",
-        "../../public/images/casa1.1.jpeg",
-        "../../public/images/casa1.2.jpeg",
-        "../../public/images/casa1.5.jpeg"
+        "https://a0.muscache.com/im/pictures/miso/Hosting-856575418570950976/original/0aaefcd2-395c-45c8-bb6d-a57275e26e55.jpeg?im_w=1440",
+        "https://a0.muscache.com/im/pictures/miso/Hosting-856575418570950976/original/f312b1eb-7064-4467-a18e-3f7fa7148ba5.jpeg?im_w=1440",
+        "https://a0.muscache.com/im/pictures/miso/Hosting-856575418570950976/original/6720ad38-b5e8-4a08-8f7e-b1ed9f61b6cf.jpeg?im_w=1440",
+        "https://a0.muscache.com/im/pictures/6d4b1ac9-b30c-4d53-a84f-c2dab0d04cf5.jpg?im_w=1440"
     ],
     allImg:[
-        "../../public/images/casa1.4.jpeg",
-        "../../public/images/casa1.1.jpeg",
-        "../../public/images/casa1.2.jpeg",
-        "../../public/images/casa1.5.jpeg",
-        "../../public/images/casa1.3.jpeg"
+        "https://a0.muscache.com/im/pictures/miso/Hosting-856575418570950976/original/0aaefcd2-395c-45c8-bb6d-a57275e26e55.jpeg?im_w=1440",
+        "https://a0.muscache.com/im/pictures/miso/Hosting-856575418570950976/original/f312b1eb-7064-4467-a18e-3f7fa7148ba5.jpeg?im_w=1440",
+        "https://a0.muscache.com/im/pictures/miso/Hosting-856575418570950976/original/6720ad38-b5e8-4a08-8f7e-b1ed9f61b6cf.jpeg?im_w=1440",
+        "https://a0.muscache.com/im/pictures/6d4b1ac9-b30c-4d53-a84f-c2dab0d04cf5.jpg?im_w=1440"
     ],
     city: "Peñol",
     country: "Colombia",
