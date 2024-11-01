@@ -50,7 +50,7 @@ const ProductDetails = () => {
         <>
         {loading ? 
             <Spinner /> : 
-            <div className="px-6 flex align-center flex-col">
+            <div className="px-[20.5rem] flex align-center flex-col container-detail">
             <div className="relative">
                 <div className="mt-10 flex justify-between ">
                     <h1 className="text-2xl font-medium">{detail.title}</h1>
@@ -121,7 +121,7 @@ const ProductDetails = () => {
                 aria-describedby="modal-modal-description"
                 >
                 <div className="h-svh flex justify-center flex items-center">
-                    <div className="w-1/2 h-5/6 bg-white rounded-lg text-wrap pl-16 pr-16 pt-10">
+                    <div className="w-1/2 h-5/6 bg-white rounded-lg text-wrap pl-16 pr-16 pt-10 modal-2">
                         <button onClick={handleClose}><IoClose className="w-7 h-7" /></button>
                         <p className="mt-7 text-xl font-bold" id="modal-modal-title">
                         Sobre este espacio

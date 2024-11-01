@@ -5,12 +5,12 @@ import { IoClose } from "react-icons/io5";
 const ImageProduct = (props) => {
 
   return (
-      <div className='m-32 relative'>
-        <div onClick={() => props.onClickClose()} className='text-xl cursor-pointer	text-white	font-bold	absolute top-[-50px] right-3'><IoClose className="w-7 h-7" /></div>
+      <div className='relative' style={{display: "flex", justifyContent: "center", flexDirection: "column", height: "100%"}}>
+        <div onClick={() => props.onClickClose()} className='text-xl cursor-pointer	text-white	font-bold	absolute top-[25px] right-3'><IoClose className="w-7 h-7" /></div>
         <Slide autoplay={false} transitionDuration={1}>
             {props.imgs.map((val, key) => 
               <div key={key} className="flex justify-center	each-slide-effect">
-                <img className="w-6/12" src={val} alt="" />
+                <img style={{width: "90%"}} src={val} alt="" />
               </div>
 
             )}
