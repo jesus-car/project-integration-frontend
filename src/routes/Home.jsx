@@ -67,7 +67,7 @@ const Home = () => {
         {loadingProperties ? (
           <Spinner />
         ) : (
-          <div className="grid grid-cols-2 gap-x-5 gap-y-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-10">
             {properties.map(property => (
               <PropertyHomeCard key={property.id} property={property} />
             ))}
@@ -121,7 +121,7 @@ const Home = () => {
         {loadingProperties ? (
           <Spinner />
         ) : (
-          <div className="grid grid-cols-2 gap-x-5 gap-y-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-10">
             {recommendedProperties.map(property => (
               <PropertyHomeCard key={property.id} property={property} />
             ))}
