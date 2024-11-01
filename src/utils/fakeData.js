@@ -362,3 +362,52 @@ export const properties = [
 
 
 ];
+
+export const detail = {
+
+    title: "Linda casa en la montaña",
+    imgPrincipal:"../../public/images/casa1.3.jpeg",
+    img: [
+        "../../public/images/casa1.4.jpeg",
+        "../../public/images/casa1.1.jpeg",
+        "../../public/images/casa1.2.jpeg",
+        "../../public/images/casa1.5.jpeg"
+    ],
+    allImg:[
+        "../../public/images/casa1.4.jpeg",
+        "../../public/images/casa1.1.jpeg",
+        "../../public/images/casa1.2.jpeg",
+        "../../public/images/casa1.5.jpeg",
+        "../../public/images/casa1.3.jpeg"
+    ],
+
+    location: "Peñol, Colombia",
+    price: "294,32",
+    guests: 6,
+    bebrooms: 3,
+    bebs: 6,
+    bathrooms: 2,
+    review: 4.89,
+    host: "William Lee",
+    yearhost: 6,
+    workarea: true,
+    description: "Relajate con toda la familia en este tranquilo alojamiento. " +
+                    "La finca tiene la casa principal 🏠 con 3 dormitorios y 3 baños completos. " +
+                    "Una cocina increíble para que la familia esté cerca y una chimenea de leña. " +
+                    " 👪 La casa tiene una cama tamaño king, cocina completa, baño completo y una bonita chimenea de madera. " +
+                    "La granja está rodeada de grandes árboles y vistas increíbles.",
+
+    moreDescription: "Servicio de limpieza diario esta incluido. " +
+                    "Por favor confirmar con anticipación la hora en la que les gustaría que la empleada entre a hacer el aseo.",
+
+    registrerNumber: "102030",
+    
+    mountainView: true,
+    securityCamera: true,
+    freeParking: true,
+    kitchen: true,
+    petAllowed: true,
+    wifi: true,
+    tv: true,
+
+};

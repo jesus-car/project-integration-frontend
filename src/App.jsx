@@ -6,6 +6,7 @@ import Administration from './routes/Administration';
 import AddProduct from './routes/AddProduct';
 import Footer from './Components/Footer';
 import { ToastProvider } from './contexts/ToastContext';
+import ProductDetails from './Components/ProductDetails';
 
 export default function App() {
   const location = useLocation();
@@ -19,6 +20,7 @@ export default function App() {
           <Routes>
             <Route path={routes.base} element={<Home />} />
             <Route path={routes.home} element={<Home />} />
+            <Route path={routes.details} element={<ProductDetails/>} />
             <Route path={routes.administration} element={<Administration />} />
           </Routes>
         </div>

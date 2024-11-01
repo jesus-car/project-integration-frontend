@@ -1,6 +1,6 @@
 // todo: servicio para encapsular la interacción con la API de propiedades
 import {API_URLS} from "../utils/apiConfig";
-import {properties} from "../utils/fakeData.js";
+import {detail, properties} from "../utils/fakeData.js";
 import {choiceRandomNFromList} from "../utils/utils.js";
 
 const API_URL = "https://api.example.com/properties";
@@ -52,6 +52,7 @@ async function getFilteredProperties(n) {
 
 async function getPropertyById(id) {
     // todo
+    return detail;
 };
 
 async function createProperty(property) {

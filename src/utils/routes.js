@@ -4,7 +4,7 @@ export const routes = {
     administration: '/administration/*',
     administrationHome: '/administration',
     addProduct: '/administration/add-property',
-    details: '/property/:id',
+    details: '/properties/:id',
     favs: '/favs',
     notFound: '*'
 }
