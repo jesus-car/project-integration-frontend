@@ -79,7 +79,7 @@ const ProductDetails = () => {
             </div>
             <div className="flex flex-col ml-56 mt-5">
                 <div>
-                    <h1 className="text-2xl font-medium">Alojamiento en {detail.location}</h1>
+                    <h1 className="text-2xl font-medium">Alojamiento en {detail.city} {detail.country}</h1>
                     <h1 className="text-2xl font-medium">{detail.price}$ Noche</h1>
                     <p className="mt-5">{detail.guests} huéspedes, {detail.bebrooms} dormitorios, {detail.bebs} camas, {detail.bathrooms} baños</p>
                 </div>
@@ -146,7 +146,7 @@ const ProductDetails = () => {
                 </div>
                 <div className="mt-8 flex gap-x-32">
                     <div>
-                        {detail.mountainView ? <div className="flex items-center gap-x-2.5 mt-1">
+                        {propertyService.mountainView ? <div className="flex items-center gap-x-2.5 mt-1">
                             <IoImageOutline />
                             <h4 className=" text-lg">Vista a las montañas</h4>
                         </div> : <></>}

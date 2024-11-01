@@ -380,8 +380,8 @@ export const detail = {
         "../../public/images/casa1.5.jpeg",
         "../../public/images/casa1.3.jpeg"
     ],
-
-    location: "Peñol, Colombia",
+    city: "Peñol",
+    country: "Colombia",
     price: "294,32",
     guests: 6,
     bebrooms: 3,

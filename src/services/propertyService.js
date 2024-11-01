@@ -52,6 +52,16 @@ async function getFilteredProperties(n) {
 
 async function getPropertyById(id) {
     // todo
+    let property = properties.find(x => x.id == id);
+
+    detail.title = property.name;
+    detail.imgPrincipal = property.images[0];
+    detail.city = property.city;
+    detail.country = property.country;
+    detail.description = property.description;
+    detail.price = property.pricePerNight;
+
+
     return detail;
 };
 
