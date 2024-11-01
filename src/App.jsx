@@ -8,26 +8,29 @@ import AddProduct from './routes/AddProduct';
 import Footer from './Components/Footer';
 import { ToastProvider } from './contexts/ToastContext';
 import ProductDetails from './Components/ProductDetails';
+import { ProductProvider } from './context/ProductContext';
 
 export default function App() {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/administration');
 
   return (
-    <ToastProvider>
-      <div className="min-h-screen flex flex-col">
-        {!isAdminRoute && <Header />}
-        <div className={`flex-grow ${!isAdminRoute ? 'pt-20' : ''}`}>
-          <Routes>
-            <Route path={routes.base} element={<Home />} />
-            <Route path={routes.home} element={<Home />} />
-            <Route path={routes.properties} element={<PropertiesList />} />
-            <Route path={routes.details} element={<ProductDetails/>} />
-            <Route path={routes.administration} element={<Administration />} />
-          </Routes>
+    <ProductProvider>
+      <ToastProvider>
+        <div className="min-h-screen flex flex-col">
+          {!isAdminRoute && <Header />}
+          <div className={`flex-grow ${!isAdminRoute ? 'pt-20' : ''}`}>
+            <Routes>
+              <Route path={routes.base} element={<Home />} />
+              <Route path={routes.home} element={<Home />} />
+              <Route path={routes.properties} element={<PropertiesList />} />
+              <Route path="/properties/:id" element={<ProductDetails />} />
+              <Route path={routes.administration} element={<Administration />} />
+            </Routes>
+          </div>
+          {!isAdminRoute && <Footer />}
         </div>
-        {!isAdminRoute && <Footer />}
-      </div>
-    </ToastProvider>
+      </ToastProvider>
+    </ProductProvider>
   );
 }

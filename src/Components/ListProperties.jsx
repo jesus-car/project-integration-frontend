@@ -1,117 +1,142 @@
-import { useEffect, useState } from 'react'
-import { FaEdit, FaTrash } from 'react-icons/fa';
-import { propertyService } from '../services/propertyService';
-import Spinner from './Spinner';
-import ConfirmModal from './ConfirmModal';
-import {useToast} from "../contexts/ToastContext.jsx";
+import { useProducts } from '../context/ProductContext';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useToast } from '../contexts/ToastContext';
 
+function ListProperties() {
+  const { products, deleteProduct } = useProducts();
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [productToDelete, setProductToDelete] = useState(null);
+  const navigate = useNavigate();
+  const toast = useToast();
 
-const ListProperties = () => {
+  const handleDeleteClick = (product) => {
+    setProductToDelete(product);
+    setShowDeleteModal(true);
+  };
 
-    const [loadingProperties, setLoadingProperties] = useState(true);
+  const confirmDelete = () => {
+    if (productToDelete) {
+      deleteProduct(productToDelete.id);
+      toast.success('Producto eliminado exitosamente');
+      setShowDeleteModal(false);
+      setProductToDelete(null);
+    }
+  };
 
-    const [properties, setProperties] = useState([]);
+  const handleEdit = (productId) => {
+    navigate(`/administration/edit-product/${productId}`);
+  };
 
-    const [isModalOpen, setIsModalOpen] = useState(false);
-
-    const [selectedProperty, setSelectedProperty] = useState(null);
-
-    const toast = useToast();
-
-    useEffect(() => {
-        propertyService.getProperties().then((properties) => {
-            setProperties(properties);
-            setTimeout(() => {
-                setLoadingProperties(false);
-            }, 1000);
-        }).catch((error) => {
-            console.error("Error:", error);
-            setLoadingProperties(false);
-            setTimeout(() => {
-                setLoadingProperties(false);
-            }, 1000);
-        });
-    }, []);
-
-
-    const onEdit = (id) => {
-        // Lógica para editar
-        console.log(`Edit property with id: ${id}`);
-    };
-
-    const onDelete = (id) => {
-        // todo: implementar consumo de API
-        setIsModalOpen(true);
-        setSelectedProperty(id);
-    };
-
-    const confirmDelete = () => {
-        console.log("Property deleted");
-        setIsModalOpen(false);
-        let newProperties = properties.filter((item) => item.id !== selectedProperty);
-        setProperties(newProperties);
-        toast.success('Propiedad eliminada correctamente');
-        setSelectedProperty(null);
-    };
-
-    const cancelDelete = () => {
-        setIsModalOpen(false);
-        setSelectedProperty(null);
-    };
-
-    return (
-        <div className='h-screen'>
-            <div className='mb-5'>
-                <p className='text-2xl font-semibold mb-4'>Todas las propiedades</p>
-                <p>Aquí podrás gestionar todas las propiedades del sistema</p>
-            </div>
-            {loadingProperties ? (
-                <Spinner />
-            ) : (
-                <div className="overflow-x-auto w-full">
-                    <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
-                        <thead>
-                            <tr className="bg-gray-100">
-                                <th className="px-6 py-3 border-b text-left text-gray-700 font-semibold whitespace-nowrap">ID</th>
-                                <th className="px-6 py-3 border-b text-left text-gray-700 font-semibold whitespace-nowrap">Nombre</th>
-                                <th className="px-6 py-3 border-b text-center text-gray-700 font-semibold whitespace-nowrap">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {properties.map((item, index) => (
-                                <tr key={index} className="hover:bg-gray-50">
-                                    <td className="px-6 py-4 border-b text-gray-600 whitespace-nowrap">{item.id}</td>
-                                    <td className="px-6 py-4 border-b text-gray-600 whitespace-nowrap">{item.name}</td>
-                                    <td className="px-6 py-4 border-b text-center whitespace-nowrap">
-                                        <button
-                                            className="text-teal-600 hover:text-teal-900 mx-2"
-                                            onClick={() => onEdit(item.id)}
-                                            aria-label="Edit"
-                                        >
-                                            <FaEdit />
-                                        </button>
-                                        <button
-                                            className="text-red-500 hover:text-red-700 mx-2"
-                                            onClick={() => onDelete(item.id)}
-                                            aria-label="Delete"
-                                        >
-                                            <FaTrash />
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                    <ConfirmModal
-                        question={`¿Confirmas que deseas eliminar la propiedad con ID ${selectedProperty}?`}
-                        isOpen={isModalOpen}
-                        onConfirm={confirmDelete}
-                        onCancel={cancelDelete}
-                    />
-                </div>
-            )}
+  // Modal de confirmación de eliminación
+  const DeleteConfirmationModal = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 max-w-sm mx-4">
+        <h3 className="text-lg font-bold mb-4">Confirmar eliminación</h3>
+        <p className="mb-6">
+          ¿Estás seguro de que deseas eliminar "{productToDelete?.name}"? Esta acción no se puede deshacer.
+        </p>
+        <div className="flex justify-end gap-4">
+          <button
+            onClick={() => setShowDeleteModal(false)}
+            className="px-4 py-2 text-gray-600 hover:text-gray-800"
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={confirmDelete}
+            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+          >
+            Eliminar
+          </button>
         </div>
-    );
+      </div>
+    </div>
+  );
+
+  return (
+    <>
+      <div className="overflow-x-auto">
+        <table className="min-w-full bg-white">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Imagen
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Nombre
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Descripción
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Precio
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Categoría
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Estado
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Acciones
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-200">
+            {products.map((product) => (
+              <tr key={product.id} className="hover:bg-gray-50">
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {product.images && product.images.length > 0 ? (
+                    <img
+                      src={product.images[0]}
+                      alt={product.name}
+                      className="h-16 w-16 object-cover rounded"
+                    />
+                  ) : (
+                    <div className="h-16 w-16 bg-gray-200 rounded flex items-center justify-center">
+                      <span className="text-gray-500 text-xs">Sin imagen</span>
+                    </div>
+                  )}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">{product.name}</td>
+                <td className="px-6 py-4">
+                  {product.description.length > 100
+                    ? `${product.description.substring(0, 100)}...`
+                    : product.description}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  ${Number(product.price).toLocaleString()}
+                </td>
+                <td className="px-6 py-4">{product.category}</td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                    {product.status}
+                  </span>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm">
+                  <button
+                    onClick={() => handleEdit(product.id)}
+                    className="text-indigo-600 hover:text-indigo-900 mr-4"
+                  >
+                    Editar
+                  </button>
+                  <button
+                    onClick={() => handleDeleteClick(product)}
+                    className="text-red-600 hover:text-red-900"
+                  >
+                    Eliminar
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {showDeleteModal && <DeleteConfirmationModal />}
+    </>
+  );
 }
 
-export default ListProperties
+export default ListProperties;

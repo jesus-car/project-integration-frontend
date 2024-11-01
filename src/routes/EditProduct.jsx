@@ -1,13 +1,15 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { routes } from '../utils/routes';
 import { FaUpload, FaTimes, FaArrowLeft } from 'react-icons/fa';
 import { useToast } from '../contexts/ToastContext';
 import { useProducts } from '../context/ProductContext';
 
-export default function AddProduct() {
+export default function EditProduct() {
+  const { productId } = useParams();
   const navigate = useNavigate();
   const toast = useToast();
+  const { products, updateProduct } = useProducts();
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -19,7 +21,21 @@ export default function AddProduct() {
   const [previews, setPreviews] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [globalError, setGlobalError] = useState('');
-  const { addProduct } = useProducts();
+
+  // Cargar datos del producto al montar el componente
+  useEffect(() => {
+    const product = products.find(p => p.id === productId);
+    if (product) {
+      setFormData(product);
+      // Si el producto tiene imágenes, establecerlas como previews
+      if (product.images && product.images.length > 0) {
+        setPreviews(product.images);
+      }
+    } else {
+      navigate('/administration/properties');
+      toast.error('Producto no encontrado');
+    }
+  }, [productId, products, navigate]);
 
   const validateForm = () => {
     const newErrors = {};
@@ -33,8 +49,7 @@ export default function AddProduct() {
     if (!formData.description.trim()) {
       newErrors.description = 'La descripción es requerida';
     } else if (formData.description.length < 10) {
-      newErrors.description =
-        'La descripción debe tener al menos 10 caracteres';
+      newErrors.description = 'La descripción debe tener al menos 10 caracteres';
     }
 
     if (!formData.price) {
@@ -45,10 +60,6 @@ export default function AddProduct() {
 
     if (!formData.category) {
       newErrors.category = 'La categoría es requerida';
-    }
-
-    if (formData.images.length === 0) {
-      newErrors.images = 'Debe subir al menos una imagen';
     }
 
     setErrors(newErrors);
@@ -69,41 +80,30 @@ export default function AddProduct() {
     }
   };
 
-  const handleImageChange = e => {
+  const handleImageChange = async (e) => {
     const files = Array.from(e.target.files);
     const validFiles = files.filter(file => {
       const isValid = file.type.startsWith('image/');
-      const isValidSize = file.size <= 5 * 1024 * 1024; // 5MB max
+      const isValidSize = file.size <= 5 * 1024 * 1024;
       return isValid && isValidSize;
     });
 
     if (validFiles.length !== files.length) {
-      const errorMessage =
-        'Algunos archivos no son válidos. Use imágenes de hasta 5MB';
+      const errorMessage = 'Algunos archivos no son válidos. Use imágenes de hasta 5MB';
       setErrors(prev => ({
         ...prev,
         images: errorMessage,
       }));
       toast.warning(errorMessage);
     } else {
-      setErrors(prev => ({
+      setFormData(prev => ({
         ...prev,
-        images: '',
+        images: [...prev.images, ...validFiles]
       }));
-      if (validFiles.length > 0) {
-        toast.success(
-          `${validFiles.length} ${validFiles.length === 1 ? 'imagen cargada' : 'imágenes cargadas'} correctamente`
-        );
-      }
+
+      const newPreviews = validFiles.map(file => URL.createObjectURL(file));
+      setPreviews(prev => [...prev, ...newPreviews]);
     }
-
-    setFormData(prev => ({
-      ...prev,
-      images: validFiles,
-    }));
-
-    const newPreviews = validFiles.map(file => URL.createObjectURL(file));
-    setPreviews(prev => [...prev, ...newPreviews]);
   };
 
   const removeImage = index => {
@@ -114,7 +114,7 @@ export default function AddProduct() {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     setGlobalError('');
 
@@ -125,11 +125,11 @@ export default function AddProduct() {
 
     setIsSubmitting(true);
     try {
-      await addProduct(formData);
-      toast.success('Producto agregado exitosamente');
+      updateProduct(productId, formData);
+      toast.success('Producto actualizado exitosamente');
       navigate('/administration/properties');
     } catch (err) {
-      const errorMessage = 'Error al guardar el producto. Por favor, intente nuevamente.';
+      const errorMessage = 'Error al actualizar el producto. Por favor, intente nuevamente.';
       setGlobalError(errorMessage);
       toast.error(errorMessage);
     } finally {
@@ -137,13 +137,12 @@ export default function AddProduct() {
     }
   };
 
-  // preview component
+  // Componente ProductPreview (idéntico al de AddProduct)
   const ProductPreview = () => {
     const [activeImage, setActiveImage] = useState(0);
-    const previewImage =
-      previews.length > 0
-        ? previews[activeImage]
-        : 'https://via.placeholder.com/400x300?text=Sin+Imagen';
+    const previewImage = previews.length > 0
+      ? previews[activeImage]
+      : 'https://via.placeholder.com/400x300?text=Sin+Imagen';
 
     return (
       <div className="">
@@ -160,21 +159,13 @@ export default function AddProduct() {
             {previews.length > 1 && (
               <>
                 <button
-                  onClick={() =>
-                    setActiveImage(prev =>
-                      prev > 0 ? prev - 1 : previews.length - 1
-                    )
-                  }
+                  onClick={() => setActiveImage(prev => prev > 0 ? prev - 1 : previews.length - 1)}
                   className="absolute left-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-2 rounded-full transition-all"
                 >
                   ←
                 </button>
                 <button
-                  onClick={() =>
-                    setActiveImage(prev =>
-                      prev < previews.length - 1 ? prev + 1 : 0
-                    )
-                  }
+                  onClick={() => setActiveImage(prev => prev < previews.length - 1 ? prev + 1 : 0)}
                   className="absolute right-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-2 rounded-full transition-all"
                 >
                   →
@@ -185,9 +176,7 @@ export default function AddProduct() {
             {/* Indicador de precio */}
             <div className="absolute top-4 right-4 bg-white px-4 py-2 rounded-full shadow-lg">
               <span className="text-xl font-bold text-blue-600">
-                {formData.price
-                  ? `$${Number(formData.price).toLocaleString()}`
-                  : '$0'}
+                {formData.price ? `$${Number(formData.price).toLocaleString()}` : '$0'}
               </span>
             </div>
           </div>
@@ -199,9 +188,7 @@ export default function AddProduct() {
                 <button
                   key={index}
                   onClick={() => setActiveImage(index)}
-                  className={`flex-shrink-0 relative ${
-                    activeImage === index ? 'ring-2 ring-blue-500' : ''
-                  }`}
+                  className={`flex-shrink-0 relative ${activeImage === index ? 'ring-2 ring-blue-500' : ''}`}
                 >
                   <img
                     src={preview}
@@ -229,16 +216,13 @@ export default function AddProduct() {
                   </span>
                   <span className="text-gray-500">•</span>
                   <span className="text-gray-500 text-sm">
-                    {previews.length}{' '}
-                    {previews.length === 1 ? 'imagen' : 'imágenes'}
+                    {previews.length} {previews.length === 1 ? 'imagen' : 'imágenes'}
                   </span>
                 </div>
               </div>
 
               <div className="bg-gray-50 rounded-lg p-4">
-                <h4 className="font-semibold text-gray-700 mb-2">
-                  Descripción
-                </h4>
+                <h4 className="font-semibold text-gray-700 mb-2">Descripción</h4>
                 <p className="text-gray-600 leading-relaxed">
                   {formData.description || 'Descripción del producto'}
                 </p>
@@ -254,9 +238,7 @@ export default function AddProduct() {
                 </div>
                 <div className="bg-gray-50 p-3 rounded-lg">
                   <span className="block text-gray-500">ID</span>
-                  <span className="font-medium text-gray-800">
-                    #PRD-{String(Date.now()).slice(-4)}
-                  </span>
+                  <span className="font-medium text-gray-800">#{productId}</span>
                 </div>
               </div>
             </div>
@@ -273,52 +255,6 @@ export default function AddProduct() {
     );
   };
 
-  // Agregar estas nuevas funciones de manejo de drag and drop
-  const handleDragOver = e => {
-    e.preventDefault();
-    e.currentTarget.classList.add('border-blue-500', 'bg-blue-50');
-  };
-
-  const handleDragLeave = e => {
-    e.preventDefault();
-    e.currentTarget.classList.remove('border-blue-500', 'bg-blue-50');
-  };
-
-  const handleDrop = e => {
-    e.preventDefault();
-    e.currentTarget.classList.remove('border-blue-500', 'bg-blue-50');
-
-    const files = Array.from(e.dataTransfer.files);
-
-    // Usar la misma lógica de validación que en handleImageChange
-    const validFiles = files.filter(file => {
-      const isValid = file.type.startsWith('image/');
-      const isValidSize = file.size <= 5 * 1024 * 1024; // 5MB max
-      return isValid && isValidSize;
-    });
-
-    if (validFiles.length !== files.length) {
-      setErrors(prev => ({
-        ...prev,
-        images: 'Algunos archivos no son válidos. Use imágenes de hasta 5MB',
-      }));
-    } else {
-      setErrors(prev => ({
-        ...prev,
-        images: '',
-      }));
-    }
-
-    setFormData(prev => ({
-      ...prev,
-      images: [...prev.images, ...validFiles],
-    }));
-
-    // Crear URLs de previsualización
-    const newPreviews = validFiles.map(file => URL.createObjectURL(file));
-    setPreviews(prev => [...prev, ...newPreviews]);
-  };
-
   return (
     <div className="min-h-screen">
       <div className="container">
@@ -330,7 +266,7 @@ export default function AddProduct() {
                 {/* Título de la sección */}
                 <div className="mb-6 pb-4 border-b border-gray-200">
                   <h2 className="text-xl font-semibold text-gray-700">
-                    Información del Producto
+                    Editar Producto
                   </h2>
                   <p className="text-gray-500 text-sm mt-1">
                     Complete todos los campos requeridos (*)
@@ -360,9 +296,7 @@ export default function AddProduct() {
                         }`}
                       />
                       {errors.name && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {errors.name}
-                        </p>
+                        <p className="text-red-500 text-xs mt-1">{errors.name}</p>
                       )}
                     </div>
 
@@ -380,9 +314,7 @@ export default function AddProduct() {
                         }`}
                       />
                       {errors.price && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {errors.price}
-                        </p>
+                        <p className="text-red-500 text-xs mt-1">{errors.price}</p>
                       )}
                     </div>
                   </div>
@@ -406,9 +338,7 @@ export default function AddProduct() {
                       <option value="local">Local Comercial</option>
                     </select>
                     {errors.category && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {errors.category}
-                      </p>
+                      <p className="text-red-500 text-xs mt-1">{errors.category}</p>
                     )}
                   </div>
 
@@ -425,9 +355,7 @@ export default function AddProduct() {
                       }`}
                     />
                     {errors.description && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {errors.description}
-                      </p>
+                      <p className="text-red-500 text-xs mt-1">{errors.description}</p>
                     )}
                   </div>
 
@@ -437,9 +365,20 @@ export default function AddProduct() {
                     </label>
                     <div
                       className="mt-2 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md transition-colors duration-200"
-                      onDragOver={handleDragOver}
-                      onDragLeave={handleDragLeave}
-                      onDrop={handleDrop}
+                      onDragOver={e => {
+                        e.preventDefault();
+                        e.currentTarget.classList.add('border-blue-500', 'bg-blue-50');
+                      }}
+                      onDragLeave={e => {
+                        e.preventDefault();
+                        e.currentTarget.classList.remove('border-blue-500', 'bg-blue-50');
+                      }}
+                      onDrop={e => {
+                        e.preventDefault();
+                        e.currentTarget.classList.remove('border-blue-500', 'bg-blue-50');
+                        const files = Array.from(e.dataTransfer.files);
+                        handleImageChange({ target: { files } });
+                      }}
                     >
                       <div className="space-y-1 text-center">
                         <FaUpload className="mx-auto h-12 w-12 text-gray-400" />
@@ -456,15 +395,11 @@ export default function AddProduct() {
                           </label>
                           <p className="pl-1">o arrastrar y soltar</p>
                         </div>
-                        <p className="text-xs text-gray-500">
-                          PNG, JPG, GIF hasta 5MB
-                        </p>
+                        <p className="text-xs text-gray-500">PNG, JPG, GIF hasta 5MB</p>
                       </div>
                     </div>
                     {errors.images && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {errors.images}
-                      </p>
+                      <p className="text-red-500 text-xs mt-1">{errors.images}</p>
                     )}
 
                     {previews.length > 0 && (
@@ -494,9 +429,7 @@ export default function AddProduct() {
                       type="submit"
                       disabled={isSubmitting}
                       className={`${
-                        isSubmitting
-                          ? 'bg-blue-400'
-                          : 'bg-blue-500 hover:bg-blue-700'
+                        isSubmitting ? 'bg-blue-400' : 'bg-blue-500 hover:bg-blue-700'
                       } text-white font-bold py-2 px-6 rounded-lg transition duration-200 flex items-center`}
                     >
                       {isSubmitting ? (
@@ -521,15 +454,15 @@ export default function AddProduct() {
                               d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                             ></path>
                           </svg>
-                          Guardando...
+                          Actualizando...
                         </>
                       ) : (
-                        'Guardar Producto'
+                        'Guardar Cambios'
                       )}
                     </button>
                     <button
                       type="button"
-                      onClick={() => navigate(routes.administration)}
+                      onClick={() => navigate('/administration/properties')}
                       className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-6 rounded-lg transition duration-200"
                     >
                       Cancelar
@@ -562,4 +495,4 @@ export default function AddProduct() {
       </div>
     </div>
   );
-}
+} 

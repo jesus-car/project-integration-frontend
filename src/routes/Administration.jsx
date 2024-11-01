@@ -4,8 +4,54 @@ import Sidebar from '../Components/SideBar';
 
 import AddProduct from './AddProduct';
 import Toast from '../Components/Toast';
+import { useState, useEffect } from 'react';
+import EditProduct from './EditProduct';
 
 const Administration = () => {
+  const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 1025);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsSmallScreen(window.innerWidth < 1025);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  if (isSmallScreen) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+        <div className="text-center max-w-2xl mx-auto p-8 bg-white rounded-lg shadow-lg">
+          <h1 className="text-3xl font-bold text-red-600 mb-4">
+            ¡Acceso no disponible!
+          </h1>
+          <div className="text-gray-600 mb-6">
+            <p className="mb-4">
+              Lo sentimos, el panel de administración solo está disponible en dispositivos con pantallas más grandes (mínimo 1025px de ancho).
+            </p>
+            <p className="mb-4">
+              Para una mejor experiencia y gestión más eficiente de los productos, te recomendamos acceder desde:
+            </p>
+            <ul className="list-disc list-inside mb-4">
+              <li>Una computadora de escritorio</li>
+              <li>Una laptop</li>
+              <li>Una tablet en modo horizontal (según el modelo)</li>
+            </ul>
+            <p className="font-semibold">
+              Esta restricción existe para garantizar la mejor experiencia posible en la gestión de tu inventario y configuraciones.
+            </p>
+          </div>
+          <div className="text-sm text-gray-500">
+            <p>
+              Si necesitas realizar cambios urgentes, por favor accede desde un dispositivo con una pantalla más grande.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex">
       {/* Sidebar */}
@@ -75,6 +121,7 @@ const Administration = () => {
                 </div>
               }
             />
+            <Route path="/edit-product/:productId" element={<EditProduct />} />
           </Routes>
         </div>
       </div>
