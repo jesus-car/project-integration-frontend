@@ -55,6 +55,7 @@ const Home = () => {
     <div className="lg:mx-24 md:mx-14 mx-10">
       <div className="mt-5">
         <Searcher />
+        
       </div>
 
       <section>
