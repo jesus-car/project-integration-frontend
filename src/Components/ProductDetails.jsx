@@ -50,7 +50,7 @@ const ProductDetails = () => {
         <>
         {loading ? 
             <Spinner /> : 
-            <div className="px-6 flex align-center flex-col">
+            <div className="px-[20.5rem] flex align-center flex-col container-detail">
             <div className="relative">
                 <div className="mt-10 flex justify-between ">
                     <h1 className="text-2xl font-medium">{detail.title}</h1>
