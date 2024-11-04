@@ -14,7 +14,23 @@ jobs:
       EC2_USERNAME: ${{ secrets.EC2_USERNAME }}
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - name: Setup Node.js 20 environment
+        uses: actions/setup-node@v4.1.0
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install1
+      - name: Lint code
+        run: pnpm lint
       - name: Build and Publish head Docker image
         uses: VaultVulp/gp-docker-action@1.0.1
         with:
