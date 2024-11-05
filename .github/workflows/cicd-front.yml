@@ -49,9 +49,10 @@ jobs:
       - name: Deploy to EC2
         run: |
           ssh -i "primerkey.pem" -o StrictHostKeyChecking=no -t $EC2_USERNAME@$EC2_URL << 'EOF'
-            sudo docker login ghcr.io -u ${{ secrets.GIT_USER }} -p ${{ secrets.GIT_TOKEN }}
-            sudo docker pull ghcr.io/${{ secrets.GIT_USER }}/project-integration-frontend/front-image:latest
             sudo docker stop frontend-integration || true
             sudo docker rm frontend-integration || true
+            sudo docker image prune -a -f
+            sudo docker login ghcr.io -u ${{ secrets.GIT_USER }} -p ${{ secrets.GIT_TOKEN }}
+            sudo docker pull ghcr.io/${{ secrets.GIT_USER }}/project-integration-frontend/front-image:latest
             sudo docker run --name frontend-integration -d -p 8080:8080 ghcr.io/${{ secrets.GIT_USER }}/project-integration-frontend/front-image:latest
           EOF
