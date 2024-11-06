@@ -11,3 +11,14 @@ export const choiceRandomNFromList = (list, n) => {
     }
     return randomList;
 }
+
+export const formatCurrency = (value) => {
+    const formattedValue = new Intl.NumberFormat('es-ES', {
+        style: 'currency',
+        currency: 'COP',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+    }).format(value);
+
+    return formattedValue.replace('COP', '$');
+};
