@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import PropertyHomeCard from '../Components/PropertyHomeCard';
+import PropertyCard from '../components/PropertyCard.jsx';
 import { propertyService } from '../services/propertyService';
 import Searcher from '../Components/Searcher';
 import CategoryHomeCard from '../Components/CategoryHomeCard';
@@ -68,9 +68,9 @@ const Home = () => {
         {loadingProperties ? (
           <Spinner />
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-5 gap-y-10">
             {properties.map(property => (
-              <PropertyHomeCard key={property.id} property={property} />
+              <PropertyCard key={property.id} property={property} />
             ))}
           </div>
         )}
@@ -122,9 +122,9 @@ const Home = () => {
         {loadingProperties ? (
           <Spinner />
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-5 gap-y-10">
             {recommendedProperties.map(property => (
-              <PropertyHomeCard key={property.id} property={property} />
+              <PropertyCard key={property.id} property={property} />
             ))}
           </div>
         )}
