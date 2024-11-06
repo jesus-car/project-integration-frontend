@@ -42,8 +42,7 @@ const Searcher = () => {
                     placeholder="Busca por país"
                 />
             </div>
-            {/* <Button type="primary" label="Buscar" icon={FaSearch} onClick={handleSearch} /> Añade onClick */}
-            <button className='flex items-center justify-center gap-2 px-4 rounded font-semibold transition duration-300 h-10 w-32 bg-primary text-white hover:bg-primaryHover' onClick={handleSearch}>Buscar</button>
+            <Button type="primary" label="Buscar" icon={FaSearch} onClick={handleSearch} />
         </div>
     );
 };
