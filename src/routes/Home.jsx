@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import PropertyCard from '../components/PropertyCard.jsx';
+import PropertyCard from '../Components/PropertyCard.jsx';
 import { propertyService } from '../services/propertyService';
 import Searcher from '../Components/Searcher';
 import CategoryHomeCard from '../Components/CategoryHomeCard';
