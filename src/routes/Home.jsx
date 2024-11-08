@@ -30,6 +30,14 @@ const Home = () => {
       name: 'Ciudad',
       img: 'https://a0.muscache.com/im/ml/photo_enhancement/pictures/hosting/Hosting-818365624854945234/original/284b081e-4487-4f15-9d00-97b35fdcbadd.jpeg?im_w=720',
     },
+    {
+      name: 'Bosque',
+      img: 'https://a0.muscache.com/im/pictures/miso/Hosting-13590317/original/4156c16a-850d-4266-81a5-d8a84effe5f8.jpeg?im_w=720',
+    },
+    {
+      name: 'Isla',
+      img: 'https://a0.muscache.com/im/pictures/miso/Hosting-899107319521368227/original/597eefed-5e88-4b41-9d05-85793e765936.jpeg?im_w=720',
+    }
   ];
 
   useEffect(() => {
@@ -37,7 +45,7 @@ const Home = () => {
       .getFilteredProperties(10)
       .then(properties => {
         setProperties(properties);
-        setRecommendedProperties(choiceRandomNFromList(properties, 2));
+        setRecommendedProperties(choiceRandomNFromList(properties, 4));
         setTimeout(() => {
           setLoadingProperties(false);
         }, 1000);
@@ -88,18 +96,23 @@ const Home = () => {
           <Spinner />
         ) : (
           <div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-4">
-              <div className="h-auto bg-primary rounded-lg p-5 flex flex-col justify-center gap-10">
-                <p className="text-4xl font-semibold">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-y-2 lg:gap-4">
+              <div className="h-auto bg-primary rounded-lg p-5 flex flex-col justify-center gap-5 lg:gap-16 col-span-1">
+                <p className="text-2xl md:text-3xl lg:text-4xl font-semibold">
                   Los mejores alojamientos
                 </p>
                 <p>
                   Sabemos que cada persona es diferente, por eso te ofrecemos
                   una amplia variedad de alojamientos para que puedas escoger el
-                  que más se adapte a tus necesidades.
+                  que más se adapte a tus necesidades y así disfrutar de una
+                  experiencia única.
+                  <br/>
+                  <br/>
+                  En la sección de filtros podrás seleccionar una o varias
+                  categorías para encontrar el alojamiento perfecto para ti.
                 </p>
               </div>
-              <div className="grid grid-cols-2 gap-2 md:gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4 col-span-2">
                 {categories.map(category => (
                   <CategoryHomeCard
                     key={category.name}
