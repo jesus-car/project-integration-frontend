@@ -1,6 +1,6 @@
 // todo: contexto para manejar el estado del usuario (si está autenticado, la información del usuario, token de autenticación, roles, etc.)
 
-import { createContext, useEffect, useState } from 'react'
+import {createContext, useContext, useEffect, useState} from 'react'
 
 export const AuthContext = createContext();
 
@@ -37,4 +37,4 @@ export const AuthProvider = ({ children }) => {
     )
 }
 
-export const useAuthContext = () => useAuthContext(AuthContext);
+export const useAuthContext = () => useContext(AuthContext);

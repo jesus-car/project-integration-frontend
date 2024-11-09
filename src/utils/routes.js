@@ -8,4 +8,5 @@ export const routes = {
     details: '/properties/:id',
     favs: '/favs',
     notFound: '*',
+    login: '/login',
 }
