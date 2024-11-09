@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom'; // Importa useNavigate
 import Button from './Button';
@@ -42,7 +42,10 @@ const Searcher = () => {
                     placeholder="Busca por país"
                 />
             </div>
-            <Button type="primary" label="Buscar" icon={FaSearch} onClick={handleSearch} />
+            <div className="w-32">
+                <Button type="primary" label="Buscar" icon={FaSearch} onClick={handleSearch} />
+            </div>
+
         </div>
     );
 };
