@@ -9,4 +9,5 @@ export const routes = {
     favs: '/favs',
     notFound: '*',
     login: '/login',
+    register: '/register',
 }

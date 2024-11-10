@@ -10,8 +10,9 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true); // Para saber si los datos están cargando
     
     const login = async (credentials) => {
+        console.log("Login", credentials)
         // Aquí iría la lógica de autenticación real (ejemplo: llamada a la API)
-        const fakeUser = { id: 1, username: credentials.username, token: 'abc123' };
+        const fakeUser = { id: 1, token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c' };
         setUser(fakeUser);
         localStorage.setItem('user', JSON.stringify(fakeUser)); // Guardamos el usuario en localStorage
     };
