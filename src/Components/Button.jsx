@@ -1,5 +1,5 @@
 const Button = ({ type = 'primary', label, icon: Icon, onClick, disabled }) => {
-  const baseStyles = 'flex items-center justify-center gap-2 px-4 rounded font-semibold transition duration-300 h-10 w-full';
+  const baseStyles = 'flex items-center justify-center gap-2 px-4 text-sm md:text-base rounded font-semibold transition duration-300 h-10 w-full';
   const primaryStyles = 'bg-primary text-white hover:bg-primaryHover';
   const secondaryStyles = 'bg-secondary text-white hover:bg-secondaryHover';
 
