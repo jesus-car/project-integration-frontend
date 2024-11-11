@@ -10,6 +10,7 @@ import ProductDetails from './Components/ProductDetails';
 import {ProductProvider} from './context/ProductContext';
 import Login from "./routes/Login.jsx";
 import ProtectedRoutes from "./routes/ProtectedRoutes.jsx";
+import Forbidden from "./routes/Forbidden.jsx";
 
 export default function App() {
     const location = useLocation();
@@ -18,7 +19,8 @@ export default function App() {
         routes.administration,
         routes.administrationHome,
         routes.login,
-        routes.register
+        routes.register,
+        routes.forbidden
     ];
 
     // Verifica si la ruta actual requiere layout o no
@@ -38,12 +40,12 @@ export default function App() {
                             <Route path={routes.base} element={<Home/>}/>
                             <Route path={routes.properties} element={<PropertiesList/>}/>
                             <Route path="/properties/:id" element={<ProductDetails/>}/>
+                            <Route path={routes.forbidden} element={<Forbidden/>}/>
 
                             {/* Agrupación de rutas protegidas */}
-                            <Route element={<ProtectedRoutes/>}>
+                            <Route element={<ProtectedRoutes requiredRole="ROLE_ADMINa"/>}>
                                 <Route path={routes.administration} element={<Administration/>}/>
-
-                                {/* Agrega aquí más rutas protegidas */}
+                                {/* Agrega más rutas protegidas */}
                             </Route>
 
                         </Routes>

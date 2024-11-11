@@ -1,14 +1,19 @@
+// ProtectedRoutes.jsx
 import {Navigate, Outlet} from 'react-router-dom';
 import {useAuthContext} from "../contexts/AuthContext.jsx";
 
-const ProtectedRoutes = () => {
-    const { user, loading } = useAuthContext();
+const ProtectedRoutes = ({ requiredRole }) => {
+    const { user } = useAuthContext();
 
-    if (loading) {
-        return <div>Cargando...</div>; // Muestra un indicador mientras se carga la autenticación
+    if (!user) {
+        return <Navigate to="/login" />;
     }
 
-    return user ? <Outlet />: <Navigate to="/login" />; // Redirige si no está autenticado
+    if (requiredRole && user.role !== requiredRole) {
+        return <Navigate to="/forbidden" />;
+    }
+
+    return <Outlet />;
 };
 
 export default ProtectedRoutes;

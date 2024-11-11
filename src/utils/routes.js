@@ -10,4 +10,5 @@ export const routes = {
     notFound: '*',
     login: '/login',
     register: '/register',
+    forbidden: '/forbidden',
 }
