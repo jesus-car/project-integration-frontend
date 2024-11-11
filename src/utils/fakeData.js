@@ -410,3 +410,27 @@ export const detail = {
     tv: true,
 
 };
+
+export const features =[
+    {
+        name: "Camaras de Seguridad",
+        icon: "GiCctvCamera"
+        
+    },
+    {
+        name:"Wifi",
+        icon: "FaWifi"
+    },
+    {
+        name:"Estacionamiento",
+        icon: "FaCarSide"
+    },
+    {
+        name:"Cocina",
+        icon:"TbToolsKitchen3"
+    },
+    {
+        name:"Se permiten mascotas",
+        icon:"PiPawPrintBold"
+    }
+]

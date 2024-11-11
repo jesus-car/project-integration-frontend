@@ -6,6 +6,7 @@ import AddProduct from './AddProduct';
 import Toast from '../Components/Toast';
 import { useState, useEffect } from 'react';
 import EditProduct from './EditProduct';
+import AddFeature from './AddFeature';
 
 const Administration = () => {
   const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 1025);
@@ -122,6 +123,10 @@ const Administration = () => {
               }
             />
             <Route path="/edit-product/:productId" element={<EditProduct />} />
+
+            <Route path='/add-feature' element={<AddFeature/>}>
+
+            </Route>
           </Routes>
         </div>
       </div>

@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { FaHome, FaList, FaPlusCircle, FaUsers, FaCog, FaSignOutAlt } from 'react-icons/fa';
 import { routes } from '../utils/routes';
+import { Icon } from '@mui/material';
 
 const Sidebar = () => {
   const location = useLocation();
@@ -21,6 +22,18 @@ const Sidebar = () => {
       path: '/administration/add-property',
       icon: FaPlusCircle
     },
+    {
+      title:'Carasteristicas',
+      path:'/administration/feature',
+      icon: FaList
+
+    },
+    {
+      title: 'Administrar Caracteristicas',
+      path: '/administration/add-feature',
+      icon: FaPlusCircle
+    },
+
     {
       title: 'Usuarios',
       path: '/administration/users',
