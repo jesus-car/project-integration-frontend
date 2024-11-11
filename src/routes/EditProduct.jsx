@@ -4,6 +4,9 @@ import { routes } from '../utils/routes';
 import { FaUpload, FaTimes, FaArrowLeft } from 'react-icons/fa';
 import { useToast } from '../contexts/ToastContext';
 import { useProducts } from '../context/ProductContext';
+import MultiSelect from '../Components/MultiSelect';
+import { GetIcon } from '../Components/ListFeature';
+import "../styles/addFeature.css"
 
 export default function EditProduct() {
   const { productId } = useParams();
@@ -17,6 +20,7 @@ export default function EditProduct() {
     category: '',
     images: [],
   });
+  const [features, setfeatures] = useState([]);
   const [errors, setErrors] = useState({});
   const [previews, setPreviews] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -244,7 +248,22 @@ export default function EditProduct() {
             </div>
           </div>
         </div>
-
+        <div className='ml-9 mr-9 flex flex-col'>
+          <h4 className="font-semibold text-gray-700 mb-2 ">
+            Caracteristicas
+          </h4>
+          <div className='flex grid grid-cols-2 gap-4'>
+            {features.map((feature) => 
+              <div className='flex gap-x-9' key={feature.id}>
+                <div className='flex items-center gap-x-5'>
+                  {GetIcon(feature.icon)}
+                  {feature.name}
+                </div>
+              </div>
+            )}
+          </div>
+          
+        </div>
         {/* Indicador de vista previa */}
         <div className="mt-4 text-center">
           <span className="text-sm text-gray-500">
@@ -341,7 +360,7 @@ export default function EditProduct() {
                       <p className="text-red-500 text-xs mt-1">{errors.category}</p>
                     )}
                   </div>
-
+                      <MultiSelect onChange={setfeatures}/>
                   <div>
                     <label className="block text-gray-700 text-sm font-bold mb-2">
                       Descripción *

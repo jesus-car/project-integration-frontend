@@ -2,18 +2,14 @@ import { GiCctvCamera } from "react-icons/gi";
 import { FaCarSide } from "react-icons/fa6";
 import { FaWifi } from "react-icons/fa6";
 import { Select, MenuItem } from "@mui/material";
-import "../styles/addFeature.css"
 
-
-
-const AddFeature = () => {
-   
+const EditFeature = () => {
   return (
     <div>
         <div className="lg:col-span-3 lg:px-6">
             <div className="bg-white rounded-xl shadow-lg h-full border border-gray-100 pt-10 pl-16 pb-14">
                 <h2 className="text-xl font-semibold text-gray-700">
-                    Caracteristicas
+                    Editar Caracteristicas
                 </h2>
                 <p className="text-gray-500 text-sm mt-1">
                     Complete todos los campos requeridos (*)
@@ -47,9 +43,8 @@ const AddFeature = () => {
                 <button type="submit" className="bg-blue-500 text-white font-bold rounded-lg w-24 h-10 mt-12">Guardar</button>
             </div>
         </div>
-        
     </div>
   )
 }
 
-export default AddFeature
+export default EditFeature

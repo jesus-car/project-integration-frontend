@@ -1,8 +1,11 @@
+import ListFeature from "../Components/ListFeature"
 
 
 const Features = () => {
   return (
-    <div>Features</div>
+    <div>
+        <ListFeature/>
+    </div>
   )
 }
 
