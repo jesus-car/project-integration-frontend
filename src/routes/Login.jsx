@@ -1,9 +1,10 @@
 import {useAuthContext} from "../contexts/AuthContext.jsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import InputField from "../Components/InputField.jsx";
 import Button from "../Components/Button.jsx";
 import {useNavigate} from "react-router-dom";
 import {routes} from "../utils/routes.js";
+import {useToast} from "../contexts/ToastContext.jsx";
 
 
 const Login = () => {
@@ -15,18 +16,21 @@ const Login = () => {
     const [isEmailValid, setIsEmailValid] = useState(false);
     const [isPasswordValid, setIsPasswordValid] = useState(false);
 
-    const {login} = useAuthContext();
+    const {login, error} = useAuthContext();
+    const toast = useToast();
+
+    useEffect(() => {
+        return () => {
+            if (error) {
+                toast.error(error);
+            }
+        };
+    }, [error]);
 
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (isEmailValid && isPasswordValid) {
-            console.log('Formulario enviado:', { email, password });
-            await login({ email, password });
-            navigate(routes.home);
-        } else {
-            console.log('Por favor, complete los campos correctamente.');
-        }
+        await login({email, password});
     };
 
     // Función para redirigir a la página de registro
@@ -45,7 +49,8 @@ const Login = () => {
 
             <div className="flex flex-col justify-center gap-14 p-12 lg:p-32">
                 <div className="flex flex-col gap-4">
-                    <h2 className="text-2xl md:text-3xl text-center md:text-left font-bold text-primaryHover">Inicio de sesión</h2>
+                    <h2 className="text-2xl md:text-3xl text-center md:text-left font-bold text-primaryHover">Inicio de
+                        sesión</h2>
                     <p className="md:text-lg text-center md:text-left">Ingresa con tu cuenta o crea una nueva</p>
                 </div>
 
