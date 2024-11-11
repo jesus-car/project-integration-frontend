@@ -4,13 +4,14 @@ import {createContext, useContext, useEffect, useState} from 'react'
 import {authService} from "../services/authService.js";
 import {useNavigate} from "react-router-dom";
 import {routes} from "../utils/routes.js";
+import {decodeJWT} from "../utils/utils.js";
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({children}) => {
 
     const [user, setUser] = useState(null);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState('');
     const [loading, setLoading] = useState(true); // Para saber si los datos están cargando
     const navigate = useNavigate();
 
@@ -19,17 +20,19 @@ export const AuthProvider = ({children}) => {
         try {
 
             const userData = await authService.login(credentials);
-            setUser(userData);
-            localStorage.setItem('user', JSON.stringify(userData));
+
+            const temporalToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlc3RlZmFuaWFhZ3Vhc0BnbWFpbC5jb20iLCJpYXQiOjE3MzEzNjU5OTMsImV4cCI6MTczMTM2OTIxOCwiaWQiOjEsImZpcnN0TmFtZSI6IkVzdGVmYW7DrWEiLCJsYXN0TmFtZSI6IkFndWFzIFPDoW5jaGV6Iiwicm9sZSI6IlJPTEVfQURNSU4ifQ.iCx2wa1FHolgY0tMhj0bYkonNuuI3Ha3oV_GCdrhgz8"
+
+            localStorage.setItem('token', temporalToken);
+
+            const userToken =  decodeJWT(temporalToken);
+            console.log("userToken", userToken);
+
+            localStorage.setItem('user', JSON.stringify(userToken)); // Guardamos el usuario en localStorage
+
+            setUser(userToken);
             navigate(routes.home);
 
-
-            const fakeUser = {
-                token: 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlc3RlZmFuaWFhZ3Vhc0BnbWFpbC5jb20iLCJpYXQiOjE3MzEzNDUxOTEsImV4cCI6MTczMTMzNDYyOH0.rMY-VaVYdBj6YBHgWXZ9uTLzMNPdVGfqmPvvbR_t1vA'
-            };
-            //setUser(fakeUser);
-            //localStorage.setItem('user', JSON.stringify(fakeUser));
-            setError(null);
         } catch (err) {
             setError(err.message);
         }

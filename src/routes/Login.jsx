@@ -22,6 +22,7 @@ const Login = () => {
     useEffect(() => {
         return () => {
             if (error) {
+                console.log('Error:', error);
                 toast.error(error);
             }
         };

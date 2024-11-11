@@ -11,7 +11,7 @@ const UserMenu = ({ user }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const menuRef = useRef(null); // Ref para el contenedor del menú
     const navigate = useNavigate();
-    const initialLetters = user.name.charAt(0) + user.lastName.charAt(0).toUpperCase();
+    const initialLetters = user.firstName.charAt(0) + user.lastName.charAt(0).toUpperCase();
 
     // Función para cerrar sesión
     const handleLogout = () => {
@@ -61,7 +61,7 @@ const UserMenu = ({ user }) => {
                     className="absolute -right-6 top-20 bg-base rounded-lg shadow-lg w-fit">
                     <ul className="py-6">
                         <li className={"px-8 pt-2 pb-4 text-secondaryHover font-bold border-b border-secondary "}>
-                            Hola, {user.name}
+                            Hola, {user.firstName}
                         </li>
                         <li className="px-8 py-2 text-nowrap cursor-pointer hover:bg-secondaryHover hover:text-white"
                             onClick={() => navigate(routes.administrationHome)}>
