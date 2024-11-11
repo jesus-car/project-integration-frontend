@@ -13,3 +13,7 @@ async function login(email, password) {
         throw error; // Lanzar el error para manejarlo en el componente
     }
 }
+
+export const authService = {
+    login
+}
