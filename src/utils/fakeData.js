@@ -413,23 +413,28 @@ export const detail = {
 
 export const features =[
     {
+        id: 1,
         name: "Camaras de Seguridad",
         icon: "GiCctvCamera"
         
     },
     {
+        id: 2,
         name:"Wifi",
         icon: "FaWifi"
     },
     {
+        id: 3,
         name:"Estacionamiento",
         icon: "FaCarSide"
     },
     {
+        id: 4,
         name:"Cocina",
         icon:"TbToolsKitchen3"
     },
     {
+        id: 5,
         name:"Se permiten mascotas",
         icon:"PiPawPrintBold"
     }
