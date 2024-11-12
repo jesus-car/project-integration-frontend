@@ -7,6 +7,7 @@ import Toast from '../Components/Toast';
 import { useState, useEffect } from 'react';
 import EditProduct from './EditProduct';
 import Users from "./Users.jsx";
+import ProtectedRoutes from "./ProtectedRoutes.jsx";
 
 const Administration = () => {
   const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 1025);
@@ -104,15 +105,17 @@ const Administration = () => {
               }
             />
             <Route path="/add-property" element={<AddProduct />} />
-            <Route
-              path="/users"
-              element={
+
+            <Route element={<ProtectedRoutes allowedRoles={['ROLE_ADMIN']} />}>
+              <Route path="/users" element={
                 <div>
                   <h1 className="text-3xl font-bold mb-6">Usuarios</h1>
                   <Users />
                 </div>
-              }
-            />
+              } />
+            </Route>
+
+
             <Route
               path="/settings"
               element={

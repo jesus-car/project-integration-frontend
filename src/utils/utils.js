@@ -51,3 +51,16 @@ export function decodeJWT(token) {
         throw new Error("No se pudo convertir el payload a JSON");
     }
 }
+
+export const userHasAccess = (user, roles) => {
+    if (!user) {
+        return false;
+    }
+
+    if (!roles) {
+        return true;
+    }
+
+    return !!roles.includes(user.role);
+
+}

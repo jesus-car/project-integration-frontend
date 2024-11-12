@@ -43,7 +43,7 @@ export default function App() {
                             <Route path={routes.forbidden} element={<Forbidden/>}/>
 
                             {/* Agrupación de rutas protegidas */}
-                            <Route element={<ProtectedRoutes requiredRole="ROLE_ADMINa"/>}>
+                            <Route element={<ProtectedRoutes allowedRoles={["ROLE_ADMIN", "ROLE_OWNER"]} />}>
                                 <Route path={routes.administration} element={<Administration/>}/>
                                 {/* Agrega más rutas protegidas */}
                             </Route>
