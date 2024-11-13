@@ -9,6 +9,7 @@ import EditProduct from './EditProduct';
 import AddFeature from './AddFeature';
 import Features from './Features';
 import EditFeature from './EditFeature';
+import ListFeature from '../Components/ListFeature';
 
 const Administration = () => {
   const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 1025);

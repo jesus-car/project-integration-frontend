@@ -411,7 +411,7 @@ export const detail = {
 
 };
 
-export const features =[
+export const features = [
     {
         id: 1,
         name: "Camaras de Seguridad",
@@ -431,7 +431,7 @@ export const features =[
     {
         id: 4,
         name:"Cocina",
-        icon:"TbToolsKitchen3"
+        icon:"FaKitchenSet"
     },
     {
         id: 5,
