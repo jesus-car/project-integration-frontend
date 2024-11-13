@@ -19,23 +19,18 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Build and Publish head Docker image
-        uses: VaultVulp/gp-docker-action@1.0.1
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
         with:
-          github-token: ${{ secrets.GIT_TOKEN }} # Provide GITHUB_TOKEN to login into the GitHub Packages
-          image-name: front-image # Provide Docker image name
-          image-tag: latest
-      - name: SSH to EC2
-        run: |
-          echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > primerkey.pem
-          chmod 400 "primerkey.pem"
-      - name: Deploy to EC2
-        run: |
-          ssh -i "primerkey.pem" -o StrictHostKeyChecking=no -t $EC2_USERNAME@$EC2_URL << 'EOF'
-            sudo docker stop frontend-integration || true
-            sudo docker rm frontend-integration || true
-            sudo docker image prune -a -f
-            sudo docker login ghcr.io -u ${{ secrets.GIT_USER }} -p ${{ secrets.GIT_TOKEN }}
-            sudo docker pull ghcr.io/${{ secrets.GIT_USER }}/project-integration-frontend/front-image:latest
-            sudo docker run --name frontend-integration -d -p 8080:8080 ghcr.io/${{ secrets.GIT_USER }}/project-integration-frontend/front-image:latest
-          EOF
+          version: 9
+      - name: Import dependencias
+        run: pnpm import
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+      - name: Install dependencies
+        run: pnpm install
+      - name: Build project
+        run: pnpm run build
