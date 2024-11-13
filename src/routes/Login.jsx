@@ -71,7 +71,7 @@ const Login = () => {
                         onChange={(e) => setPassword(e.target.value)}
                         onValidChange={setIsPasswordValid}
                         placeholder="Ingresa tu contraseña"
-
+                        required
                         minLength={6}
                     />
 

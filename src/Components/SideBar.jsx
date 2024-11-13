@@ -21,12 +21,14 @@ const Sidebar = () => {
       icon: FaList,
       requiredRoles: ['ROLE_ADMIN']
     },
+      /*
     {
       title: 'Mis propiedades',
       path: '/administration/my-properties',
       icon: FaList,
       requiredRoles: ['ROLE_OWNER']
     },
+       */
     {
       title: 'Agregar Propiedad',
       path: '/administration/add-property',

@@ -14,7 +14,7 @@ const ProtectedRoutes = ({ allowedRoles }) => {
         const token = localStorage.getItem('token');
 
         // Validar si el token ha expirado
-        if (isTokenExpired(token)) {
+        if (token && isTokenExpired(token)) {
             logout(); // Desloguea al usuario
             navigate('/login'); // Redirige a la página de login
         }

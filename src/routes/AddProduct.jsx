@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { routes } from '../utils/routes';
 import { FaUpload, FaTimes, FaArrowLeft } from 'react-icons/fa';
 import { useToast } from '../contexts/ToastContext';
 import { useProducts } from '../context/ProductContext';
+import PropertyForm from '../Components/PropertyForm';
+import PropertyPreview from '../Components/PropertyPreview';
 
 export default function AddProduct() {
   const navigate = useNavigate();
@@ -11,15 +13,74 @@ export default function AddProduct() {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    price: '',
-    category: '',
+    pricePerNight: '',
+    exactAddress: '',
+    maxCapacity: '',
+    numRooms: '',
+    numBeds: '',
+    numBathrooms: '',
+    categoryId: '',
     images: [],
+    mainImage: null,
+    cityId: 1,
+    countryId: 1,
+    ownerId: 1,
   });
   const [errors, setErrors] = useState({});
   const [previews, setPreviews] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [globalError, setGlobalError] = useState('');
   const { addProduct } = useProducts();
+  const [categories, setCategories] = useState([]);
+  const [isLoadingCategories, setIsLoadingCategories] = useState(true);
+  const [categoriesError, setCategoriesError] = useState('');
+  const [countries, setCountries] = useState([]);
+  const [isLoadingCountries, setIsLoadingCountries] = useState(true);
+  const [countriesError, setCountriesError] = useState('');
+
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch(
+        'http://100.29.91.166:8080/roomly-services/api/v1/categories/all'
+      );
+      if (!response.ok) {
+        throw new Error('Error al cargar las categorías');
+      }
+      const data = await response.json();
+      setCategories(data);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+      setCategoriesError(
+        'Error al cargar las categorías. Por favor, recarga la página.'
+      );
+    } finally {
+      setIsLoadingCategories(false);
+    }
+  };
+
+  const fetchCountries = async () => {
+    try {
+      const response = await fetch(
+        'http://100.29.91.166:8080/roomly-services/api/v1/countries/all'
+      );
+      if (!response.ok) {
+        throw new Error('Error al cargar los países');
+      }
+      const data = await response.json();
+      setCountries(data);
+    } catch (error) {
+      console.error('Error fetching countries:', error);
+      setCountriesError(
+        'Error al cargar los países. Por favor, recarga la página.'
+      );
+    } finally {
+      setIsLoadingCountries(false);
+    }
+  };
+
+  useEffect(() => {
+    Promise.all([fetchCategories(), fetchCountries()]);
+  }, []);
 
   const validateForm = () => {
     const newErrors = {};
@@ -28,6 +89,9 @@ export default function AddProduct() {
       newErrors.name = 'El nombre es requerido';
     } else if (formData.name.length < 3) {
       newErrors.name = 'El nombre debe tener al menos 3 caracteres';
+    } else if (!/^[a-záéíóúñ\s]+$/i.test(formData.name)) {
+      newErrors.name =
+        'Debe contener solo letras, incluyendo tildes, y espacios entre palabras';
     }
 
     if (!formData.description.trim()) {
@@ -37,18 +101,73 @@ export default function AddProduct() {
         'La descripción debe tener al menos 10 caracteres';
     }
 
-    if (!formData.price) {
-      newErrors.price = 'El precio es requerido';
-    } else if (isNaN(formData.price) || Number(formData.price) <= 0) {
-      newErrors.price = 'El precio debe ser un número válido mayor a 0';
+    if (!formData.pricePerNight) {
+      newErrors.pricePerNight = 'El precio por noche es requerido';
+    } else if (
+      isNaN(formData.pricePerNight) ||
+      Number(formData.pricePerNight) <= 0
+    ) {
+      newErrors.pricePerNight =
+        'El precio por noche debe ser un número válido mayor a 0';
     }
 
-    if (!formData.category) {
-      newErrors.category = 'La categoría es requerida';
+    if (!formData.exactAddress.trim()) {
+      newErrors.exactAddress = 'La dirección exacta es requerida';
+    } else if (formData.exactAddress.length < 10) {
+      newErrors.exactAddress =
+        'La dirección exacta debe tener al menos 10 caracteres';
     }
 
-    if (formData.images.length === 0) {
-      newErrors.images = 'Debe subir al menos una imagen';
+    if (!formData.maxCapacity) {
+      newErrors.maxCapacity = 'La capacidad máxima es requerida';
+    } else if (
+      isNaN(formData.maxCapacity) ||
+      Number(formData.maxCapacity) <= 0
+    ) {
+      newErrors.maxCapacity =
+        'La capacidad máxima debe ser un número válido mayor a 0';
+    } else if (Number(formData.maxCapacity) > 255) {
+      newErrors.maxCapacity = 'La capacidad máxima no debe ser mayor a 255';
+    }
+
+    if (!formData.numRooms) {
+      newErrors.numRooms = 'El número de habitaciones es requerido';
+    } else if (isNaN(formData.numRooms) || Number(formData.numRooms) <= 0) {
+      newErrors.numRooms =
+        'El número de habitaciones debe ser un número válido mayor a 0';
+    } else if (Number(formData.numRooms) > 255) {
+      newErrors.numRooms = 'El número de habitaciones no debe ser mayor a 255';
+    }
+
+    if (!formData.numBeds) {
+      newErrors.numBeds = 'El número de camas es requerido';
+    } else if (isNaN(formData.numBeds) || Number(formData.numBeds) <= 0) {
+      newErrors.numBeds =
+        'El número de camas debe ser un número válido mayor a 0';
+    }
+
+    if (!formData.numBathrooms) {
+      newErrors.numBathrooms = 'El número de baños es requerido';
+    } else if (
+      isNaN(formData.numBathrooms) ||
+      Number(formData.numBathrooms) <= 0
+    ) {
+      newErrors.numBathrooms =
+        'El número de baños debe ser un número válido mayor a 0';
+    }
+
+    if (!formData.categoryId) {
+      newErrors.categoryId = 'La categoría es requerida';
+    }
+
+    if (formData.images.length < 5) {
+      newErrors.images = 'Debe subir al menos 5 imágenes';
+    } else if (formData.images.length > 6) {
+      newErrors.images = 'No puede subir más de 6 imágenes';
+    }
+
+    if (formData.mainImage === null) {
+      newErrors.images = 'Debe seleccionar una imagen principal';
     }
 
     setErrors(newErrors);
@@ -71,6 +190,19 @@ export default function AddProduct() {
 
   const handleImageChange = e => {
     const files = Array.from(e.target.files);
+
+    if (formData.images.length + files.length > 6) {
+      const currentImages = formData.images.length;
+      const remainingSlots = 6 - currentImages;
+      const errorMessage = `Ya tiene ${currentImages} ${currentImages === 1 ? 'imagen' : 'imágenes'}. Solo puede agregar ${remainingSlots} ${remainingSlots === 1 ? 'imagen más' : 'imágenes más'} (máximo 6)`;
+      setErrors(prev => ({
+        ...prev,
+        images: errorMessage,
+      }));
+      toast.warning(errorMessage);
+      return;
+    }
+
     const validFiles = files.filter(file => {
       const isValid = file.type.startsWith('image/');
       const isValidSize = file.size <= 5 * 1024 * 1024; // 5MB max
@@ -99,7 +231,7 @@ export default function AddProduct() {
 
     setFormData(prev => ({
       ...prev,
-      images: validFiles,
+      images: [...prev.images, ...validFiles],
     }));
 
     const newPreviews = validFiles.map(file => URL.createObjectURL(file));
@@ -108,28 +240,96 @@ export default function AddProduct() {
 
   const removeImage = index => {
     setPreviews(prev => prev.filter((_, i) => i !== index));
-    setFormData(prev => ({
-      ...prev,
-      images: prev.images.filter((_, i) => i !== index),
-    }));
+    setFormData(prev => {
+      let newMainImage = prev.mainImage;
+
+      // Si la imagen eliminada era la principal
+      if (prev.mainImage === index) {
+        newMainImage = null;
+      }
+      // Si la imagen eliminada estaba antes que la principal, ajustar el índice
+      else if (prev.mainImage > index) {
+        newMainImage = prev.mainImage - 1;
+      }
+
+      return {
+        ...prev,
+        images: prev.images.filter((_, i) => i !== index),
+        mainImage: newMainImage,
+      };
+    });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     setGlobalError('');
+    setErrors({});
 
     if (!validateForm()) {
-      toast.error('Por favor, complete todos los campos requeridos correctamente');
+      toast.error(
+        'Por favor, complete todos los campos requeridos correctamente'
+      );
       return;
     }
 
     setIsSubmitting(true);
     try {
-      await addProduct(formData);
-      toast.success('Producto agregado exitosamente');
+      const formDataToSend = new FormData();
+
+      const propertyData = {
+        name: formData.name,
+        description: formData.description,
+        pricePerNight: Number(formData.pricePerNight),
+        cityId: formData.cityId,
+        exactAddress: formData.exactAddress,
+        maxCapacity: Number(formData.maxCapacity),
+        numRooms: Number(formData.numRooms),
+        numBeds: Number(formData.numBeds),
+        numBathrooms: Number(formData.numBathrooms),
+        ownerId: formData.ownerId,
+        categoryId: Number(formData.categoryId),
+      };
+
+      formDataToSend.append('property', JSON.stringify(propertyData));
+      formDataToSend.append('mainImage', formData.images[formData.mainImage]);
+
+      formData.images.forEach((image, index) => {
+        if (index !== formData.mainImage) {
+          formDataToSend.append('images', image);
+        }
+      });
+
+      const response = await fetch(
+        'http://100.29.91.166:8080/roomly-services/api/v1/properties/new',
+        {
+          method: 'POST',
+          body: formDataToSend,
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        if (data.details && Array.isArray(data.details)) {
+          const backendErrors = {};
+          data.details.forEach(detail => {
+            const [field, message] = detail.split(': ');
+            backendErrors[field.toLowerCase()] = message;
+          });
+          setErrors(backendErrors);
+          throw new Error(data.details.join('\n'));
+        } else {
+          throw new Error(data.message || 'Error al crear la propiedad');
+        }
+      }
+
+      toast.success('Propiedad creada exitosamente');
       navigate('/administration/properties');
     } catch (err) {
-      const errorMessage = 'Error al guardar el producto. Por favor, intente nuevamente.';
+      console.error('Error:', err);
+      const errorMessage =
+        err.message ||
+        'Error al guardar la propiedad. Por favor, intente nuevamente.';
       setGlobalError(errorMessage);
       toast.error(errorMessage);
     } finally {
@@ -137,143 +337,6 @@ export default function AddProduct() {
     }
   };
 
-  // preview component
-  const ProductPreview = () => {
-    const [activeImage, setActiveImage] = useState(0);
-    const previewImage =
-      previews.length > 0
-        ? previews[activeImage]
-        : 'https://via.placeholder.com/400x300?text=Sin+Imagen';
-
-    return (
-      <div className="">
-        <div className="bg-gray-50 rounded-xl overflow-hidden">
-          {/* Imagen Principal */}
-          <div className="relative aspect-[4/3] overflow-hidden">
-            <img
-              src={previewImage}
-              alt="Vista previa principal"
-              className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-            />
-
-            {/* Navegación de imágenes */}
-            {previews.length > 1 && (
-              <>
-                <button
-                  onClick={() =>
-                    setActiveImage(prev =>
-                      prev > 0 ? prev - 1 : previews.length - 1
-                    )
-                  }
-                  className="absolute left-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-2 rounded-full transition-all"
-                >
-                  ←
-                </button>
-                <button
-                  onClick={() =>
-                    setActiveImage(prev =>
-                      prev < previews.length - 1 ? prev + 1 : 0
-                    )
-                  }
-                  className="absolute right-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-2 rounded-full transition-all"
-                >
-                  →
-                </button>
-              </>
-            )}
-
-            {/* Indicador de precio */}
-            <div className="absolute top-4 right-4 bg-white px-4 py-2 rounded-full shadow-lg">
-              <span className="text-xl font-bold text-blue-600">
-                {formData.price
-                  ? `$${Number(formData.price).toLocaleString()}`
-                  : '$0'}
-              </span>
-            </div>
-          </div>
-
-          {/* Miniaturas de imágenes */}
-          {previews.length > 0 && (
-            <div className="px-4 py-3 border-b flex gap-2 overflow-x-auto">
-              {previews.map((preview, index) => (
-                <button
-                  key={index}
-                  onClick={() => setActiveImage(index)}
-                  className={`flex-shrink-0 relative ${
-                    activeImage === index ? 'ring-2 ring-blue-500' : ''
-                  }`}
-                >
-                  <img
-                    src={preview}
-                    alt={`Miniatura ${index + 1}`}
-                    className="w-16 h-16 object-cover rounded-lg"
-                  />
-                  {activeImage === index && (
-                    <div className="absolute inset-0 bg-blue-500 bg-opacity-20 rounded-lg" />
-                  )}
-                </button>
-              ))}
-            </div>
-          )}
-
-          {/* Información del producto */}
-          <div className="p-6">
-            <div className="space-y-4">
-              <div>
-                <h3 className="text-2xl font-bold text-gray-800">
-                  {formData.name || 'Nombre del producto'}
-                </h3>
-                <div className="flex items-center gap-2 mt-2">
-                  <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-                    {formData.category || 'Categoría'}
-                  </span>
-                  <span className="text-gray-500">•</span>
-                  <span className="text-gray-500 text-sm">
-                    {previews.length}{' '}
-                    {previews.length === 1 ? 'imagen' : 'imágenes'}
-                  </span>
-                </div>
-              </div>
-
-              <div className="bg-gray-50 rounded-lg p-4">
-                <h4 className="font-semibold text-gray-700 mb-2">
-                  Descripción
-                </h4>
-                <p className="text-gray-600 leading-relaxed">
-                  {formData.description || 'Descripción del producto'}
-                </p>
-              </div>
-
-              {/* Características adicionales */}
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div className="bg-gray-50 p-3 rounded-lg">
-                  <span className="block text-gray-500">Categoría</span>
-                  <span className="font-medium text-gray-800">
-                    {formData.category || 'No especificada'}
-                  </span>
-                </div>
-                <div className="bg-gray-50 p-3 rounded-lg">
-                  <span className="block text-gray-500">ID</span>
-                  <span className="font-medium text-gray-800">
-                    #PRD-{String(Date.now()).slice(-4)}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Indicador de vista previa */}
-        <div className="mt-4 text-center">
-          <span className="text-sm text-gray-500">
-            Vista previa de cómo se verá en el sitio web
-          </span>
-        </div>
-      </div>
-    );
-  };
-
-  // Agregar estas nuevas funciones de manejo de drag and drop
   const handleDragOver = e => {
     e.preventDefault();
     e.currentTarget.classList.add('border-blue-500', 'bg-blue-50');
@@ -290,7 +353,18 @@ export default function AddProduct() {
 
     const files = Array.from(e.dataTransfer.files);
 
-    // Usar la misma lógica de validación que en handleImageChange
+    if (formData.images.length + files.length > 6) {
+      const currentImages = formData.images.length;
+      const remainingSlots = 6 - currentImages;
+      const errorMessage = `Ya tiene ${currentImages} ${currentImages === 1 ? 'imagen' : 'imágenes'}. Solo puede agregar ${remainingSlots} ${remainingSlots === 1 ? 'imagen más' : 'imágenes más'} (máximo 6)`;
+      setErrors(prev => ({
+        ...prev,
+        images: errorMessage,
+      }));
+      toast.warning(errorMessage);
+      return;
+    }
+
     const validFiles = files.filter(file => {
       const isValid = file.type.startsWith('image/');
       const isValidSize = file.size <= 5 * 1024 * 1024; // 5MB max
@@ -314,250 +388,52 @@ export default function AddProduct() {
       images: [...prev.images, ...validFiles],
     }));
 
-    // Crear URLs de previsualización
     const newPreviews = validFiles.map(file => URL.createObjectURL(file));
     setPreviews(prev => [...prev, ...newPreviews]);
+  };
+
+  const setMainImage = index => {
+    setFormData(prev => ({
+      ...prev,
+      mainImage: index,
+    }));
+    toast.success('Imagen principal establecida');
   };
 
   return (
     <div className="min-h-screen">
       <div className="container">
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-          {/* Panel izquierdo - Formulario */}
-          <div className="lg:col-span-3 lg:px-6">
-            <div className="bg-white rounded-xl shadow-lg h-full border border-gray-100">
-              <div className="p-6">
-                {/* Título de la sección */}
-                <div className="mb-6 pb-4 border-b border-gray-200">
-                  <h2 className="text-xl font-semibold text-gray-700">
-                    Información del Producto
-                  </h2>
-                  <p className="text-gray-500 text-sm mt-1">
-                    Complete todos los campos requeridos (*)
-                  </p>
-                </div>
+          <PropertyForm
+            formData={formData}
+            errors={errors}
+            previews={previews}
+            isSubmitting={isSubmitting}
+            isLoadingCategories={isLoadingCategories}
+            categories={categories}
+            categoriesError={categoriesError}
+            handleInputChange={handleInputChange}
+            handleImageChange={handleImageChange}
+            handleDragOver={handleDragOver}
+            handleDragLeave={handleDragLeave}
+            handleDrop={handleDrop}
+            removeImage={removeImage}
+            setMainImage={setMainImage}
+            handleSubmit={handleSubmit}
+            handleCancel={() => navigate(routes.administration)}
+            submitButtonText="Guardar Producto"
+            title="Crear Nueva Propiedad"
+            countries={countries}
+            isLoadingCountries={isLoadingCountries}
+            countriesError={countriesError}
+          />
 
-                {globalError && (
-                  <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6">
-                    <p className="font-bold">Error</p>
-                    <p>{globalError}</p>
-                  </div>
-                )}
-
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-gray-700 text-sm font-bold mb-2">
-                        Nombre del Producto *
-                      </label>
-                      <input
-                        type="text"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleInputChange}
-                        className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
-                          errors.name ? 'border-red-500' : ''
-                        }`}
-                      />
-                      {errors.name && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {errors.name}
-                        </p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="block text-gray-700 text-sm font-bold mb-2">
-                        Precio *
-                      </label>
-                      <input
-                        type="number"
-                        name="price"
-                        value={formData.price}
-                        onChange={handleInputChange}
-                        className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
-                          errors.price ? 'border-red-500' : ''
-                        }`}
-                      />
-                      {errors.price && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {errors.price}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Categoría *
-                    </label>
-                    <select
-                      name="category"
-                      value={formData.category}
-                      onChange={handleInputChange}
-                      className={`shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
-                        errors.category ? 'border-red-500' : ''
-                      }`}
-                    >
-                      <option value="">Seleccione una categoría</option>
-                      <option value="casa">Casa</option>
-                      <option value="departamento">Departamento</option>
-                      <option value="oficina">Oficina</option>
-                      <option value="local">Local Comercial</option>
-                    </select>
-                    {errors.category && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {errors.category}
-                      </p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Descripción *
-                    </label>
-                    <textarea
-                      name="description"
-                      value={formData.description}
-                      onChange={handleInputChange}
-                      className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 h-32 focus:outline-none focus:shadow-outline ${
-                        errors.description ? 'border-red-500' : ''
-                      }`}
-                    />
-                    {errors.description && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {errors.description}
-                      </p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                      Imágenes *
-                    </label>
-                    <div
-                      className="mt-2 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md transition-colors duration-200"
-                      onDragOver={handleDragOver}
-                      onDragLeave={handleDragLeave}
-                      onDrop={handleDrop}
-                    >
-                      <div className="space-y-1 text-center">
-                        <FaUpload className="mx-auto h-12 w-12 text-gray-400" />
-                        <div className="flex text-sm text-gray-600">
-                          <label className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
-                            <span>Subir archivos</span>
-                            <input
-                              type="file"
-                              multiple
-                              accept="image/*"
-                              onChange={handleImageChange}
-                              className="sr-only"
-                            />
-                          </label>
-                          <p className="pl-1">o arrastrar y soltar</p>
-                        </div>
-                        <p className="text-xs text-gray-500">
-                          PNG, JPG, GIF hasta 5MB
-                        </p>
-                      </div>
-                    </div>
-                    {errors.images && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {errors.images}
-                      </p>
-                    )}
-
-                    {previews.length > 0 && (
-                      <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
-                        {previews.map((preview, index) => (
-                          <div key={index} className="relative">
-                            <img
-                              src={preview}
-                              alt={`Preview ${index + 1}`}
-                              className="h-24 w-full object-cover rounded-lg"
-                            />
-                            <button
-                              type="button"
-                              onClick={() => removeImage(index)}
-                              className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
-                            >
-                              <FaTimes size={12} />
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex gap-4">
-                    <button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className={`${
-                        isSubmitting
-                          ? 'bg-blue-400'
-                          : 'bg-blue-500 hover:bg-blue-700'
-                      } text-white font-bold py-2 px-6 rounded-lg transition duration-200 flex items-center`}
-                    >
-                      {isSubmitting ? (
-                        <>
-                          <svg
-                            className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                          >
-                            <circle
-                              className="opacity-25"
-                              cx="12"
-                              cy="12"
-                              r="10"
-                              stroke="currentColor"
-                              strokeWidth="4"
-                            ></circle>
-                            <path
-                              className="opacity-75"
-                              fill="currentColor"
-                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                            ></path>
-                          </svg>
-                          Guardando...
-                        </>
-                      ) : (
-                        'Guardar Producto'
-                      )}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => navigate(routes.administration)}
-                      className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-6 rounded-lg transition duration-200"
-                    >
-                      Cancelar
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-
-          {/* Panel derecho - Vista previa */}
-          <div className="hidden lg:block lg:col-span-2">
-            <div className="bg-white rounded-xl shadow-lg h-full border border-gray-100">
-              <div className="p-6">
-                {/* Título de la sección */}
-                <div className="mb-6 pb-4 border-b border-gray-200">
-                  <h2 className="text-xl font-semibold text-gray-700">
-                    Vista Previa
-                  </h2>
-                  <p className="text-gray-500 text-sm mt-1">
-                    Visualización en tiempo real
-                  </p>
-                </div>
-
-                <ProductPreview />
-              </div>
-            </div>
-          </div>
+          <PropertyPreview
+            formData={formData}
+            previews={previews}
+            categories={categories}
+            countries={countries}
+          />
         </div>
       </div>
     </div>
