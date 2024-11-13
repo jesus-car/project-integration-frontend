@@ -84,30 +84,29 @@ export default function EditProduct() {
         ownerId: data.owner.id,
         images: [],
         mainImage: null,
+        originalMainPhotoUrl: data.mainPhotoUrl,
+        originalPhotoUrls: data.photoUrls || [],
       });
 
-      let allImages = [];
-
+      const allImages = [];
       if (data.mainPhotoUrl) {
         allImages.push(data.mainPhotoUrl);
       }
-
       if (data.photoUrls) {
         const otherImages = data.photoUrls.filter(
           url => url !== data.mainPhotoUrl
         );
-        allImages = [...allImages, ...otherImages];
+        allImages.push(...otherImages);
       }
 
-      // Establecer el índice de la imagen principal (será 0 si existe)
+      setPreviews(allImages);
+      
       if (data.mainPhotoUrl) {
         setFormData(prev => ({
           ...prev,
           mainImage: 0,
         }));
       }
-
-      setPreviews(allImages);
     } catch (error) {
       console.error('Error:', error);
       toast.error('Error al cargar la propiedad');
@@ -198,6 +197,25 @@ export default function EditProduct() {
 
   const handleImageChange = async e => {
     const files = Array.from(e.target.files);
+    const currentImageCount = previews.length;
+    const remainingSlots = 6 - currentImageCount;
+
+    if (files.length > remainingSlots) {
+      const errorMessage = `Ya tiene ${currentImageCount} ${
+        currentImageCount === 1 ? 'imagen' : 'imágenes'
+      }. Solo puede agregar ${remainingSlots} ${
+        remainingSlots === 1 ? 'imagen más' : 'imágenes más'
+      } (máximo 6)`;
+      setErrors(prev => ({
+        ...prev,
+        images: errorMessage,
+      }));
+      toast.warning(errorMessage);
+      // Limpiar el input de archivos
+      e.target.value = '';
+      return;
+    }
+
     const validFiles = files.filter(file => {
       const isValid = file.type.startsWith('image/');
       const isValidSize = file.size <= 5 * 1024 * 1024;
@@ -205,13 +223,14 @@ export default function EditProduct() {
     });
 
     if (validFiles.length !== files.length) {
-      const errorMessage =
-        'Algunos archivos no son válidos. Use imágenes de hasta 5MB';
+      const errorMessage = 'Algunos archivos no son válidos. Use imágenes de hasta 5MB';
       setErrors(prev => ({
         ...prev,
         images: errorMessage,
       }));
       toast.warning(errorMessage);
+      // Limpiar el input de archivos
+      e.target.value = '';
     } else {
       setFormData(prev => ({
         ...prev,
@@ -225,10 +244,37 @@ export default function EditProduct() {
 
   const removeImage = index => {
     setPreviews(prev => prev.filter((_, i) => i !== index));
-    setFormData(prev => ({
-      ...prev,
-      images: prev.images.filter((_, i) => i !== index),
-    }));
+    
+    // Si el índice es menor que la cantidad de URLs originales, es una URL
+    const isUrlImage = index < formData.originalPhotoUrls.length;
+    
+    if (isUrlImage) {
+      // Remover de originalPhotoUrls
+      setFormData(prev => ({
+        ...prev,
+        originalPhotoUrls: prev.originalPhotoUrls.filter((_, i) => i !== index)
+      }));
+    } else {
+      // Remover de images (binarios)
+      const binaryIndex = index - formData.originalPhotoUrls.length;
+      setFormData(prev => ({
+        ...prev,
+        images: prev.images.filter((_, i) => i !== binaryIndex)
+      }));
+    }
+
+    // Ajustar mainImage si es necesario
+    if (formData.mainImage === index) {
+      setFormData(prev => ({
+        ...prev,
+        mainImage: 0
+      }));
+    } else if (formData.mainImage > index) {
+      setFormData(prev => ({
+        ...prev,
+        mainImage: prev.mainImage - 1
+      }));
+    }
   };
 
   const setMainImage = index => {
@@ -254,11 +300,15 @@ export default function EditProduct() {
     e.currentTarget.classList.remove('border-blue-500', 'bg-blue-50');
 
     const files = Array.from(e.dataTransfer.files);
+    const currentImageCount = previews.length;
+    const remainingSlots = 6 - currentImageCount;
 
-    if (formData.images.length + files.length > 6) {
-      const currentImages = formData.images.length;
-      const remainingSlots = 6 - currentImages;
-      const errorMessage = `Ya tiene ${currentImages} ${currentImages === 1 ? 'imagen' : 'imágenes'}. Solo puede agregar ${remainingSlots} ${remainingSlots === 1 ? 'imagen más' : 'imágenes más'} (máximo 6)`;
+    if (files.length > remainingSlots) {
+      const errorMessage = `Ya tiene ${currentImageCount} ${
+        currentImageCount === 1 ? 'imagen' : 'imágenes'
+      }. Solo puede agregar ${remainingSlots} ${
+        remainingSlots === 1 ? 'imagen más' : 'imágenes más'
+      } (máximo 6)`;
       setErrors(prev => ({
         ...prev,
         images: errorMessage,
@@ -300,9 +350,18 @@ export default function EditProduct() {
     setErrors({});
 
     if (!validateForm()) {
-      toast.error(
-        'Por favor, complete todos los campos requeridos correctamente'
-      );
+      toast.error('Por favor, complete todos los campos requeridos correctamente');
+      return;
+    }
+
+    // Validar el número total de imágenes
+    if (previews.length < 5 || previews.length > 6) {
+      const errorMessage = `Debe tener entre 5 y 6 imágenes. Actualmente tiene ${previews.length}`;
+      setErrors(prev => ({
+        ...prev,
+        images: errorMessage,
+      }));
+      toast.error(errorMessage);
       return;
     }
 
@@ -326,15 +385,33 @@ export default function EditProduct() {
 
       formDataToSend.append('property', JSON.stringify(propertyData));
 
-      // Si hay nuevas imágenes, añadirlas
-      if (formData.images.length > 0) {
-        formDataToSend.append('mainImage', formData.images[formData.mainImage]);
-        formData.images.forEach((image, index) => {
-          if (index !== formData.mainImage) {
-            formDataToSend.append('images', image);
-          }
-        });
+      // Determinar si la imagen principal es una URL o un archivo binario
+      const isMainImageUrl = formData.mainImage < formData.originalPhotoUrls.length;
+
+      if (isMainImageUrl) {
+        // Si es una URL existente
+        const mainImageUrl = formData.originalPhotoUrls[formData.mainImage];
+        formDataToSend.append('mainImageUrl', mainImageUrl);
+      } else {
+        // Si es un archivo binario nuevo
+        const binaryIndex = formData.mainImage - formData.originalPhotoUrls.length;
+        formDataToSend.append('mainImage', formData.images[binaryIndex]);
       }
+
+      // Agregar las URLs restantes (excluyendo la principal)
+      formData.originalPhotoUrls.forEach((url, index) => {
+        if (index !== formData.mainImage) {
+          formDataToSend.append('imageUrls', url);
+        }
+      });
+
+      // Agregar los archivos binarios restantes (excluyendo el principal)
+      formData.images.forEach((file, index) => {
+        const absoluteIndex = index + formData.originalPhotoUrls.length;
+        if (absoluteIndex !== formData.mainImage) {
+          formDataToSend.append('images', file);
+        }
+      });
 
       const response = await fetch(
         `http://100.29.91.166:8080/roomly-services/api/v1/properties/${productId}`,

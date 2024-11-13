@@ -4,7 +4,29 @@ import {detail, properties} from "../utils/fakeData.js";
 import {choiceRandomNFromList} from "../utils/utils.js";
 
 const API_URL = "https://api.example.com/properties";
+const BASE_URL = 'http://100.29.91.166:8080/roomly-services/api/v1';
 
+export const filterProperties = async (filters, page = 0, size = 10) => {
+    try {
+        const response = await fetch(`${BASE_URL}/properties/filter?page=${page}&size=${size}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                cityId: filters.cityId ? parseInt(filters.cityId) : null,
+                countryId: filters.countryId ? parseInt(filters.countryId) : null,
+                categoryId: filters.categoryId ? parseInt(filters.categoryId) : null
+            })
+        });
+
+        if (!response.ok) throw new Error('Error filtering properties');
+        return await response.json();
+    } catch (error) {
+        console.error('Error:', error);
+        return null;
+    }
+};
 export const propertyService = {
     getProperties,
     getFilteredProperties,
@@ -12,47 +34,19 @@ export const propertyService = {
     createProperty,
     updateProperty,
     deleteProperty,
-    getPaginatedProperties
+    getPaginatedProperties,
+    filterProperties
 };
 
 async function getProperties() {
-    // todo
-    return properties
-    /*
-    try {
-        const response = await fetch(API_URLS.PROPERTIES);
-        if (!response.ok) {
-            throw new Error("Error al obtener propiedades");
-        }
-        return await response.json();
-    } catch (error) {
-        console.error("Error en getProperties:", error);
-        throw error;
-    }*/
-};
+    return properties;
+}
 
 async function getFilteredProperties(n) {
-    // todo
-    return choiceRandomNFromList(properties, n)
-
-    /*
-    try {
-        const response = await fetch(API_URLS.FILTERED_PROPERTIES+'?size='+n);
-        if (!response.ok) {
-            throw new Error("Error al obtener propiedades");
-        }
-        return await response.json()
-    } catch (error) {
-        console.error("Error en getFilteredProperties:", error);
-        throw error;
-    }
-
-     */
-
-};
+    return choiceRandomNFromList(properties, n);
+}
 
 async function getPropertyById(id) {
-    // todo
     let property = properties.find(x => x.id == id);
 
     detail.title = property.name;
@@ -62,9 +56,8 @@ async function getPropertyById(id) {
     detail.description = property.description;
     detail.price = property.pricePerNight;
 
-
     return detail;
-};
+}
 
 async function createProperty(property) {
     const newProperty = { id: Date.now(), ...property };
