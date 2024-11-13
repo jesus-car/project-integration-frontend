@@ -17,6 +17,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { propertyService } from '../services/propertyService'
 import Spinner from "./Spinner";
 import "../styles/productDetail.css"
+import { GetIcon } from "./ListFeature";
 
 
 
@@ -93,26 +94,8 @@ const ProductDetails = () => {
                 <p className="font-semibold text-lg">Anfitrión: {detail.host}</p>
                 <p className="font-normal">{detail.yearhost} años anfitrionando</p>
             </div>
-           {detail.workarea ? <div className="flex flex-row items-center gap-x-4 mt-14">
-                <div>
-                    <AiOutlineDesktop className="size-5"/>
-                </div>
-                <div>
-                    <h3 className="font-semibold text-lg">Area de trabajo</h3>
-                    <p className="font-normal">Una habitación con wifi ideal para trabajar</p>
-                </div>
-            </div> : <></>}
-            {detail.petAllowed ? <div className="flex flex-row items-center gap-x-4 mt-5">
-                <div>
-                    <PiPawPrintBold className="size-5"/>
-                </div>
-                <div>
-                    <h3 className="font-semibold text-lg">Las mascotas son bievenidas</h3>
-                    <p className="font-normal">Trae tus mascotas al alojamiento</p>
-                </div>
-            </div> : <></>}
             <div className="mt-16 text-lg">
-                <p>{detail.description}</p>
+                <p className="w-7/12">{detail.description}</p>
                 <button className="font-medium mt-1" onClick={handleOpen}>Más +</button>
                 <Modal
                 open={open}
@@ -144,41 +127,14 @@ const ProductDetails = () => {
                     <h3 className="font-semibold text-lg">Lo que ofrece este lugar</h3>
                 </div>
                 <div className="mt-8 flex flex-wrap gap-x-32">
-                    <div>
-                        {propertyService.mountainView ? <div className="flex items-center gap-x-2.5 mt-1">
-                            <IoImageOutline />
-                            <h4 className=" text-lg">Vista a las montañas</h4>
-                        </div> : <></>}
-                        {detail.securityCamera ? <div className="flex items-center gap-x-2.5 mt-1">
-                            <GiCctvCamera />
-                            <h4 className=" text-lg">Cámaras de seguridad </h4>
-                        </div> : <></>}
-                        {detail.freeParking ? <div className="flex items-center gap-x-2.5 mt-1">
-                            <FaCarSide />
-                            <h4 className=" text-lg">Estacionamiento gratuito</h4>
-                        </div> : <></> }
-                        {detail.kitchen ? <div className="flex items-center gap-x-2.5 mt-1">
-                            <TbToolsKitchen3 />
-                            <h4 className=" text-lg">Cocina</h4>
-                        </div> : <></>}
-                    </div>
-                    <div>
-                        {detail.petAllowed ? <div className="flex items-center gap-x-2.5 mt-1">
-                            <PiPawPrintBold/>
-                            <h4 className=" text-lg">Se permiten mascotas</h4>
-                        </div>: <></>}
-                        {detail.wifi ?<div className="flex items-center gap-x-2.5 mt-1">
-                            <FaWifi />
-                            <h4 className=" text-lg">Wifi</h4>
-                        </div>: <></>}
-                        {detail.workarea ? <div className="flex items-center gap-x-2.5 mt-1">
-                            <AiOutlineDesktop/>
-                            <h4 className=" text-lg">Zona de trabajo</h4>
-                        </div> : <></>}
-                        {detail.tv ? <div className="flex items-center gap-x-2.5 mt-1">
-                            <IoTvOutline />
-                            <h4 className=" text-lg">TV</h4>
-                        </div>: <></> }
+                    <div className="grid grid-cols-2 gap-x-28">
+                        {detail.features.map((feature, key) => 
+                            <div  key={key} className="flex items-center gap-x-2.5 mt-1">
+                            {GetIcon(feature.icon)}
+                            <h4 className=" text-lg">{feature.name}</h4>
+                            </div>
+                        )}
+                        
                     </div>
                 </div>
             </div>

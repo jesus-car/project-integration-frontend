@@ -17,6 +17,7 @@ export default function AddProduct() {
     price: '',
     category: '',
     images: [],
+    features: []
   });
   const [features, setfeatures] = useState([]);
   const [errors, setErrors] = useState({});
@@ -121,6 +122,7 @@ export default function AddProduct() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setGlobalError('');
+    formData.features = features;
 
     if (!validateForm()) {
       toast.error('Por favor, complete todos los campos requeridos correctamente');

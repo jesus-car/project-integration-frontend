@@ -1,5 +1,5 @@
 import { Select } from "@mui/material"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Box from '@mui/material/Box';
 import Chip from '@mui/material/Chip';
@@ -9,7 +9,10 @@ import "../styles/multiSelect.css"
 import { GetIcon } from "./ListFeature";
 
 const MultiSelect = (props) => {
-    const [currentfeatures, setfeatures] = useState([]);
+    const [currentfeatures, setfeatures] = useState(props.value ?? []);
+    useEffect(() => {
+      setfeatures(props.value);
+    }, [props.value])
 
     const handleChange = (event) => {
         const {

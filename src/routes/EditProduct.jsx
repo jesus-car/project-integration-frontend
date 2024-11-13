@@ -19,6 +19,7 @@ export default function EditProduct() {
     price: '',
     category: '',
     images: [],
+    features: []
   });
   const [features, setfeatures] = useState([]);
   const [errors, setErrors] = useState({});
@@ -121,6 +122,7 @@ export default function EditProduct() {
   const handleSubmit = async e => {
     e.preventDefault();
     setGlobalError('');
+    formData.features = features;
 
     if (!validateForm()) {
       toast.error('Por favor, complete todos los campos requeridos correctamente');
@@ -360,7 +362,7 @@ export default function EditProduct() {
                       <p className="text-red-500 text-xs mt-1">{errors.category}</p>
                     )}
                   </div>
-                      <MultiSelect onChange={setfeatures}/>
+                      <MultiSelect onChange={setfeatures} value={formData.features}/>
                   <div>
                     <label className="block text-gray-700 text-sm font-bold mb-2">
                       Descripción *
