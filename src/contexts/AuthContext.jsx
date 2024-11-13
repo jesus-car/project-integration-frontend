@@ -1,10 +1,8 @@
-// todo: contexto para manejar el estado del usuario (si está autenticado, la información del usuario, token de autenticación, roles, etc.)
-
 import {createContext, useContext, useEffect, useState} from 'react'
 import {authService} from "../services/authService.js";
 import {useNavigate} from "react-router-dom";
 import {routes} from "../utils/routes.js";
-import {decodeJWT} from "../utils/utils.js";
+import {decodeJWT, isTokenExpired} from "../utils/utils.js";
 import {roleService} from "../services/roleService.js";
 
 export const AuthContext = createContext();
@@ -20,8 +18,11 @@ export const AuthProvider = ({children}) => {
     // Al inicializar la aplicación, verifica si hay un token válido en localStorage y carga el usuario si existe.
     useEffect(() => {
         const storedToken = localStorage.getItem('token');
-        if (storedToken) {
+
+
+        if (storedToken && !isTokenExpired(storedToken)) {
             const decodedUser = decodeJWT(storedToken);
+            // validar si el token ya expiró
             setUser(decodedUser);
         }
         fetchRoles();

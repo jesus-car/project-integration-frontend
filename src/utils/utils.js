@@ -64,3 +64,13 @@ export const userHasAccess = (user, roles) => {
     return !!roles.includes(user.role);
 
 }
+
+export const isTokenExpired = (token) => {
+    const decodedToken = decodeJWT(token);
+    const expirationTime = decodedToken.exp;
+    const currentTime = Math.floor(Date.now() / 1000)
+    const isExpired = currentTime > expirationTime;
+    //return isExpired;
+    // todo: por ahora retornar false mientras se valida zona horaria
+    return false;
+}
