@@ -3,12 +3,15 @@ import {userService} from "../services/userService.js";
 import Button from "../Components/Button.jsx";
 import Spinner from "../Components/Spinner.jsx";
 import ChangeRoleModal from "../Components/modals/ChangeRoleModal.jsx";
+import {roleService} from "../services/roleService.js";
 
 const Users = () => {
 
     const [users, setUsers] = useState([]);
 
     const [loadingUsers, setLoadingUsers] = useState(true);
+
+    const [error, setError] = useState('');
 
     const [selectedUser, setSelectedUser] = useState(null);
 
@@ -22,12 +25,43 @@ const Users = () => {
     ]
 
     useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const response = await userService.getAllUsers();
+                setUsers(response.data.content)
+            } catch (error) {
+                setError(error.message);
+            } finally {
+                setLoadingUsers(false);
+            }
+        };
+
+        fetchUsers()
+
+    }, []);
+
+    useEffect(() => {
         if (selectedUser) {
             setIsModalOpen(true);
         }
     }, [selectedUser]);
 
-    const confirmChange = (role) => {
+    const confirmChange = async (newRole) => {
+        if (newRole.id == selectedUser.role.id) {
+            return;
+        }
+        await roleService.changeUserRole(selectedUser.id, newRole.id);
+        const updatedUsers = users.map((user) => {
+            if (user.id === selectedUser.id) {
+                return {
+                    ...user,
+                    role: newRole
+                };
+            }
+            return user;
+        });
+        setUsers(updatedUsers);
+
         setIsModalOpen(false);
         setSelectedUser(null);
         // Llamar a la API para cambiar el rol
@@ -37,21 +71,6 @@ const Users = () => {
         setIsModalOpen(false);
         setSelectedUser(null);
     };
-
-    useEffect(() => {
-        userService.getUsers().then((users) => {
-            setUsers(users);
-            setTimeout(() => {
-                setLoadingUsers(false);
-            }, 1000);
-        }).catch(error => {
-            console.error('Error en Users:', error);
-            setLoadingUsers(false);
-            setTimeout(() => {
-                setLoadingUsers(false);
-            }, 2000);
-        });
-    }, []);
 
 
     return (
@@ -91,7 +110,7 @@ const Users = () => {
             <ChangeRoleModal isOpen={isModalOpen}
                              onConfirm={confirmChange}
                              onCancel={cancelChange}
-                             currentRole={selectedUser?.role.id}/>
+                             currentRole={selectedUser?.role}/>
         </div>
     );
 };

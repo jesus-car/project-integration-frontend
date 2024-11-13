@@ -1,26 +1,15 @@
 import {API_URLS} from "../utils/apiConfig.js";
 import axios from "axios";
-import {users} from "../utils/fakeData.js";
 
-async function getUsers() {
-    // todo
-
-    return users
-
-    /*
+async function getAllUsers() {
     try {
-        const response = await axios.get(API_URLS.PROPERTIES);
-        return response.data;
+        return await axios.get(`${API_URLS.USERS}/all`, {});
     } catch (error) {
-        console.error("Error en getUsers:", error);
-        throw error;
+        throw new Error("Error al obtener los usuarios: " + error.response.data.details || 'Error del servidor');
     }
-
-     */
-
 }
 
 
 export const userService = {
-    getUsers
+    getAllUsers
 }

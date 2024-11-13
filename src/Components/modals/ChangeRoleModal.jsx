@@ -1,39 +1,29 @@
 import {useEffect, useState} from "react";
 import Button from "../Button.jsx";
+import {useAuthContext} from "../../contexts/AuthContext.jsx";
+import Spinner from "../Spinner.jsx";
 
 const ChangeRoleModal = ({currentRole, onConfirm, onCancel, isOpen}) => {
-    const roles = [
-        {
-            "id": 1,
-            "name": "ROLE_ADMIN",
-            "description": "Administrador"
-        },
-        {
-            "id": 2,
-            "name": "ROLE_USER",
-            "description": "Usuario"
-        },
-        {
-            "id": 3,
-            "name": "ROLE_OWNER",
-            "description": "Propietario"
-        }
-    ]
+    const {roles, loading } = useAuthContext();
 
-    const [selectedRole, setSelectedRole] = useState(null);
+    const [selectedRole, setSelectedRole] = useState({});
 
     useEffect(() => {
         setSelectedRole(currentRole);
     }, [currentRole]);
 
     const handleChange = (e) => {
-        console.log("e.target.value", e.target.value);
-        setSelectedRole(e.target.value);
+        const role = roles.find((role) => role.id == e.target.value);
+        setSelectedRole(role);
     }
 
 
     if (!isOpen) return null;
 
+
+    if (loading) {
+        return <Spinner/>;
+    }
 
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -46,14 +36,13 @@ const ChangeRoleModal = ({currentRole, onConfirm, onCancel, isOpen}) => {
                     <select
                         className="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                         name="role"
-                        value={selectedRole}
-                        onChange={handleChange}
-                    >
+                        value={selectedRole.id}
+                        onChange={handleChange}>
                         <option value="" disabled>Selecciona un nuevo rol</option>
                         {roles.map((role) => (
                             <option key={role.id}
                                     value={role.id}
-                                    disabled={role.id === selectedRole}>
+                                    disabled={role.id === selectedRole.id}>
                                 {role.description}
                             </option>
                         ))}
