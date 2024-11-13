@@ -12,27 +12,38 @@ export const AuthProvider = ({children}) => {
 
     const [user, setUser] = useState(null);
     const [error, setError] = useState('');
-    const [loading, setLoading] = useState(true); // Para saber si los datos están cargando
+    const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
+
+    // Al inicializar la aplicación, verifica si hay un token válido en localStorage y carga el usuario si existe.
+    useEffect(() => {
+        const storedToken = localStorage.getItem('token');
+        if (storedToken) {
+            const decodedUser = decodeJWT(storedToken);
+            setUser(decodedUser);
+        }
+        setLoading(false);
+    }, []);
 
     const login = async (credentials) => {
         setError(null)
+        setLoading(true);
         try {
 
             const userData = await authService.login(credentials);
 
-            // todo: por ahora mientras no tengamos un backend, vamos a simular que el usuario se logueó correctamente
-            const temporalToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJlc3RlZmFuaWFhZ3Vhc0BnbWFpbC5jb20iLCJpYXQiOjE3MzEzNjU5OTMsImV4cCI6MTczMTM2OTIxOCwiaWQiOjEsImZpcnN0TmFtZSI6IkVzdGVmYW7DrWEiLCJsYXN0TmFtZSI6IkFndWFzIFPDoW5jaGV6Iiwicm9sZSI6IlJPTEVfQURNSU4ifQ.iCx2wa1FHolgY0tMhj0bYkonNuuI3Ha3oV_GCdrhgz8"
+            const token = userData.data.token
+            localStorage.setItem('token', token);
 
-            localStorage.setItem('token', temporalToken);
+            const userToken =  decodeJWT(token);
 
-            const userToken =  decodeJWT(temporalToken);
-
-            setUser(userToken);
+            await setUser(userToken);
             navigate(routes.home);
 
         } catch (err) {
             setError(err.message);
+        } finally {
+            setLoading(false);
         }
 
     };
@@ -42,8 +53,6 @@ export const AuthProvider = ({children}) => {
         localStorage.removeItem('token');
         navigate(routes.login);
     };
-
-
 
 
     return (
