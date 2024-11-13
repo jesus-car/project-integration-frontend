@@ -20,7 +20,7 @@ const ChangeRoleModal = ({currentRole, onConfirm, onCancel, isOpen}) => {
         }
     ]
 
-    const [selectedRole, setSelectedRole] = useState({});
+    const [selectedRole, setSelectedRole] = useState(null);
 
     useEffect(() => {
         setSelectedRole(currentRole);
@@ -46,12 +46,14 @@ const ChangeRoleModal = ({currentRole, onConfirm, onCancel, isOpen}) => {
                     <select
                         className="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                         name="role"
-                        value={selectedRole.id}
+                        value={selectedRole}
                         onChange={handleChange}
                     >
                         <option value="" disabled>Selecciona un nuevo rol</option>
                         {roles.map((role) => (
-                            <option key={role.id} value={role.id}>
+                            <option key={role.id}
+                                    value={role.id}
+                                    disabled={role.id === selectedRole}>
                                 {role.description}
                             </option>
                         ))}

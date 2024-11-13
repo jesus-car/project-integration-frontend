@@ -91,7 +91,7 @@ const Users = () => {
             <ChangeRoleModal isOpen={isModalOpen}
                              onConfirm={confirmChange}
                              onCancel={cancelChange}
-                             currentRole={selectedUser}/>
+                             currentRole={selectedUser?.role.id}/>
         </div>
     );
 };

@@ -420,7 +420,7 @@ export const users = [
         "role": {
             "id": 3,
             "name": "ROLE_OWNER",
-            "description": "Cliente",
+            "description": "Propietario",
             "permissions": [
                 {
                     "id": 1,
@@ -483,7 +483,7 @@ export const users = [
         "role": {
             "id": 3,
             "name": "ROLE_OWNER",
-            "description": "Cliente",
+            "description": "Propietario",
             "permissions": [
                 {
                     "id": 1,
@@ -546,7 +546,7 @@ export const users = [
         "role": {
             "id": 3,
             "name": "ROLE_OWNER",
-            "description": "Cliente",
+            "description": "Propietario",
             "permissions": [
                 {
                     "id": 1,
