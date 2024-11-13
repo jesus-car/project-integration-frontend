@@ -15,7 +15,6 @@ const ProtectedRoutes = ({ allowedRoles }) => {
 
         // Validar si el token ha expirado
         if (isTokenExpired(token)) {
-            console.log('Token expirado');
             logout(); // Desloguea al usuario
             navigate('/login'); // Redirige a la página de login
         }

@@ -15,6 +15,8 @@ export const AuthProvider = ({children}) => {
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
+    const clearError = () => setError('');
+
     // Al inicializar la aplicación, verifica si hay un token válido en localStorage y carga el usuario si existe.
     useEffect(() => {
         const storedToken = localStorage.getItem('token');
@@ -40,7 +42,7 @@ export const AuthProvider = ({children}) => {
     }
 
     const login = async (credentials) => {
-        setError(null)
+        clearError();
         setLoading(true);
         try {
 
@@ -70,7 +72,7 @@ export const AuthProvider = ({children}) => {
 
 
     return (
-        <AuthContext.Provider value={{user, roles, error, login, logout, loading}}>
+        <AuthContext.Provider value={{user, roles, error, clearError, login, logout, loading}}>
             {children}
         </AuthContext.Provider>
     )

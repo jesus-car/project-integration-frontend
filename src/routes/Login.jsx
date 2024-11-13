@@ -16,17 +16,15 @@ const Login = () => {
     const [isEmailValid, setIsEmailValid] = useState(false);
     const [isPasswordValid, setIsPasswordValid] = useState(false);
 
-    const {login, error} = useAuthContext();
+    const {login, error, clearError} = useAuthContext();
     const toast = useToast();
 
     useEffect(() => {
-        return () => {
-            if (error) {
-                console.log('Error:', error);
-                toast.error(error);
-            }
-        };
-    }, [error]);
+        if (error) {
+            toast.error(error);
+            clearError();
+        }
+    }, [error, toast, clearError]);
 
 
     const handleSubmit = async (e) => {
@@ -40,7 +38,6 @@ const Login = () => {
     };
 
     return (
-
         <div className="grid grid-cols-1 md:grid-cols-2 h-screen">
             <div className="bg-cover bg-center flex justify-center items-center cursor-pointer"
                  onClick={() => navigate(routes.home)}

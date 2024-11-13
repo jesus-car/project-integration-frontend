@@ -16,8 +16,6 @@ const UserMenu = ({ user }) => {
 
     // Función para cerrar sesión
     const handleLogout = () => {
-        // Lógica para cerrar sesión, puede ser un logout del contexto, o borrar el token
-        console.log("Usuario ha cerrado sesión");
         logout();
         navigate("/login");
     };
