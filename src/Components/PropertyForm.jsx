@@ -1,4 +1,5 @@
 import { FaUpload, FaTimes } from 'react-icons/fa';
+import MultiSelect from './MultiSelect';
 
 export default function PropertyForm({
   formData,
@@ -22,6 +23,9 @@ export default function PropertyForm({
   countries,
   isLoadingCountries,
   countriesError,
+  handleFeature,
+  featureValue,
+  featureList
 }) {
   const selectedCountry = countries.find(
     country => country.id === Number(formData.countryId)
@@ -294,7 +298,7 @@ export default function PropertyForm({
                 )}
               </div>
             </div>
-
+            <MultiSelect onChange={handleFeature} value={featureValue ?? []} featureList={featureList} />
             <div>
               <label className="block text-gray-700 text-sm font-bold mb-2">
                 Descripción *

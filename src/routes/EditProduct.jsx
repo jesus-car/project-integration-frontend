@@ -27,7 +27,10 @@ export default function EditProduct() {
     cityId: 1,
     countryId: 1,
     ownerId: 1,
+    featureIds: []
   });
+  const [features, setfeatures] = useState([]);
+  const [listFeatures, setListFeatures] = useState([])
   const [errors, setErrors] = useState({});
   const [previews, setPreviews] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -84,7 +87,10 @@ export default function EditProduct() {
         ownerId: data.owner.id,
         images: [],
         mainImage: null,
+        featureIds: data.features.map(f => f.id)
       });
+
+      setfeatures(data.features);
 
       let allImages = [];
 
@@ -137,8 +143,24 @@ export default function EditProduct() {
     }
   };
 
+  
+  const fetchFeatures = async() => {
+    try {
+
+      const response = await fetch('http://100.29.91.166:8080/roomly-services/api/v1/features/all', {
+        method: 'GET'
+      });
+
+      const data = await response.json();
+      setListFeatures(data);
+    } catch (err) {
+      console.error(err);
+      toast.error("No fue posible cargar el listado de caracteristicas")  
+    }
+  }
+
   useEffect(() => {
-    Promise.all([fetchCategories(), fetchCountries(), fetchProperty()]);
+    Promise.all([fetchCategories(), fetchCountries(), fetchProperty(), fetchFeatures()]);
   }, [productId]);
 
   if (isLoading || isLoadingCategories || isLoadingCountries) {
@@ -294,6 +316,14 @@ export default function EditProduct() {
     setPreviews(prev => [...prev, ...newPreviews]);
   };
 
+  const handleFeaturesChange = (features) => {
+    setFormData(prev => ({
+      ...prev,
+      featureIds: features.map((x) => x.id),
+    }));
+    setfeatures(features);
+  }
+
   const handleSubmit = async e => {
     e.preventDefault();
     setGlobalError('');
@@ -322,6 +352,7 @@ export default function EditProduct() {
         numBathrooms: Number(formData.numBathrooms),
         ownerId: formData.ownerId,
         categoryId: Number(formData.categoryId),
+        featureIds: formData.featureIds
       };
 
       formDataToSend.append('property', JSON.stringify(propertyData));
@@ -335,7 +366,7 @@ export default function EditProduct() {
           }
         });
       }
-
+      console.log(propertyData)
       const response = await fetch(
         `http://100.29.91.166:8080/roomly-services/api/v1/properties/${productId}`,
         {
@@ -400,6 +431,9 @@ export default function EditProduct() {
             countries={countries}
             isLoadingCountries={isLoadingCountries}
             countriesError={countriesError}
+            handleFeature={handleFeaturesChange}
+            featureValue={features}
+            featureList={listFeatures}
           />
 
           <PropertyPreview
@@ -407,6 +441,7 @@ export default function EditProduct() {
             previews={previews}
             categories={categories}
             countries={countries}
+            features={features}
           />
         </div>
       </div>

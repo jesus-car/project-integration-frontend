@@ -3,6 +3,7 @@ import { FaHome, FaList, FaPlusCircle, FaUsers, FaCog, FaSignOutAlt } from 'reac
 import { routes } from '../utils/routes';
 import {useAuthContext} from "../contexts/AuthContext.jsx";
 import {userHasAccess} from "../utils/utils.js";
+import { Icon } from '@mui/material';
 
 const Sidebar = () => {
   const location = useLocation();
@@ -34,6 +35,18 @@ const Sidebar = () => {
       path: '/administration/add-property',
       icon: FaPlusCircle
     },
+    {
+      title:'Carasteristicas',
+      path:'/administration/feature',
+      icon: FaList
+
+    },
+    {
+      title: 'Administrar Caracteristicas',
+      path: '/administration/add-feature',
+      icon: FaPlusCircle
+    },
+
     {
       title: 'Usuarios',
       path: '/administration/users',

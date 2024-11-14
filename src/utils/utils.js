@@ -23,7 +23,6 @@ export const formatCurrency = (value) => {
     return formattedValue.replace('COP', '$');
 };
 
-
 export function decodeJWT(token) {
     if (!token) {
         throw new Error("Token no proporcionado");

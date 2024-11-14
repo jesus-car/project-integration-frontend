@@ -6,6 +6,10 @@ import AddProduct from './AddProduct';
 import Toast from '../Components/Toast';
 import { useState, useEffect } from 'react';
 import EditProduct from './EditProduct';
+import AddFeature from './AddFeature';
+import Features from './Features';
+import EditFeature from './EditFeature';
+import ListFeature from '../Components/ListFeature';
 import Users from "./Users.jsx";
 import ProtectedRoutes from "./ProtectedRoutes.jsx";
 
@@ -126,6 +130,14 @@ const Administration = () => {
               }
             />
             <Route path="/edit-product/:productId" element={<EditProduct />} />
+
+            <Route path='/add-feature' element={<AddFeature/>}>
+
+            </Route>
+            <Route path='/feature' element={<Features/>}>
+            </Route>
+            <Route path='/edit-feature/:id' element={<EditFeature/>}></Route>
+
           </Routes>
         </div>
       </div>

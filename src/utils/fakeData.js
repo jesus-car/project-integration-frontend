@@ -1,3 +1,31 @@
+export const features = [
+    {
+        id: 1,
+        name: "Camaras de Seguridad",
+        icon: "GiCctvCamera"
+        
+    },
+    {
+        id: 2,
+        name:"Wifi",
+        icon: "FaWifi"
+    },
+    {
+        id: 3,
+        name:"Estacionamiento",
+        icon: "FaCarSide"
+    },
+    {
+        id: 4,
+        name:"Cocina",
+        icon:"FaKitchenSet"
+    },
+    {
+        id: 5,
+        name:"Se permiten mascotas",
+        icon:"PiPawPrintBold"
+    }
+]
 export const properties = [
     {
         id: 1,
@@ -9,7 +37,8 @@ export const properties = [
         category: "playa",
         images: [
             'https://a0.muscache.com/im/pictures/miso/Hosting-1231218421417858848/original/43117236-c7d2-40c2-a70c-4b141d8171c5.jpeg?im_w=1200',
-        ]
+        ],
+        features: [features[0], features[2], features[3], features[4]]
     },
     {
         id: 2,
@@ -21,7 +50,8 @@ export const properties = [
         category: "playa",
         images: [
             'https://a0.muscache.com/im/pictures/hosting/Hosting-1212273910034900968/original/8078283b-c8d2-4c00-ba15-cfd2bf0be27b.jpeg?im_w=1200',
-        ]
+        ],
+        features: [features[1], features[2]]
     },
     {
         id: 3,
@@ -33,7 +63,8 @@ export const properties = [
         category: "playa",
         images: [
             'https://a0.muscache.com/im/pictures/miso/Hosting-1003548971445736385/original/3a46cf50-b38c-488a-81ce-69f270f46eb3.jpeg?im_w=1200',
-        ]
+        ],
+        features: [features[2], features[3]]
     },
     {
         id: 4,
@@ -45,7 +76,8 @@ export const properties = [
         category: "playa",
         images: [
             'https://a0.muscache.com/im/pictures/miso/Hosting-1122694246457285445/original/d4407c43-6f2b-453b-8cc4-303734ac61a6.jpeg?im_w=1200',
-        ]
+        ],
+        features: [features[0], features[2]]
     },
     {
         id: 5,
@@ -57,7 +89,8 @@ export const properties = [
         category: "montaña",
         images: [
             'https://a0.muscache.com/im/pictures/miso/Hosting-1157222746294729818/original/f5586a11-c147-4fd1-9895-cb00b36eee10.jpeg?im_w=1200',
-        ]
+        ],
+        features: [features[3], features[4]]
     },
     {
         id: 6,
@@ -69,7 +102,8 @@ export const properties = [
         category: "montaña",
         images: [
             'https://a0.muscache.com/im/pictures/airflow/Hosting-892813186472291719/original/44244a51-7e71-4a55-b8a2-fa860ce8b948.jpg?im_w=1200',
-        ]
+        ],
+        features: [features[0], features[2]]
     },
     {
         id: 7,
@@ -81,7 +115,8 @@ export const properties = [
         category: "campo",
         images: [
             'https://a0.muscache.com/im/pictures/2aae9259-4a19-47c8-a7ba-6f146e226db6.jpg?im_w=1440&im_q=highq',
-        ]
+        ],
+        features: [features[0], features[2]]
     },
     {
         id: 8,
@@ -93,7 +128,8 @@ export const properties = [
         category: "ciudad",
         images: [
             'https://a0.muscache.com/im/pictures/miso/Hosting-51978429/original/cb9b3d99-7cae-48ad-9000-37afe1e81769.jpeg?im_w=720',
-        ]
+        ],
+        features: [features[0], features[1]]
     },
     {
         id: 9,
@@ -105,7 +141,8 @@ export const properties = [
         category: "montaña",
         images: [
             'https://a0.muscache.com/im/pictures/94fc8327-fa4e-48e6-a802-f786614d9c51.jpg?im_w=1440&im_q=highq',
-        ]
+        ],
+        features: [features[1], features[2]]
     },
     {
         id: 10,
@@ -117,7 +154,8 @@ export const properties = [
         category: "playa",
         images: [
             'https://a0.muscache.com/im/pictures/hosting/Hosting-955858690980318819/original/3740d4df-39e8-4a30-b9dd-5d17baec7a9d.jpeg?im_w=1440&im_q=highq',
-        ]
+        ],
+        features: [features[2], features[3]]
     },
     {
         id: 11,
@@ -129,7 +167,8 @@ export const properties = [
         category: "campo",
         images: [
             'https://a0.muscache.com/im/pictures/miso/Hosting-746210844868185359/original/fd07e82b-4a64-46de-a800-8bebe88f4822.jpeg?im_w=1440&im_q=highq',
-        ]
+        ],
+        features: [features[3], features[4]]
     },
     {
         id: 12,
@@ -141,7 +180,8 @@ export const properties = [
         category: "ciudad",
         images: [
             'https://a0.muscache.com/im/pictures/miso/Hosting-897701630996078259/original/71d40723-bc60-4fc3-ba88-79fba8ce8bee.jpeg?im_w=1440&im_q=highq',
-        ]
+        ],
+        features: [features[0], features[2]]
     },
     {
         id: 13,
@@ -153,7 +193,8 @@ export const properties = [
         category: "montaña",
         images: [
             'https://a0.muscache.com/im/pictures/b79f133a-1a73-4499-a43e-9163b52cea33.jpg?im_w=1440&im_q=highq',
-        ]
+        ],
+        features: [features[1], features[2]]
     },
     {
         id: 14,
@@ -165,7 +206,8 @@ export const properties = [
         category: "campo",
         images: [
             'https://a0.muscache.com/im/pictures/42c45e05-c866-4017-9045-f6c34aa27410.jpg?im_w=1440&im_q=highq',
-        ]
+        ],
+        features: [features[2], features[3]]
     },
     {
         id: 15,
@@ -177,7 +219,8 @@ export const properties = [
         category: "playa",
         images: [
             'https://a0.muscache.com/im/pictures/e63f53b6-0953-4d85-998a-16d4baa373cc.jpg?im_w=1440&im_q=highq',
-        ]
+        ],
+        features: [features[3], features[4]]
     },
     {
         id: 16,
@@ -189,7 +232,8 @@ export const properties = [
         category: "campo",
         images: [
             'https://a0.muscache.com/im/pictures/43a6ee79-6685-4c3f-bb4d-8db164406006.jpg?im_w=1440&im_q=highq',
-        ]
+        ],
+        features: [features[0], features[2]]
     },
     {
         id: 17,
@@ -201,7 +245,8 @@ export const properties = [
         category: "ciudad",
         images: [
             'https://a0.muscache.com/im/pictures/fa0dbacc-58e1-45ae-be91-da046333b08c.jpg?im_w=1440&im_q=highq',
-        ]
+        ],
+        features: [features[1], features[2]]
     },
     {
         id: 18,
@@ -213,7 +258,8 @@ export const properties = [
         category: "montaña",
         images: [
             'https://a0.muscache.com/im/pictures/68e7546d-539c-463c-aed1-0cc8a7c0a46c.jpg?im_w=1440&im_q=highq',
-        ]
+        ],
+        features: [features[2], features[3]]
     },
     {
         id: 19,
@@ -225,7 +271,8 @@ export const properties = [
         category: "playa",
         images: [
             'https://a0.muscache.com/im/pictures/hosting/Hosting-U3RheVN1cHBseUxpc3Rpbmc6MzExODU2NjM%3D/original/d2a650e6-3386-45f5-a6b4-e5fb7a2449aa.jpeg?im_w=1440&im_q=highq',
-        ]
+        ],
+        features: [features[0], features[2]]
     },
     {
         id: 20,
@@ -237,7 +284,8 @@ export const properties = [
         category: "ciudad",
         images: [
             'https://a0.muscache.com/im/pictures/hosting/Hosting-1196141205624875008/original/841a7fc0-bd9e-4b9b-869c-0c268efafcae.jpeg?im_w=1440&im_q=highq',
-        ]
+        ],
+        features: [features[3], features[4]]
     },
     {
         id: 21,
@@ -249,7 +297,8 @@ export const properties = [
         category: "campo",
         images: [
             'https://a0.muscache.com/im/pictures/miso/Hosting-1055711668239141400/original/7db34c62-47f7-4de8-b4f9-085d1cbe7628.jpeg?im_w=1440&im_q=highq',
-        ]
+        ],
+        features: [features[0], features[2]]
     },
     {
         id: 22,
@@ -261,7 +310,8 @@ export const properties = [
         category: "ciudad",
         images: [
             'https://a0.muscache.com/im/pictures/36b1e51b-27fa-47be-9526-df2c2d33142a.jpg?im_w=1440&im_q=highq',
-        ]
+        ],
+        features: [features[1], features[2]]
     },
     {
         id: 23,
@@ -273,7 +323,8 @@ export const properties = [
         category: "campo",
         images: [
             'https://a0.muscache.com/im/pictures/e41ce817-84d8-46b8-9b7b-9f6077c6d31a.jpg?im_w=1440&im_q=highq',
-        ]
+        ],
+        features: [features[3], features[4]]
     },
     {
         id: 24,
@@ -285,7 +336,8 @@ export const properties = [
         category: "ciudad",
         images: [
             'https://a0.muscache.com/im/pictures/prohost-api/Hosting-1102255664744611948/original/50538cbd-9418-4b61-bbda-15f31a307690.jpeg?im_w=1440&im_q=highq',
-        ]
+        ],
+        features: [features[0], features[2]]
     },
     {
         id: 25,
@@ -297,7 +349,8 @@ export const properties = [
         category: "montaña",
         images: [
             'https://a0.muscache.com/im/pictures/prohost-api/Hosting-40799878/original/96e84ae8-bda4-498d-b35a-151c6b2567b5.jpeg?im_w=1440&im_q=highq',
-        ]
+        ],
+        features: [features[1], features[2]]
     },
     {
         id: 26,
@@ -309,7 +362,8 @@ export const properties = [
         category: "ciudad",
         images: [
             'https://a0.muscache.com/im/pictures/miso/Hosting-817250467699332015/original/4f5bbf35-5232-499e-991f-4bb9ddb80e02.jpeg?im_w=1440&im_q=highq',
-        ]
+        ],
+        features: [features[2], features[3]]
     },
     {
         id: 27,
@@ -321,7 +375,8 @@ export const properties = [
         category: "playa",
         images: [
             'https://a0.muscache.com/im/pictures/miso/Hosting-1037390972405688567/original/0f4e4f76-1b02-4612-8b1f-f114201b96c4.jpeg?im_w=1440&im_q=highq',
-        ]
+        ],
+        features: [features[0], features[4]]
     },
     {
         id: 28,
@@ -333,7 +388,8 @@ export const properties = [
         category: "campo",
         images: [
             'https://a0.muscache.com/im/pictures/miso/Hosting-52329661/original/800aa635-16b7-4ceb-adbc-3d2445edd9dd.jpeg?im_w=1440&im_q=highq',
-        ]
+        ],
+        features: [features[1], features[2]]
     },
     {
         id: 29,
@@ -345,7 +401,8 @@ export const properties = [
         category: "playa",
         images: [
             'https://a0.muscache.com/im/pictures/2018d69d-7036-4af5-ab11-937b674f5240.jpg?im_w=1440&im_q=highq',
-        ]
+        ],
+        features: [features[1], features[3]]
     },
     {
         id: 30,
@@ -357,7 +414,8 @@ export const properties = [
         category: "campo",
         images: [
             'https://a0.muscache.com/im/pictures/8b44aa4b-8f85-468c-ab39-15cef1581586.jpg?im_w=1440&im_q=highq',
-        ]
+        ],
+        features: [features[0], features[2]]
     },
 
 
@@ -408,5 +466,6 @@ export const detail = {
     petAllowed: true,
     wifi: true,
     tv: true,
+    features: []
 
 };
