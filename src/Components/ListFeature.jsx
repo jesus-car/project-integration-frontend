@@ -7,7 +7,7 @@ import { useState } from "react";
 
 
 export const GetIcon = (name) => {
-    let content = name.substring(0, 2)
+    let content = name?.substring(0, 2)
     let ResultContent = <div></div>;
     
     switch (content) {

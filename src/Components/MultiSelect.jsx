@@ -46,7 +46,7 @@ const MultiSelect = (props) => {
               {selected.map((value) => {
                 const option = options.find((opt) => opt.id === value);
                 return (
-                  <Chip key={value.id} label={option.name} icon={GetIcon(option.iconName)}>
+                  <Chip key={value.id} label={option?.name} icon={option?.iconName && GetIcon(option?.iconName)}>
                   </Chip>
                 )
               })}
