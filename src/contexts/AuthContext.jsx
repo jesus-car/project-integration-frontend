@@ -1,40 +1,81 @@
-// todo: contexto para manejar el estado del usuario (si está autenticado, la información del usuario, token de autenticación, roles, etc.)
-
-import { createContext, useEffect, useState } from 'react'
+import {createContext, useContext, useEffect, useState} from 'react'
+import {authService} from "../services/authService.js";
+import {useNavigate} from "react-router-dom";
+import {routes} from "../utils/routes.js";
+import {decodeJWT, isTokenExpired} from "../utils/utils.js";
+import {roleService} from "../services/roleService.js";
 
 export const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
+export const AuthProvider = ({children}) => {
 
     const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true); // Para saber si los datos están cargando
-    
+    const [roles, setRoles] = useState([]);
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
+
+    const clearError = () => setError('');
+
+    // Al inicializar la aplicación, verifica si hay un token válido en localStorage y carga el usuario si existe.
+    useEffect(() => {
+        const storedToken = localStorage.getItem('token');
+
+
+        if (storedToken && !isTokenExpired(storedToken)) {
+            const decodedUser = decodeJWT(storedToken);
+            // validar si el token ya expiró
+            setUser(decodedUser);
+        }
+        fetchRoles();
+    }, []);
+
+    const fetchRoles = async () => {
+        try {
+            const response = await roleService.getAllRoles();
+            setRoles(response.data);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    }
+
     const login = async (credentials) => {
-        // Aquí iría la lógica de autenticación real (ejemplo: llamada a la API)
-        const fakeUser = { id: 1, username: credentials.username, token: 'abc123' };
-        setUser(fakeUser);
-        localStorage.setItem('user', JSON.stringify(fakeUser)); // Guardamos el usuario en localStorage
+        clearError();
+        setLoading(true);
+        try {
+
+            const response = await authService.login(credentials);
+
+            const token = response.data.token
+            localStorage.setItem('token', token);
+
+            const userToken =  decodeJWT(token);
+
+            await setUser(userToken);
+            navigate(routes.home);
+
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+
     };
 
     const logout = () => {
         setUser(null);
-        localStorage.removeItem('user'); // Removemos el usuario de localStorage
+        localStorage.removeItem('token');
+        navigate(routes.login);
     };
 
-    useEffect(() => {
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-          setUser(JSON.parse(storedUser)); // Recuperamos el usuario del localStorage
-        }
-        setLoading(false); // Terminamos de cargar los datos
-      }, []);
-    
 
     return (
-        <AuthContext.Provider value={{ user, login, logout, loading }}>
+        <AuthContext.Provider value={{user, roles, error, clearError, login, logout, loading}}>
             {children}
         </AuthContext.Provider>
     )
 }
 
-export const useAuthContext = () => useAuthContext(AuthContext);
+export const useAuthContext = () => useContext(AuthContext);

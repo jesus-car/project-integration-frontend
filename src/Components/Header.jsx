@@ -1,24 +1,49 @@
-import {  useNavigate } from "react-router-dom"
-
+import {useNavigate} from "react-router-dom";
+import {routes} from "../utils/routes.js";
+import {useAuthContext} from "../contexts/AuthContext.jsx";
+import UserMenu from "./UserMenu";
+import Button from "./Button.jsx"; // Importamos el componente UserMenu
 
 const Header = () => {
-  const navigate = useNavigate();
+    const navigate = useNavigate();
+    const {user} = useAuthContext();
 
-  return (
-    <div className="fixed top-0 left-0 right-0 z-50 shadow-md bg-base">
-        <div className='flex justify-between top-0 left-0 right-0'>
-          <div className="p-2">
-            <img onClick={() => navigate("/home")} className="ml-7 cursor-pointer" src="/images/logo_primary_base.png" alt="" width={80} />
-          </div>
-            
-            <div dir='rtl' className="content-center space-between">     
-                <button className="w-20 h-7 mr-12 bg-primary rounded-lg shadow-2xl text-white text-sm hover:bg-primaryHover">Sign up</button>
-                <button className="text-black hover:text-white w-20 h-7 mr-5 rounded-lg text-center shadow-2xl text-base hover:bg-primaryHover">Login</button>
+    const goTo = (route) => {
+        navigate(route);
+    };
+
+    return (
+        <div className="fixed top-0 left-0 right-0 z-50 shadow-md bg-base py-3 px-6">
+            <div className="flex justify-between">
+
+                <div className="flex items-center justify-center">
+                    <img
+                        onClick={() => goTo(routes.home)}
+                        className="cursor-pointer w-20"
+                        src="/images/logo_primary_base.png"
+                        alt="Logo"
+                    />
+                </div>
+
+                {/* Condicional para mostrar el UserMenu si el usuario está autenticado o los botones de login/signup */}
+
+                {user ? (
+                    <UserMenu user={user}/> // Muestra el UserMenu si el usuario está autenticado
+                ) : (
+                    <div className="flex items-center gap-4">
+                        <Button type="secondary"
+                                label="Registrarse"
+                                onClick={() => goTo(routes.register)}/>
+
+                        <Button type="primary"
+                                label="Ingresar"
+                                onClick={() => goTo(routes.login)}/>
+                    </div>
+                )}
+
             </div>
-        </div>  
-        
-    </div>
-  )
-}
+        </div>
+    );
+};
 
-export default Header
+export default Header;
