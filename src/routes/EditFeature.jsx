@@ -6,28 +6,42 @@ import { FaKitchenSet } from "react-icons/fa6";
 import { FaPaw } from "react-icons/fa";
 import { FaWaterLadder } from "react-icons/fa6";
 import { FaTv } from "react-icons/fa";
-import { TbTreadmill } from "react-icons/tb";
+import { TbAirConditioning, TbTreadmill } from "react-icons/tb";
 import { TbPawOff } from "react-icons/tb";
 import { Select, MenuItem } from "@mui/material";
 import { useEffect, useState } from "react";
 import { features } from "../utils/fakeData";
 import { useNavigate, useParams } from "react-router-dom";
 import { useToast } from "../contexts/ToastContext";
+import { PiSwimmingPoolFill } from "react-icons/pi";
 
 const EditFeature = () => {
     const [name, setname] = useState();
     const [icon, seticon] = useState("");
     const [currentFeature, setCurrentFeature] = useState();
     const { id } = useParams();
-    const { success } = useToast();
+    const { success, error} = useToast();
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
-        let current = features.find(x => x.id == id);
-        setCurrentFeature(current);
-        setname(current.name);
-        seticon(current.icon);
+        if(id){
+            getFeature()
+        }
     }, [id])
+
+
+    const getFeature = async() => {
+        
+        const response = await fetch(`http://100.29.91.166:8080/roomly-services/api/v1/features/${id}`, {
+            method: 'GET'
+        });
+        const data = await response.json();
+
+        setCurrentFeature(data);
+        setname(data.name);
+        seticon(data.iconName);
+    }
 
 
     const handleChangeName = (e) =>{
@@ -40,21 +54,37 @@ const EditFeature = () => {
         seticon(value);
     }
 
-    const onSave = () => {
+    const onSave = async() => {
         let result = currentFeature;
         result.name = name;
-        result.icon = icon;
+        result.iconName = icon;
 
-        const index = features.findIndex(item => item.id.toString() === id);
-        features[index].name = result.name;
-        features[index].icon = result.icon;
-
-        success("Caracteristica agregada exitosamente");
-        navigate('/administration/feature');
+        try {
+            const response = await fetch(`http://100.29.91.166:8080/roomly-services/api/v1/features/update/${result.id}`, {
+                method: "PUT",
+                body: JSON.stringify(result),
+                headers: {'Content-Type': 'application/json' }
+            })
+            if (!response.ok) {
+                throw new Error(`Response status: ${response.status}`);
+            }
+            success("Caracteristica actualizada exitosamente");
+            navigate('/administration/feature'); 
+        } catch (err) {
+            error("No fue posible actualizar la caracteristica")
+            console.log(err);
+        } finally{
+            setLoading(false)
+        }
     }
 
   return (
     <div>
+        {loading &&
+            <div className="fixed top-1/4 left-1/2 flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+            </div>
+        }
         <div className="lg:col-span-3 lg:px-6">
             <div className="bg-white rounded-xl shadow-lg h-full border border-gray-100 pt-10 pl-16 pb-14">
                 <h2 className="text-xl font-semibold text-gray-700">
@@ -116,6 +146,14 @@ const EditFeature = () => {
 
                         <MenuItem value={"TbPawOff"}>
                         <TbPawOff />
+                        </MenuItem>
+
+                        <MenuItem value={"TbAirConditioning"}>
+                        <TbAirConditioning />
+                        </MenuItem>
+
+                        <MenuItem value={"PiSwimmingPoolFill"}>
+                        <PiSwimmingPoolFill />
                         </MenuItem>
 
                     </Select>                    

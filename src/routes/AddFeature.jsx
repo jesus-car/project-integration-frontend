@@ -5,7 +5,7 @@ import { FaComputer } from "react-icons/fa6";
 import { FaKitchenSet } from "react-icons/fa6";
 import { FaPaw } from "react-icons/fa";
 import { FaWaterLadder } from "react-icons/fa6";
-import { TbTreadmill } from "react-icons/tb";
+import { TbAirConditioning, TbTreadmill } from "react-icons/tb";
 import { TbPawOff } from "react-icons/tb";
 import { Select, MenuItem } from "@mui/material";
 import "../styles/addFeature.css"
@@ -13,6 +13,7 @@ import { useState } from "react";
 import { features } from "../utils/fakeData";
 import { useToast } from "../contexts/ToastContext";
 import { useNavigate } from "react-router-dom";
+import { PiSwimmingPoolFill } from "react-icons/pi";
 
 
 
@@ -20,7 +21,8 @@ const AddFeature = () => {
     const [newname, setnewname] = useState("");
     const [newicon, setnewicon] = useState("");
     const navigate = useNavigate();
-    const { success } = useToast();
+    const { success, error } = useToast();
+    const [loading, setLoading] = useState(false)
 
 
     const handleChangeName = (e) =>{
@@ -32,17 +34,33 @@ const AddFeature = () => {
         let value = e.target.value;
         setnewicon(value);
     }
-    const saveNewFeature =() =>{
-        let newfeature = {
-            id: 6,
-            name: newname,
-            icon: newicon,
-        };
-        console.log(newfeature);
-        features.push(newfeature);
-        success("Caracteristica agregada exitosamente");
-        navigate('/administration/feature');
 
+    const saveNewFeature = async() =>{
+        let newfeature = {
+            name: newname,
+            iconName: newicon,
+            description: ""
+        };
+        setLoading(true);
+        try {
+            const response = await fetch("http://100.29.91.166:8080/roomly-services/api/v1/features/new", {
+                method: "POST",
+                body: JSON.stringify(newfeature),
+                headers: {'Content-Type': 'application/json' }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Response status: ${response.status}`);
+            }
+            success("Caracteristica agregada exitosamente");
+            navigate('/administration/feature'); 
+        } catch (err) {
+            error("No fue posible crear la caracteristica")
+            console.log(err);
+        }finally{
+            setLoading(false)
+        }
+    
     }
 
 
@@ -50,6 +68,11 @@ const AddFeature = () => {
    
   return (
     <div>
+        {loading &&
+            <div className="fixed top-1/4 left-1/2 flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+            </div>
+        }
         <div className="lg:col-span-3 lg:px-6">
             <div className="bg-white rounded-xl shadow-lg h-full border border-gray-100 pt-10 pl-16 pb-14">
                 <h2 className="text-xl font-semibold text-gray-700">
@@ -111,6 +134,14 @@ const AddFeature = () => {
 
                         <MenuItem value={"TbPawOff"}>
                         <TbPawOff />
+                        </MenuItem>
+
+                        <MenuItem value={"TbAirConditioning"}>
+                        <TbAirConditioning />
+                        </MenuItem>
+
+                        <MenuItem value={"PiSwimmingPoolFill"}>
+                        <PiSwimmingPoolFill />
                         </MenuItem>
                         
                     </Select>                    

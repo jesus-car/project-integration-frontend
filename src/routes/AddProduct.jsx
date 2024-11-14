@@ -25,9 +25,10 @@ export default function AddProduct() {
     cityId: 1,
     countryId: 1,
     ownerId: 1,
-    features: []
+    featureIds: []
   });
   const [features, setfeatures] = useState([]);
+  const [listFeatures, setListFeatures] = useState([])
   const [errors, setErrors] = useState({});
   const [previews, setPreviews] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -79,9 +80,23 @@ export default function AddProduct() {
       setIsLoadingCountries(false);
     }
   };
+  
+  const fetchFeatures = async() => {
+    try {
 
+      const response = await fetch('http://100.29.91.166:8080/roomly-services/api/v1/features/all', {
+        method: 'GET'
+      });
+
+      const data = await response.json();
+      setListFeatures(data);
+    } catch (err) {
+      console.error(err);
+      toast.error("No fue posible cargar el listado de caracteristicas")  
+    }
+  }
   useEffect(() => {
-    Promise.all([fetchCategories(), fetchCountries()]);
+    Promise.all([fetchCategories(), fetchCountries(), fetchFeatures()]);
   }, []);
 
   const validateForm = () => {
@@ -190,6 +205,15 @@ export default function AddProduct() {
     }
   };
 
+  const handleFeaturesChange = (features) => {
+    setFormData(prev => ({
+      ...prev,
+      featureIds: features.map((x) => x.id),
+    }));
+
+    setfeatures(features);
+  }
+
   const handleImageChange = e => {
     const files = Array.from(e.target.files);
 
@@ -266,7 +290,6 @@ export default function AddProduct() {
     e.preventDefault();
     setGlobalError('');
     setErrors({});
-    formData.features = features;
 
     if (!validateForm()) {
       toast.error(
@@ -291,6 +314,7 @@ export default function AddProduct() {
         numBathrooms: Number(formData.numBathrooms),
         ownerId: formData.ownerId,
         categoryId: Number(formData.categoryId),
+        featureIds: formData.featureIds
       };
 
       formDataToSend.append('property', JSON.stringify(propertyData));
@@ -301,6 +325,8 @@ export default function AddProduct() {
           formDataToSend.append('images', image);
         }
       });
+
+      console.log(propertyData);
 
       const response = await fetch(
         'http://100.29.91.166:8080/roomly-services/api/v1/properties/new',
@@ -429,6 +455,9 @@ export default function AddProduct() {
             countries={countries}
             isLoadingCountries={isLoadingCountries}
             countriesError={countriesError}
+            handleFeature={handleFeaturesChange}
+            featureValue={features}
+            featureList={listFeatures}
           />
 
           <PropertyPreview
@@ -436,6 +465,7 @@ export default function AddProduct() {
             previews={previews}
             categories={categories}
             countries={countries}
+            features={features}
           />
         </div>
       </div>

@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { GetIcon } from './ListFeature';
 
 export default function PropertyPreview({
   formData,
   previews,
   categories = [],
   countries = [],
+  features = []
 }) {
   const [activeImage, setActiveImage] = useState(formData.mainImage || 0);
 
@@ -299,6 +301,21 @@ export default function PropertyPreview({
                           {locationInfo.address}
                         </span>
                       </div>
+                    </div>
+                  </div>
+                  <div className='ml-9 mr-9 flex flex-col'>
+                    <h4 className="font-semibold text-gray-700 mb-2 ">
+                      Caracteristicas
+                    </h4>
+                    <div className='flex grid grid-cols-2 gap-4'>
+                      {features.map((feature) => 
+                        <div className='flex gap-x-9' key={feature.id}>
+                          <div className='flex items-center gap-x-5'>
+                            {GetIcon(feature.iconName)}
+                            {feature.name}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

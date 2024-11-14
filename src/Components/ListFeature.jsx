@@ -4,13 +4,11 @@ import * as TbContainer from "react-icons/tb";
 import * as PiContainer from "react-icons/pi";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { features } from "../utils/fakeData";
-import { useToast } from "../contexts/ToastContext";
 
 
 export const GetIcon = (name) => {
     let content = name.substring(0, 2)
-    let ResultContent = <></>;
+    let ResultContent = <div></div>;
     
     switch (content) {
         case "Gi":
@@ -29,12 +27,11 @@ export const GetIcon = (name) => {
     return <ResultContent />
 }
 
-const ListFeature = () => {
+const ListFeature = ({features = [], onDeleteFeature}) => {
 
     const navigate = useNavigate();
     const [showDeleteModal, setShowDeleteModal] = useState(false); 
     const [currentDelete, setCurrentDelete] = useState();
-    const {success} = useToast();
 
     const handleEdit = (featureId) => {
         navigate(`/administration/edit-feature/${featureId}`);
@@ -43,10 +40,8 @@ const ListFeature = () => {
     
     const onDelete = () => {
         if(currentDelete){
-            let featureIndex = features.findIndex(x => x.id == currentDelete);
-            features.splice(featureIndex, 1);
+            onDeleteFeature(currentDelete);
             setShowDeleteModal(false);
-            success("Caracteristica eliminada exitosamente")
         }
     }
 
@@ -80,43 +75,43 @@ const ListFeature = () => {
         <div>
             <div className="overflow-x-auto">
             <h1 className="text-3xl font-bold mb-6">Caracteristicas</h1>
-                <table className="min-w-full bg-white">
-                    
-                <thead className="bg-gray-50">
-                    <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Icono
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Nombre
-                    </th>
-                    </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                    {features.map((feature) => (
-                    <tr key={feature.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap">
-                            {GetIcon(feature.icon)}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">{feature.name}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm">
-                        <button
-                            onClick={() => handleEdit(feature.id)}
-                            className="text-indigo-600 hover:text-indigo-900 mr-4"
-                        >
-                            Editar
-                        </button>
-                        <button
-                            onClick={() => {setShowDeleteModal(true); setCurrentDelete(feature.id)}}
-                            className="text-red-600 hover:text-red-900"
-                        >
-                            Eliminar
-                        </button>
-                        </td>
-                    </tr>
-                    ))}
-                </tbody>
-                </table>
+            <table className="min-w-full bg-white">
+                
+            <thead className="bg-gray-50">
+                <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Icono
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Nombre
+                </th>
+                </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+                {features.map((feature) => (
+                <tr key={feature.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                        {GetIcon(feature.iconName)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">{feature.name}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    <button
+                        onClick={() => handleEdit(feature.id)}
+                        className="text-indigo-600 hover:text-indigo-900 mr-4"
+                    >
+                        Editar
+                    </button>
+                    <button
+                        onClick={() => {setShowDeleteModal(true); setCurrentDelete(feature.id)}}
+                        className="text-red-600 hover:text-red-900"
+                    >
+                        Eliminar
+                    </button>
+                    </td>
+                </tr>
+                ))}
+            </tbody>
+            </table>
         </div>
         {showDeleteModal && <DeleteConfirmationModal/>}
         </div>
