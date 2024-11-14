@@ -8,4 +8,7 @@ export const routes = {
     details: '/properties/:id',
     favs: '/favs',
     notFound: '*',
+    login: '/login',
+    register: '/register',
+    forbidden: '/forbidden',
 }
