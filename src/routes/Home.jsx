@@ -1,16 +1,13 @@
 import { useEffect, useState } from 'react';
-// import PropertyCard from '../Components/PropertyCard.jsx';
+import PropertyCard from '../Components/PropertyCard';
 import { propertyService } from '../services/propertyService';
 import Searcher from '../Components/Searcher';
 import CategoryHomeCard from '../Components/CategoryHomeCard';
 import Spinner from '../Components/Spinner';
-import { choiceRandomNFromList } from '../utils/utils';
 
 const Home = () => {
   const [loadingProperties, setLoadingProperties] = useState(true);
-
-  const [properties, setProperties] = useState([]);
-
+  const [properties, setProperties] = useState({ content: [] });
   const [recommendedProperties, setRecommendedProperties] = useState([]);
 
   const categories = [
@@ -40,23 +37,34 @@ const Home = () => {
     },
   ];
 
+  // Función auxiliar para obtener elementos aleatorios de un array
+  const getRandomItems = (array, count) => {
+    const shuffled = [...array].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, count);
+  };
+
   useEffect(() => {
-    propertyService
-      .getFilteredProperties(10)
-      .then(properties => {
-        setProperties(properties);
-        setRecommendedProperties(choiceRandomNFromList(properties, 4));
+    const fetchProperties = async () => {
+      try {
+        // Obtener 8 propiedades para la sección principal
+        const response = await propertyService.getFilteredProperties({}, 0, 8);
+        setProperties(response);
+        
+        // Seleccionar 4 propiedades aleatorias para recomendados
+        if (response.content && response.content.length > 0) {
+          const randomProperties = getRandomItems(response.content, 4);
+          setRecommendedProperties(randomProperties);
+        }
+      } catch (error) {
+        console.error('Error en Home:', error);
+      } finally {
         setTimeout(() => {
           setLoadingProperties(false);
         }, 1000);
-      })
-      .catch(error => {
-        console.error('Error en Home:', error);
-        setLoadingProperties(false);
-        setTimeout(() => {
-          setLoadingProperties(false);
-        }, 2000);
-      });
+      }
+    };
+
+    fetchProperties();
   }, []);
 
   return (
@@ -76,9 +84,24 @@ const Home = () => {
             <Spinner />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-5 gap-y-10">
-              {/* {properties.map(property => (
-              <PropertyCard key={property.id} property={property} />
-            ))} */}
+              {properties.content?.map(property => (
+                <div key={property.id} className="h-full">
+                  <PropertyCard 
+                    property={{
+                      ...property,
+                      images: [property.mainPhotoUrl, ...(property.photoUrls || [])],
+                      price: property.pricePerNight,
+                      title: property.name,
+                      location: `ID Ciudad: ${property.cityId}`, // Esto deberías cambiarlo cuando tengas el nombre de la ciudad
+                      features: {
+                        rooms: property.numRooms,
+                        bathrooms: property.numBathrooms,
+                        capacity: property.maxCapacity
+                      }
+                    }} 
+                  />
+                </div>
+              ))}
             </div>
           )}
         </section>
@@ -135,9 +158,24 @@ const Home = () => {
             <Spinner />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-5 gap-y-10">
-              {/* {recommendedProperties.map(property => (
-              <PropertyCard key={property.id} property={property} />
-            ))} */}
+              {recommendedProperties.map(property => (
+                <div key={property.id} className="h-full">
+                  <PropertyCard 
+                    property={{
+                      ...property,
+                      images: [property.mainPhotoUrl, ...(property.photoUrls || [])],
+                      price: property.pricePerNight,
+                      title: property.name,
+                      location: `ID Ciudad: ${property.cityId}`, // Esto deberías cambiarlo cuando tengas el nombre de la ciudad
+                      features: {
+                        rooms: property.numRooms,
+                        bathrooms: property.numBathrooms,
+                        capacity: property.maxCapacity
+                      }
+                    }}
+                  />
+                </div>
+              ))}
             </div>
           )}
         </section>

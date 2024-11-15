@@ -1,16 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import PropertyCard from '../Components/PropertyCard';
 import { filterProperties } from '../services/propertyService';
-import { FaChevronLeft, FaChevronRight, FaSearch } from 'react-icons/fa';
+import { locationService } from '../services/locationService';
+import { categoryService } from '../services/categoryService';
+import { FaChevronLeft, FaChevronRight, FaSearch, FaTimes } from 'react-icons/fa';
 
 const Properties = () => {
     const location = useLocation();
+    const navigate = useNavigate();
     const { appliedFilters } = location.state || {};
     
     const [currentPage, setCurrentPage] = useState(0);
     const [properties, setProperties] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [totalProperties, setTotalProperties] = useState(0);
+    const [locationNames, setLocationNames] = useState({});
+    const [categoryNames, setCategoryNames] = useState({});
 
     const fetchProperties = async (page) => {
         setLoading(true);
@@ -23,9 +29,70 @@ const Properties = () => {
         fetchProperties(currentPage);
     }, [currentPage, appliedFilters]);
 
+    useEffect(() => {
+        const fetchTotalProperties = async () => {
+            const results = await filterProperties({}, 0, 1);
+            setTotalProperties(results.totalElements);
+        };
+        fetchTotalProperties();
+    }, []);
+
+    useEffect(() => {
+        const fetchNames = async () => {
+            try {
+                // Obtener países y ciudades
+                const countries = await locationService.getAllCountries();
+                const locations = {};
+                countries.forEach(country => {
+                    locations[country.id] = {
+                        countryName: country.name,
+                        cities: Object.fromEntries(
+                            country.cities.map(city => [city.id, city.name])
+                        )
+                    };
+                });
+                setLocationNames(locations);
+
+                // Obtener categorías
+                const categories = await categoryService.getAllCategories();
+                setCategoryNames(
+                    Object.fromEntries(
+                        categories.map(cat => [cat.id, cat.name])
+                    )
+                );
+            } catch (error) {
+                console.error('Error fetching names:', error);
+            }
+        };
+
+        fetchNames();
+    }, []);
+
     const handlePageChange = (newPage) => {
         setCurrentPage(newPage);
         window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const handleClearFilters = () => {
+        navigate('/properties', { state: { appliedFilters: {} } });
+    };
+
+    const getFilterLabel = (key, value) => {
+        if (!value) return '';
+        
+        switch (key) {
+            case 'countryId':
+                return locationNames[value]?.countryName || `País: ${value}`;
+            case 'cityId':
+                const country = Object.values(locationNames).find(
+                    country => country.cities[value]
+                );
+                return country?.cities[value] || `Ciudad: ${value}`;
+            case 'categoryId':
+                return categoryNames[value] || `Categoría: ${value}`;
+            default:
+                return `${key}: ${value}`;
+        }
     };
 
     if (loading) {
@@ -48,24 +115,64 @@ const Properties = () => {
             {properties?.content ? (
                 <>
                     <div className="bg-white rounded-xl shadow-md p-6 mb-8">
-                        <div className="flex items-center gap-3 text-gray-600">
-                            <FaSearch className="text-primary text-xl" />
-                            <div>
-                                
-                                <h2 className="text-2xl font-bold text-gray-800">
-                                    {properties.totalElements} propiedades encontradas
-                                </h2>
-                                <p className="text-sm mt-1">
-                                    Mostrando página {currentPage + 1} de {properties.totalPages}
-                                </p>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3 text-gray-600">
+                                <FaSearch className="text-primary text-xl" />
+                                <div>
+                                    <h2 className="text-2xl font-bold text-gray-800">
+                                        {properties.totalElements} propiedades encontradas
+                                    </h2>
+                                    <p className="text-sm mt-1">
+                                        de un total de {totalProperties} propiedades
+                                    </p>
+                                </div>
                             </div>
+                            
+                            {Object.keys(appliedFilters || {}).length > 0 && (
+                                <button
+                                    onClick={handleClearFilters}
+                                    className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
+                                >
+                                    <FaTimes />
+                                    Limpiar filtros
+                                </button>
+                            )}
                         </div>
+
+                        {Object.keys(appliedFilters || {}).length > 0 && (
+                            <div className="mt-4 flex flex-wrap gap-2">
+                                {Object.entries(appliedFilters).map(([key, value]) => (
+                                    value && (
+                                        <span 
+                                            key={key} 
+                                            className="inline-flex items-center gap-1 px-3 py-1 bg-primary/10 text-primary rounded-full text-sm"
+                                        >
+                                            {getFilterLabel(key, value)}
+                                        </span>
+                                    )
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                         {properties.content.map(property => (
                             <div key={property.id} className="h-full">
-                                <PropertyCard property={property} />
+                                <PropertyCard 
+                                    property={{
+                                        ...property,
+                                        images: [property.mainPhotoUrl, ...(property.photoUrls || [])],
+                                        price: property.pricePerNight,
+                                        title: property.name,
+                                        location: locationNames[property.countryId]?.cities[property.cityId] || 
+                                                `${locationNames[property.countryId]?.countryName || ''}, Ciudad ID: ${property.cityId}`,
+                                        features: {
+                                            rooms: property.numRooms,
+                                            bathrooms: property.numBathrooms,
+                                            capacity: property.maxCapacity
+                                        }
+                                    }}
+                                />
                             </div>
                         ))}
                     </div>

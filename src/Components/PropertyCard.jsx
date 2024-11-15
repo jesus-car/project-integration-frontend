@@ -27,10 +27,10 @@ const PropertyCard = ({ property }) => {
                             </h3>
                         </div>
                         
-                        <div className="flex items-center text-gray-600 text-sm mb-3">
+                        {/* <div className="flex items-center text-gray-600 text-sm mb-3">
                             <FaMapMarkerAlt className="text-primary mr-1" />
                             <span>Argentina, Buenos Aires</span>
-                        </div>
+                        </div> */}
                         
                         <p className="text-gray-600 text-sm mb-4 line-clamp-2">
                             {property.description}
