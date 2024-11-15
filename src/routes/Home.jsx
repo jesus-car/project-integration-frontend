@@ -1,16 +1,13 @@
 import { useEffect, useState } from 'react';
-import PropertyCard from '../Components/PropertyCard.jsx';
+import PropertyCard from '../Components/PropertyCard';
 import { propertyService } from '../services/propertyService';
 import Searcher from '../Components/Searcher';
 import CategoryHomeCard from '../Components/CategoryHomeCard';
 import Spinner from '../Components/Spinner';
-import { choiceRandomNFromList } from '../utils/utils';
 
 const Home = () => {
   const [loadingProperties, setLoadingProperties] = useState(true);
-
-  const [properties, setProperties] = useState([]);
-
+  const [properties, setProperties] = useState({ content: [] });
   const [recommendedProperties, setRecommendedProperties] = useState([]);
 
   const categories = [
@@ -37,112 +34,153 @@ const Home = () => {
     {
       name: 'Isla',
       img: 'https://a0.muscache.com/im/pictures/miso/Hosting-899107319521368227/original/597eefed-5e88-4b41-9d05-85793e765936.jpeg?im_w=720',
-    }
+    },
   ];
 
+  // Función auxiliar para obtener elementos aleatorios de un array
+  const getRandomItems = (array, count) => {
+    const shuffled = [...array].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, count);
+  };
+
   useEffect(() => {
-    propertyService
-      .getFilteredProperties(10)
-      .then(properties => {
-        setProperties(properties);
-        setRecommendedProperties(choiceRandomNFromList(properties, 4));
+    const fetchProperties = async () => {
+      try {
+        // Obtener 8 propiedades para la sección principal
+        const response = await propertyService.getFilteredProperties({}, 0, 8);
+        setProperties(response);
+        
+        // Seleccionar 4 propiedades aleatorias para recomendados
+        if (response.content && response.content.length > 0) {
+          const randomProperties = getRandomItems(response.content, 4);
+          setRecommendedProperties(randomProperties);
+        }
+      } catch (error) {
+        console.error('Error en Home:', error);
+      } finally {
         setTimeout(() => {
           setLoadingProperties(false);
         }, 1000);
-      })
-      .catch(error => {
-        console.error('Error en Home:', error);
-        setLoadingProperties(false);
-        setTimeout(() => {
-          setLoadingProperties(false);
-        }, 2000);
-      });
+      }
+    };
+
+    fetchProperties();
   }, []);
 
   return (
-    <div className="lg:mx-24 md:mx-14 mx-10">
-      <div className="mt-5">
-        <Searcher />
-        
-      </div>
+    <>
+      <Searcher />
+      <div className="lg:mx-24 md:mx-14 mx-10">
+        <div className="mt-5"></div>
 
-      <section>
-        <div className="py-5">
-          <p className="font-semibold text-2xl mb-2">
-            Conoce nuestras casas y fincas vacacionales
-          </p>
-          <p>Planea tu alojamiento perfecto</p>
-        </div>
-        {loadingProperties ? (
-          <Spinner />
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-5 gap-y-10">
-            {properties.map(property => (
-              <PropertyCard key={property.id} property={property} />
-            ))}
+        <section>
+          <div className="py-5">
+            <p className="font-semibold text-2xl mb-2">
+              Conoce nuestras casas y fincas vacacionales
+            </p>
+            <p>Planea tu alojamiento perfecto</p>
           </div>
-        )}
-      </section>
-
-      <section>
-        <div className="py-5">
-          <p className="font-semibold text-2xl mb-2">
-            Conoce nuestras categorías
-          </p>
-          <p>Escoge tu tipo de alojamiento ideal</p>
-        </div>
-
-        {loadingProperties ? (
-          <Spinner />
-        ) : (
-          <div>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-y-2 lg:gap-4">
-              <div className="h-auto bg-primary rounded-lg p-5 flex flex-col justify-center gap-5 lg:gap-16 col-span-1">
-                <p className="text-2xl md:text-3xl lg:text-4xl font-semibold">
-                  Los mejores alojamientos
-                </p>
-                <p>
-                  Sabemos que cada persona es diferente, por eso te ofrecemos
-                  una amplia variedad de alojamientos para que puedas escoger el
-                  que más se adapte a tus necesidades y así disfrutar de una
-                  experiencia única.
-                  <br/>
-                  <br/>
-                  En la sección de filtros podrás seleccionar una o varias
-                  categorías para encontrar el alojamiento perfecto para ti.
-                </p>
-              </div>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4 col-span-2">
-                {categories.map(category => (
-                  <CategoryHomeCard
-                    key={category.name}
-                    img={category.img}
-                    category={category.name}
+          {loadingProperties ? (
+            <Spinner />
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-5 gap-y-10">
+              {properties.content?.map(property => (
+                <div key={property.id} className="h-full">
+                  <PropertyCard 
+                    property={{
+                      ...property,
+                      images: [property.mainPhotoUrl, ...(property.photoUrls || [])],
+                      price: property.pricePerNight,
+                      title: property.name,
+                      location: `ID Ciudad: ${property.cityId}`, // Esto deberías cambiarlo cuando tengas el nombre de la ciudad
+                      features: {
+                        rooms: property.numRooms,
+                        bathrooms: property.numBathrooms,
+                        capacity: property.maxCapacity
+                      }
+                    }} 
                   />
-                ))}
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+
+        <section>
+          <div className="py-5">
+            <p className="font-semibold text-2xl mb-2">
+              Conoce nuestras categorías
+            </p>
+            <p>Escoge tu tipo de alojamiento ideal</p>
+          </div>
+
+          {loadingProperties ? (
+            <Spinner />
+          ) : (
+            <div>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-y-2 lg:gap-4">
+                <div className="h-auto bg-primary rounded-lg p-5 flex flex-col justify-center gap-5 lg:gap-16 col-span-1">
+                  <p className="text-2xl md:text-3xl lg:text-4xl font-semibold">
+                    Los mejores alojamientos
+                  </p>
+                  <p>
+                    Sabemos que cada persona es diferente, por eso te ofrecemos
+                    una amplia variedad de alojamientos para que puedas escoger
+                    el que más se adapte a tus necesidades y así disfrutar de
+                    una experiencia única.
+                    <br />
+                    <br />
+                    En la sección de filtros podrás seleccionar una o varias
+                    categorías para encontrar el alojamiento perfecto para ti.
+                  </p>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4 col-span-2">
+                  {categories.map(category => (
+                    <CategoryHomeCard
+                      key={category.name}
+                      img={category.img}
+                      category={category.name}
+                    />
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
-        )}
-      </section>
+          )}
+        </section>
 
-      <section>
-        <div className="py-5">
-          <p className="font-semibold text-2xl mb-2">Nuestros recomendados</p>
-          <p>Te presentamos nuestras mejores opciones</p>
-        </div>
-
-        {loadingProperties ? (
-          <Spinner />
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-5 gap-y-10">
-            {recommendedProperties.map(property => (
-              <PropertyCard key={property.id} property={property} />
-            ))}
+        <section>
+          <div className="py-5">
+            <p className="font-semibold text-2xl mb-2">Nuestros recomendados</p>
+            <p>Te presentamos nuestras mejores opciones</p>
           </div>
-        )}
-      </section>
-    </div>
+
+          {loadingProperties ? (
+            <Spinner />
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-5 gap-y-10">
+              {recommendedProperties.map(property => (
+                <div key={property.id} className="h-full">
+                  <PropertyCard 
+                    property={{
+                      ...property,
+                      images: [property.mainPhotoUrl, ...(property.photoUrls || [])],
+                      price: property.pricePerNight,
+                      title: property.name,
+                      location: `ID Ciudad: ${property.cityId}`, // Esto deberías cambiarlo cuando tengas el nombre de la ciudad
+                      features: {
+                        rooms: property.numRooms,
+                        bathrooms: property.numBathrooms,
+                        capacity: property.maxCapacity
+                      }
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      </div>
+    </>
   );
 };
 

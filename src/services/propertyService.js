@@ -4,10 +4,38 @@ import {detail, properties} from "../utils/fakeData.js";
 import {choiceRandomNFromList} from "../utils/utils.js";
 
 const API_URL = "https://api.example.com/properties";
+const BASE_URL = 'http://100.29.91.166:8080/roomly-services/api/v1';
+
+export const filterProperties = async (filters = {}, page = 0, size = 10) => {
+    try {
+        const response = await fetch(
+            `${BASE_URL}/properties/filter?page=${page}&size=${size}`,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    cityId: filters.cityId ? parseInt(filters.cityId) : null,
+                    countryId: filters.countryId ? parseInt(filters.countryId) : null,
+                    categoryId: filters.categoryId ? parseInt(filters.categoryId) : null
+                })
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error('Error al obtener las propiedades');
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('Error en propertyService:', error);
+        throw error;
+    }
+};
 
 export const propertyService = {
-    getProperties,
-    getFilteredProperties,
+    getFilteredProperties: filterProperties,
     getPropertyById,
     createProperty,
     updateProperty,
@@ -15,91 +43,64 @@ export const propertyService = {
     getPaginatedProperties
 };
 
-async function getProperties() {
-    // todo
-    return properties
-    /*
+async function getPropertyById(id) {
     try {
-        const response = await fetch(API_URLS.PROPERTIES);
-        if (!response.ok) {
-            throw new Error("Error al obtener propiedades");
-        }
+        const response = await fetch(`${BASE_URL}/properties/${id}`);
+        if (!response.ok) throw new Error('Error al obtener la propiedad');
         return await response.json();
     } catch (error) {
-        console.error("Error en getProperties:", error);
-        throw error;
-    }*/
-};
-
-async function getFilteredProperties(n) {
-    // todo
-    return choiceRandomNFromList(properties, n)
-
-    /*
-    try {
-        const response = await fetch(API_URLS.FILTERED_PROPERTIES+'?size='+n);
-        if (!response.ok) {
-            throw new Error("Error al obtener propiedades");
-        }
-        return await response.json()
-    } catch (error) {
-        console.error("Error en getFilteredProperties:", error);
+        console.error('Error:', error);
         throw error;
     }
-
-     */
-
-};
-
-async function getPropertyById(id) {
-    // todo
-    let property = properties.find(x => x.id == id);
-
-    detail.title = property.name;
-    detail.imgPrincipal = property.images[0];
-    detail.city = property.city;
-    detail.country = property.country;
-    detail.description = property.description;
-    detail.price = property.pricePerNight;
-    detail.features = property.features ?? []; 
-
-
-    return detail;
-};
-
-async function createProperty(property) {
-    const newProperty = { id: Date.now(), ...property };
-    properties.push(newProperty);
-    return newProperty;
 }
 
-async function updateProperty(id, updatedProperty) {
-    const index = properties.findIndex(x => x.id === id);
-    if (index !== -1) {
-        properties[index] = { ...properties[index], ...updatedProperty };
-        return properties[index];
+async function createProperty(property) {
+    try {
+        const response = await fetch(`${BASE_URL}/properties`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(property)
+        });
+        if (!response.ok) throw new Error('Error al crear la propiedad');
+        return await response.json();
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
     }
-    throw new Error("Propiedad no encontrada");
+}
+
+async function updateProperty(id, property) {
+    try {
+        const response = await fetch(`${BASE_URL}/properties/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(property)
+        });
+        if (!response.ok) throw new Error('Error al actualizar la propiedad');
+        return await response.json();
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
+    }
 }
 
 async function deleteProperty(id) {
-    const index = properties.findIndex(x => x.id === id);
-    if (index !== -1) {
-        const deletedProperty = properties.splice(index, 1)[0];
-        return deletedProperty;
+    try {
+        const response = await fetch(`${BASE_URL}/properties/${id}`, {
+            method: 'DELETE'
+        });
+        if (!response.ok) throw new Error('Error al eliminar la propiedad');
+        return await response.json();
+    } catch (error) {
+        console.error('Error:', error);
+        throw error;
     }
-    throw new Error("Propiedad no encontrada");
 }
 
-async function getPaginatedProperties(page = 1, limit = 10) {
-    const startIndex = (page - 1) * limit;
-    const endIndex = page * limit;
-    const paginatedProperties = properties.slice(startIndex, endIndex);
-    
-    return {
-        total: properties.length,
-        page,
-        totalPages: Math.ceil(properties.length / limit),
-        properties: paginatedProperties,
-    };
+async function getPaginatedProperties(page = 0, size = 10) {
+    return filterProperties({}, page, size);
 }
