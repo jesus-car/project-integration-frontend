@@ -1,30 +1,57 @@
 import { Link, useLocation } from 'react-router-dom';
 import { FaHome, FaList, FaPlusCircle, FaUsers, FaCog, FaSignOutAlt } from 'react-icons/fa';
 import { routes } from '../utils/routes';
+import {useAuthContext} from "../contexts/AuthContext.jsx";
+import {userHasAccess} from "../utils/utils.js";
+import { Icon } from '@mui/material';
 
 const Sidebar = () => {
   const location = useLocation();
 
-  const menuItems = [
+  const { user } = useAuthContext();
+
+  let menuItems = [
     {
       title: 'Dashboard',
       path: '/administration',
       icon: FaHome
     },
     {
-      title: 'Propiedades',
+      title: 'Todas las propiedades',
       path: '/administration/properties',
-      icon: FaList
+      icon: FaList,
+      requiredRoles: ['ROLE_ADMIN']
     },
+      /*
+    {
+      title: 'Mis propiedades',
+      path: '/administration/my-properties',
+      icon: FaList,
+      requiredRoles: ['ROLE_OWNER']
+    },
+       */
     {
       title: 'Agregar Propiedad',
       path: '/administration/add-property',
       icon: FaPlusCircle
     },
     {
+      title:'Carasteristicas',
+      path:'/administration/feature',
+      icon: FaList
+
+    },
+    {
+      title: 'Administrar Caracteristicas',
+      path: '/administration/add-feature',
+      icon: FaPlusCircle
+    },
+
+    {
       title: 'Usuarios',
       path: '/administration/users',
-      icon: FaUsers
+      icon: FaUsers,
+      requiredRoles: ['ROLE_ADMIN']
     },
     {
       title: 'Configuración',
@@ -32,6 +59,10 @@ const Sidebar = () => {
       icon: FaCog
     }
   ];
+
+  const allowedRoutes = menuItems.filter(item => {
+    return userHasAccess(user, item.requiredRoles)
+  });
 
   return (
     <div className="bg-gray-900 text-white h-screen fixed left-0 w-64">
@@ -43,7 +74,7 @@ const Sidebar = () => {
       {/* Menú de navegación */}
       <nav className="mt-6">
         <div className="px-4 space-y-2">
-          {menuItems.map((item, index) => {
+          {allowedRoutes.map((item, index) => {
             const isActive = location.pathname === item.path;
             const Icon = item.icon;
 

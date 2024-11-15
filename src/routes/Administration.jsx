@@ -6,6 +6,12 @@ import AddProduct from './AddProduct';
 import Toast from '../Components/Toast';
 import { useState, useEffect } from 'react';
 import EditProduct from './EditProduct';
+import AddFeature from './AddFeature';
+import Features from './Features';
+import EditFeature from './EditFeature';
+import ListFeature from '../Components/ListFeature';
+import Users from "./Users.jsx";
+import ProtectedRoutes from "./ProtectedRoutes.jsx";
 
 const Administration = () => {
   const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 1025);
@@ -103,15 +109,17 @@ const Administration = () => {
               }
             />
             <Route path="/add-property" element={<AddProduct />} />
-            <Route
-              path="/users"
-              element={
+
+            <Route element={<ProtectedRoutes allowedRoles={['ROLE_ADMIN']} />}>
+              <Route path="/users" element={
                 <div>
                   <h1 className="text-3xl font-bold mb-6">Usuarios</h1>
-                  {/* Contenido de usuarios */}
+                  <Users />
                 </div>
-              }
-            />
+              } />
+            </Route>
+
+
             <Route
               path="/settings"
               element={
@@ -122,6 +130,14 @@ const Administration = () => {
               }
             />
             <Route path="/edit-product/:productId" element={<EditProduct />} />
+
+            <Route path='/add-feature' element={<AddFeature/>}>
+
+            </Route>
+            <Route path='/feature' element={<Features/>}>
+            </Route>
+            <Route path='/edit-feature/:id' element={<EditFeature/>}></Route>
+
           </Routes>
         </div>
       </div>

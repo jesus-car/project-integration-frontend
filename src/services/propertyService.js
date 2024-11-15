@@ -55,6 +55,7 @@ async function getPropertyById(id) {
     detail.country = property.country;
     detail.description = property.description;
     detail.price = property.pricePerNight;
+    detail.features = property.features ?? []; 
 
     return detail;
 }

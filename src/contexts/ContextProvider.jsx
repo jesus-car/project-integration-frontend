@@ -1,12 +1,16 @@
-import React from 'react'
-import { ThemeProvider } from "./ThemeContext.jsx";
-import { AuthProvider } from "./AuthContext.jsx";
+import {ThemeProvider} from "./ThemeContext.jsx";
+import {AuthProvider} from "./AuthContext.jsx";
+import {ToastProvider} from "./ToastContext.jsx";
 
-const ContextProvider =  ({ children }) => {
+const ContextProvider = ({children}) => {
     return (
-        <AuthProvider>
-            <ThemeProvider>{children}</ThemeProvider>
-        </AuthProvider>
+        <ToastProvider>
+            <AuthProvider>
+                <ThemeProvider>
+                    {children}
+                </ThemeProvider>
+            </AuthProvider>
+        </ToastProvider>
     );
 }
 
