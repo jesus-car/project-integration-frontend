@@ -11,6 +11,7 @@ import {ProductProvider} from './context/ProductContext';
 import Login from "./routes/Login.jsx";
 import ProtectedRoutes from "./routes/ProtectedRoutes.jsx";
 import Forbidden from "./routes/Forbidden.jsx";
+import RegistrerUser from './Components/RegistrerUser.jsx';
 
 export default function App() {
     const location = useLocation();
@@ -35,7 +36,7 @@ export default function App() {
                     <div className={`flex-grow ${!shouldHideLayout ? 'pt-20' : ''}`}>
                         <Routes>
                             <Route path={routes.login} element={<Login/>}/>
-                            <Route path={routes.register} element={<div className="text-center">Página de registro</div>}/>
+                            <Route path={routes.register} element={<RegistrerUser/>}/>
                             <Route path={routes.home} element={<Home/>}/>
                             <Route path={routes.base} element={<Home/>}/>
                             <Route path={routes.properties} element={<PropertiesList/>}/>
