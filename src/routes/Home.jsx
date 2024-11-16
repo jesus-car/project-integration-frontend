@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import PropertyCard from '../Components/PropertyCard';
 import { propertyService } from '../services/propertyService';
-import Searcher from '../Components/Searcher';
 import CategoryHomeCard from '../Components/CategoryHomeCard';
 import Spinner from '../Components/Spinner';
+import HeroSection from '../Components/HeroSection';
 
 const Home = () => {
   const [loadingProperties, setLoadingProperties] = useState(true);
@@ -69,7 +69,7 @@ const Home = () => {
 
   return (
     <>
-      <Searcher />
+      <HeroSection />
       <div className="lg:mx-24 md:mx-14 mx-10">
         <div className="mt-5"></div>
 
