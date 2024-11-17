@@ -17,6 +17,7 @@ const HeroSection = () => {
   const [countries, setCountries] = useState([]);
   const [cities, setCities] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [backgroundImage, setBackgroundImage] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -72,19 +73,34 @@ const HeroSection = () => {
     }
   };
 
+  const imageUrls = [
+    "https://images.unsplash.com/photo-1482192505345-5655af888cc4?q=80&w=1856&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "https://images.unsplash.com/photo-1541420937988-702d78cb9fa1?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "https://images.unsplash.com/photo-1590695577457-48bd93c13f84?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "https://images.unsplash.com/photo-1587061949409-02df41d5e562?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "https://images.unsplash.com/photo-1700769025506-6c3dcb9ec9b7?q=80&w=1964&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "https://images.unsplash.com/photo-1531302271066-91cdfbac3508?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  ];
+
+  useEffect(() => {
+    const randomImage = imageUrls[Math.floor(Math.random() * imageUrls.length)];
+    setBackgroundImage(randomImage);
+  }, []);
+
   return (
     <div className="w-full h-screen relative overflow-hidden">
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat transform scale-105"
-        style={{
-          backgroundImage:
-            "url('https://images.unsplash.com/photo-1449158743715-0a90ebb6d2d8?q=80&w=2070&auto=format&fit=crop')",
-          transform: 'scale(1.1)',
-
-        }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-black/60"></div>
-      </div>
+      {backgroundImage && (
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat transform scale-105"
+          style={{
+            backgroundImage: `url('${backgroundImage}')`,
+            transform: "scale(1.1)",
+          }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-black/60"></div>
+        </div>
+      )}
 
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
