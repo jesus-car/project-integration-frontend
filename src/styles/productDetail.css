@@ -1,6 +1,8 @@
 .detail-img{
     display: grid;
     grid-template-columns: 1fr 1fr;
+    position: relative;
+    gap: 8px;
 }
 
 @media (max-width: 500px){
@@ -107,4 +109,321 @@
       margin-top: 10px;
     }
   }
+  
+.leaflet-container {
+    width: 100% !important;
+    height: 100% !important;
+    z-index: 1;
+    background-color: rgb(239, 239, 239);
+}
+
+.map-container {
+    height: 400px;
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+}
+
+.leaflet-tile-pane {
+    z-index: 1;
+}
+
+.leaflet-control-container {
+    z-index: 2;
+}
+
+/* Estilos para los inputs de fecha */
+.react-datepicker-wrapper {
+    width: 100%;
+}
+
+.react-datepicker__input-container input {
+    width: 100%;
+    padding: 8px;
+    border: none;
+    outline: none;
+}
+
+/* Estilos para el contenedor sticky */
+.sticky {
+    position: sticky;
+    top: 24px;
+}
+
+/* Ajustes para el modal en dispositivos móviles */
+@media (max-width: 768px) {
+    .MuiModal-root .MuiBox-root {
+        width: 95% !important;
+        margin: 0 auto;
+        padding: 16px !important;
+    }
+}
+
+/* Mejoras para la galería de imágenes en el modal */
+.modal-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+    padding: 16px;
+}
+
+.modal-gallery-grid img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.img-prin {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.img-secun {
+    width: 100%;
+    height: 196px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.more-img {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    z-index: 10;
+}
+
+/* Estilos para el mapa */
+.leaflet-container {
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+/* Estilos para el modal */
+.MuiModal-root {
+    z-index: 1300;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 8px;
+    padding: 24px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container-detail {
+        margin: 0 16px;
+    }
+
+    .detail-img {
+        grid-template-columns: 1fr;
+    }
+
+    .img-prin {
+        height: 300px;
+    }
+
+    .img-secun {
+        height: 150px;
+    }
+}
+
+/* Nuevos estilos para las características */
+.feature-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.75rem;
+    background-color: #f7f7f7;
+    color: #222222;
+}
+
+.feature-icon svg {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.feature-item {
+    transition: all 0.2s ease;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+}
+
+.feature-item:hover {
+    background-color: #f7f7f7;
+}
+
+/* Colores consistentes */
+.text-gray-900 {
+    color: #222222;
+}
+
+.text-gray-700 {
+    color: #484848;
+}
+
+.text-gray-600 {
+    color: #717171;
+}
+
+.text-gray-500 {
+    color: #8f8f8f;
+}
+
+/* Espaciado y bordes */
+.border-b {
+    border-color: #ebebeb;
+}
+
+/* Sombras suaves */
+.shadow-lg {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.shadow-sm {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+/* Mejoras en el mapa */
+.map-container {
+    border: 1px solid #ebebeb;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+/* Estilos para los botones */
+button {
+    transition: all 0.2s ease;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+/* Mejoras en la tipografía */
+h1, h2, h3 {
+    letter-spacing: -0.025em;
+}
+
+p {
+    line-height: 1.5;
+}
+
+/* Consistencia en los iconos */
+svg {
+    flex-shrink: 0;
+}
+
+/* Añadir estos estilos */
+.img-prin, .img-secun {
+  transition: transform 0.3s ease;
+}
+
+.img-prin:hover, .img-secun:hover {
+  /* transform: scale(1.02); */
+  filter: brightness(.9);
+  transition: filter 0.3s ease;
+}
+
+.more-img {
+  background-color: white;
+  transition: background-color 0.3s ease;
+}
+
+.more-img:hover {
+  background-color: #f3f4f6;
+}
+
+/* Estilos para el Image Slider */
+.slider-image-enter {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
+.slider-image-enter-active {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 300ms, transform 300ms;
+}
+
+.slider-image-exit {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.slider-image-exit-active {
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 300ms, transform 300ms;
+}
+
+/* Mejoras para dispositivos móviles */
+@media (max-width: 768px) {
+  .slider-container {
+    padding: 0;
+  }
+  
+  .slider-image {
+    width: 100%;
+    height: auto;
+    max-height: 85vh;
+  }
+}
+
+/* Animaciones suaves */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Aplicar animaciones */
+.slider-controls {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.slider-navigation {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Mejoras en la accesibilidad */
+.slider-button:focus {
+  outline: 2px solid white;
+  outline-offset: 2px;
+}
+
+/* Prevenir scroll del body cuando el slider está abierto */
+body.slider-open {
+  overflow: hidden;
+}
   

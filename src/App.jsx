@@ -12,9 +12,12 @@ import Login from "./routes/Login.jsx";
 import ProtectedRoutes from "./routes/ProtectedRoutes.jsx";
 import Forbidden from "./routes/Forbidden.jsx";
 import RegistrerUser from './Components/RegistrerUser.jsx';
+import ScrollToTop from './Components/ScrollToTop';
 
 export default function App() {
     const location = useLocation();
+    const isHome = location.pathname === '/' || location.pathname === '/home';
+    
     // Define rutas que deben ocultar Header y Footer
     const noLayoutRoutes = [
         routes.administration,
@@ -32,8 +35,9 @@ export default function App() {
         <ProductProvider>
             <ToastProvider>
                 <div className="min-h-screen flex flex-col">
+                    <ScrollToTop />
                     {!shouldHideLayout && <Header/>}
-                    <div className={`flex-grow ${!shouldHideLayout ? 'pt-20' : ''}`}>
+                    <div className={`flex-grow ${isHome ? 'home-content' : 'main-content'}`} >
                         <Routes>
                             <Route path={routes.login} element={<Login/>}/>
                             <Route path={routes.register} element={<RegistrerUser/>}/>

@@ -1,23 +1,26 @@
-import { Slide } from 'react-slideshow-image';
-import 'react-slideshow-image/dist/styles.css';
 import { IoClose } from "react-icons/io5";
-import "../styles/productDetail.css"
 
-const ImageProduct = (props) => {
+const ImageProduct = ({ imgs, onClickClose }) => {
+    return (
+        <div className="bg-white rounded-lg p-6">
+            <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold">Todas las fotos</h2>
+                <button onClick={onClickClose}>
+                    <IoClose className="w-6 h-6" />
+                </button>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+                {imgs.map((url, index) => (
+                    <img
+                        key={index}
+                        src={url}
+                        alt={`Property ${index + 1}`}
+                        className="w-full h-64 object-cover rounded-lg"
+                    />
+                ))}
+            </div>
+        </div>
+    );
+};
 
-  return (
-      <div className='relative flex justify-center flex-col h-full'>
-        <div onClick={() => props.onClickClose()} className='z-50 text-xl cursor-pointer	text-white	font-bold	absolute top-[25px] right-3'><IoClose className="w-7 h-7" /></div>
-        <Slide autoplay={false} transitionDuration={1}>
-            {props.imgs.map((val, key) => 
-              <div key={key} className="flex justify-center	each-slide-effect">
-                <img className='w-4/6' src={val} alt="" />
-              </div>
-
-            )}
-        </Slide>
-      </div>
-  )
-}
-
-export default ImageProduct
+export default ImageProduct;
