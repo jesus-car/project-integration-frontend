@@ -1,9 +1,7 @@
 import { FaArrowLeftLong } from 'react-icons/fa6';
 import { TfiLayoutGrid2Alt } from 'react-icons/tfi';
 import { FaStar } from 'react-icons/fa6';
-import { Modal } from '@mui/material';
 import { useEffect, useState } from 'react';
-import ImageProduct from './ImageProduct';
 import { useNavigate, useParams } from 'react-router-dom';
 import { propertyService } from '../services/propertyService';
 import Spinner from './Spinner';
@@ -20,7 +18,6 @@ import { IoPeopleOutline, IoBedOutline } from 'react-icons/io5';
 import { MdOutlineBedroomParent } from 'react-icons/md';
 import { LuBath } from 'react-icons/lu';
 import ImageSlider from './ImageSlider';
-import { differenceInDays } from 'date-fns';
 import { formatPrice } from '../utils/formatters';
 
 const defaultIcon = new Icon({
@@ -155,7 +152,7 @@ const ProductDetails = () => {
 
   const calculateCosts = (checkInDate, checkOutDate) => {
     if (checkInDate && checkOutDate) {
-      const nights = differenceInDays(checkOutDate, checkInDate);
+      const nights = Math.ceil((checkOutDate - checkInDate) / (1000 * 60 * 60 * 24));
       if (nights > 0) {
         const costPerNight = detail.pricePerNight * nights;
         setTotalNights(nights);
