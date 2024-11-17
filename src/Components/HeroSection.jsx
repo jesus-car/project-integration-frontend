@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { getAllCategories } from '../services/categoryService';
 import { getAllCountries } from '../services/locationService';
 import { filterProperties } from '../services/propertyService';
@@ -72,36 +73,58 @@ const HeroSection = () => {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full h-screen relative overflow-hidden">
       <div
-        className="relative min-h-[500px] sm:min-h-[600px] bg-cover bg-center bg-no-repeat flex items-center justify-center overflow-hidden"
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat transform scale-105"
         style={{
           backgroundImage:
             "url('https://images.unsplash.com/photo-1449158743715-0a90ebb6d2d8?q=80&w=2070&auto=format&fit=crop')",
+          transform: 'scale(1.1)',
+
         }}
       >
-        <div className="absolute inset-0 bg-black/40"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-black/60"></div>
+      </div>
 
-        <div className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-8 md:px-12 pt-16 sm:pt-0">
-          <div className="text-center mb-8 sm:mb-10">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-3 sm:mb-4">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        className="relative z-10 w-full h-full flex items-center justify-center"
+      >
+        <div className="w-full max-w-5xl mx-auto px-4 sm:px-8 md:px-12">
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="text-center mb-8 sm:mb-10"
+          >
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4 sm:mb-6 
+                         text-shadow-lg tracking-tight leading-tight">
               Encuentra tu lugar ideal
             </h1>
-            <p className="text-lg sm:text-xl text-white/90 px-4">
+            <p className="text-xl sm:text-2xl text-white/90 px-4 font-light 
+                         text-shadow-sm max-w-2xl mx-auto leading-relaxed">
               Explora las mejores propiedades en tu destino preferido
             </p>
-          </div>
+          </motion.div>
 
-          <SearchFilters
-            search={search}
-            handleChange={handleChange}
-            handleSearch={handleSearch}
-            countries={countries}
-            cities={cities}
-            categories={categories}
-          />
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+          >
+            <SearchFilters
+              search={search}
+              handleChange={handleChange}
+              handleSearch={handleSearch}
+              countries={countries}
+              cities={cities}
+              categories={categories}
+            />
+          </motion.div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };

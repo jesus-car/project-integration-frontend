@@ -16,6 +16,8 @@ import ScrollToTop from './Components/ScrollToTop';
 
 export default function App() {
     const location = useLocation();
+    const isHome = location.pathname === '/' || location.pathname === '/home';
+    
     // Define rutas que deben ocultar Header y Footer
     const noLayoutRoutes = [
         routes.administration,
@@ -35,7 +37,7 @@ export default function App() {
                 <div className="min-h-screen flex flex-col">
                     <ScrollToTop />
                     {!shouldHideLayout && <Header/>}
-                    <div className="flex-grow">
+                    <div className={`flex-grow ${isHome ? 'home-content' : 'main-content'}`} >
                         <Routes>
                             <Route path={routes.login} element={<Login/>}/>
                             <Route path={routes.register} element={<RegistrerUser/>}/>

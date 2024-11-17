@@ -92,7 +92,7 @@ const Home = () => {
   return (
     <>
       <HeroSection />
-      <div className="container mx-auto px-4 sm:px-16 lg:px-8 max-w-[1360px]">
+      <div className=" container mx-auto px-4 sm:px-16 lg:px-8 max-w-[1360px]">
         {/* Sección de Casas y Fincas */}
         <section className="mb-16">
           <div className="py-8">
