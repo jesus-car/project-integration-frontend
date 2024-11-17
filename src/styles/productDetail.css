@@ -426,4 +426,73 @@ svg {
 body.slider-open {
   overflow: hidden;
 }
+
+/* Agregar o actualizar estos estilos */
+.container-detail {
+  width: 100%;
+  max-width: 1280px;
+  padding: 0 1rem;
+}
+
+@media (max-width: 1024px) {
+  .container-detail {
+    padding: 0 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .container-detail {
+    padding: 0 1rem;
+  }
+}
+
+/* Actualizar/agregar estos estilos */
+@media (max-width: 426px) {
+  .feature-icon {
+    width: 2rem !important;
+    height: 2rem !important;
+  }
+
+  .feature-icon svg {
+    width: 1rem !important;
+    height: 1rem !important;
+  }
+
+  .feature-item {
+    padding: 0.25rem !important;
+  }
+
+  /* Ajustar el espaciado entre características */
+  .grid-cols-1 {
+    gap: 0.5rem !important;
+  }
+
+  /* Reducir el padding general */
+  .py-8 {
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+  }
+
+  /* Ajustar el tamaño del título */
+  .text-xl {
+    font-size: 1.125rem !important;
+  }
+
+  /* Ajustar el espaciado después del título */
+  .mb-6 {
+    margin-bottom: 0.75rem !important;
+  }
+}
+
+/* Asegurarse de que los iconos y texto se ajusten correctamente */
+@media (max-width: 320px) {
+  .feature-icon {
+    width: 1.75rem !important;
+    height: 1.75rem !important;
+  }
+
+  .feature-item {
+    gap: 0.5rem !important;
+  }
+}
   

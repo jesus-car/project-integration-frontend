@@ -132,20 +132,6 @@ const ProductDetails = () => {
 
   if (loading || !detail) return <Spinner />;
 
-  const modalStyle = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: '80%',
-    maxHeight: '90vh',
-    bgcolor: 'background.paper',
-    borderRadius: '8px',
-    boxShadow: 24,
-    p: 4,
-    overflow: 'auto',
-  };
-
   const getInitials = (firstName, lastName) => {
     return `${firstName?.charAt(0) || ''}${lastName?.charAt(0) || ''}`.toUpperCase();
   };
@@ -176,7 +162,8 @@ const ProductDetails = () => {
   };
 
   return (
-    <div className="mx-36 flex align-center flex-col container-detail">
+<div className="mx-auto xs:px-4 sm:px-12 lg:px-14 xl:px-16 2xl:px-32 flex align-center flex-col container-detail">
+
       <div className="relative">
         <div className="flex justify-between items-center py-6">
           <div className="flex flex-col gap-2">
@@ -223,8 +210,8 @@ const ProductDetails = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-12 mt-8">
-        <div className="col-span-2">
+      <div className="flex flex-col lg:flex-row gap-12 mt-8">
+        <div className="w-full lg:w-[60%] xl:w-[2/3]">
           <div className="flex items-center justify-between py-6 border-b">
             <div className="flex items-center gap-4">
               {detail.owner.photoUrl ? (
@@ -239,7 +226,7 @@ const ProductDetails = () => {
                 </div>
               )}
               <div>
-                <p className="text-lg font-medium text-gray-900">
+                <p className="text-lg font-medium text-gray-900 xs:text-[1rem]">
                   Anfitrión: {detail.owner.firstName} {detail.owner.lastName}
                 </p>
                 <p className="text-sm text-gray-500">Miembro desde 2023</p>
@@ -247,22 +234,22 @@ const ProductDetails = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-4 gap-8 py-8 border-b">
+          <div className="grid grid-cols-4 gap-2 py-8 border-b xs:grid-cols-2">
             <div className="flex flex-col items-center text-center">
-              <IoPeopleOutline className="w-6 h-6 text-gray-700 mb-2" />
-              <p className="text-sm font-medium text-gray-700">{detail.maxCapacity} huéspedes</p>
+              <IoPeopleOutline className="w-6 h-6 sm:w-6 sm:h-6  text-gray-700 mb-2" />
+              <p className="text-sm  font-medium text-gray-700">{detail.maxCapacity} huéspedes</p>
             </div>
             <div className="flex flex-col items-center text-center">
-              <MdOutlineBedroomParent className="w-6 h-6 text-gray-700 mb-2" />
-              <p className="text-sm font-medium text-gray-700">{detail.numRooms} dormitorios</p>
+              <MdOutlineBedroomParent className="w-6 h-6 sm:w-6 sm:h-6  text-gray-700 mb-2" />
+              <p className="text-sm  font-medium text-gray-700">{detail.numRooms} dormitorios</p>
             </div>
             <div className="flex flex-col items-center text-center">
-              <IoBedOutline className="w-6 h-6 text-gray-700 mb-2" />
-              <p className="text-sm font-medium text-gray-700">{detail.numBeds} camas</p>
+              <IoBedOutline className="w-6 h-6 sm:w-6 sm:h-6  text-gray-700 mb-2" />
+              <p className="text-sm  font-medium text-gray-700">{detail.numBeds} camas</p>
             </div>
             <div className="flex flex-col items-center text-center">
-              <LuBath className="w-6 h-6 text-gray-700 mb-2" />
-              <p className="text-sm font-medium text-gray-700">{detail.numBathrooms} baños</p>
+              <LuBath className="w-6 h-6 sm:w-6 sm:h-6  text-gray-700 mb-2" />
+              <p className="text-sm  font-medium text-gray-700">{detail.numBathrooms} baños</p>
             </div>
           </div>
 
@@ -273,13 +260,13 @@ const ProductDetails = () => {
 
           <div className="py-8 border-b">
             <h3 className="text-xl font-semibold text-gray-900 mb-6">Características que ofrece este lugar</h3>
-            <div className="grid grid-cols-2 gap-y-4 gap-x-8">
+            <div className="grid grid-cols-2 xs:grid-cols-1 gap-y-4 gap-x-8">
               {detail.features.map((feature, key) => (
                 <div key={key} className="feature-item flex items-center gap-4 p-2">
-                  <div className="feature-icon">
+                  <div className="feature-icon xs:w-8 xs:h-8">
                     {GetIcon(feature.iconName)}
                   </div>
-                  <span className="text-gray-600">{feature.name}</span>
+                  <span className="text-gray-600 xs:text-sm">{feature.name}</span>
                 </div>
               ))}
             </div>
@@ -321,8 +308,8 @@ const ProductDetails = () => {
           </div>
         </div>
 
-        <div className="relative">
-          <div className="sticky top-24 mt-8 border rounded-xl shadow-lg p-6 bg-white">
+        <div className=" lg:w-[40%] xl:w-[1/3] mx-auto">
+          <div className="sticky top-24 border rounded-xl shadow-lg p-6 bg-white">
             <div className="flex justify-between items-center mb-6">
               <div className="flex items-baseline gap-1">
                 <span className="text-2xl font-semibold text-gray-900">

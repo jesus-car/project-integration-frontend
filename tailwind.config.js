@@ -5,6 +5,9 @@ export const content = [
 ];
 export const theme = {
   extend: {
+    screens: {
+      'xs': {'max': '426px'},
+    },
     colors: {
       primary: '#91b07c',
       primaryHover: '#48653c',
