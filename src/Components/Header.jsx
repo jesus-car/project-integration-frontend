@@ -13,13 +13,13 @@ const Header = () => {
     };
 
     return (
-        <div className="fixed top-0 left-0 right-0 z-50 shadow-md bg-base py-3 px-6">
+        <div className="fixed top-0 left-0 right-0 z-50 shadow-md bg-base py-2 px-20">
             <div className="flex justify-between">
 
                 <div className="flex items-center justify-center">
                     <img
                         onClick={() => goTo(routes.home)}
-                        className="cursor-pointer w-20"
+                        className="cursor-pointer h-14 w-auto"
                         src="/images/logo_primary_base.png"
                         alt="Logo"
                     />

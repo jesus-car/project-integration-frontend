@@ -15,7 +15,7 @@ import {
 const Properties = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { appliedFilters } = location.state || {};
+  const { appliedFilters, categoryId } = location.state || {};
 
   const [currentPage, setCurrentPage] = useState(0);
   const [properties, setProperties] = useState(null);
@@ -30,19 +30,57 @@ const Properties = () => {
   const [search, setSearch] = useState({
     city: appliedFilters?.cityId || '',
     country: appliedFilters?.countryId || '',
-    category: appliedFilters?.categoryId || '',
+    category: categoryId || appliedFilters?.categoryId || '',
   });
 
-  const fetchProperties = async page => {
+  const initialCategories = location.state?.selectedCategories || [];
+  const [selectedCategories, setSelectedCategories] = useState(initialCategories);
+  
+  useEffect(() => {
+    // Si venimos desde Home con una categoría preseleccionada
+    if (location.state?.fromHome && location.state?.selectedCategories) {
+      // Aplicar los filtros inmediatamente
+      handleFilterSubmit();
+    }
+  }, []);
+
+  const handleFilterSubmit = async () => {
     setLoading(true);
-    const results = await filterProperties(appliedFilters, page, 10);
-    setProperties(results);
-    setLoading(false);
+    try {
+      const filters = {
+        categories: selectedCategories,
+        // ... otros filtros que ya tengas
+      };
+      
+      const response = await propertyService.getFilteredProperties(filters, currentPage, pageSize);
+      setProperties(response);
+    } catch (error) {
+      console.error('Error al filtrar propiedades:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchProperties = async (page) => {
+    setLoading(true);
+    try {
+      const filters = {
+        ...appliedFilters,
+        categoryId: categoryId || appliedFilters?.categoryId
+      };
+      
+      const results = await filterProperties(filters, page, 10);
+      setProperties(results);
+    } catch (error) {
+      console.error('Error fetching properties:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     fetchProperties(currentPage);
-  }, [currentPage, appliedFilters]);
+  }, [currentPage, appliedFilters, categoryId]);
 	
   useEffect(() => {
     const fetchTotalProperties = async () => {
@@ -87,17 +125,14 @@ const Properties = () => {
   };
 
   const handleClearFilters = () => {
-    // Limpiar el estado de búsqueda
     setSearch({
       city: '',
       country: '',
       category: '',
     });
     
-    // Limpiar las ciudades
     setCities([]);
     
-    // Navegar con filtros vacíos
     navigate('/properties', { 
       state: { 
         appliedFilters: {} 
@@ -196,15 +231,15 @@ const Properties = () => {
 
       {properties?.content ? (
         <>
-          <div className=" mb-8">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3 text-gray-600">
-                <FaSearch className="text-primary text-xl mb-4" />
+          <div className="mb-8">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-start sm:items-center gap-3 text-gray-600">
+                <FaSearch className="text-primary text-xl mt-1 sm:mb-4" />
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-800">
+                  <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
                     {properties.totalElements} propiedades encontradas
                   </h2>
-                  <p className="text-sm ">
+                  <p className="text-xs sm:text-sm">
                     de un total de {totalProperties} propiedades
                   </p>
                 </div>
@@ -213,7 +248,7 @@ const Properties = () => {
               {Object.keys(appliedFilters || {}).length > 0 && (
                 <button
                   onClick={handleClearFilters}
-                  className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
+                  className="flex items-center justify-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors w-full sm:w-auto"
                 >
                   <FaTimes />
                   Limpiar filtros
@@ -222,9 +257,9 @@ const Properties = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          <div className="justify-items-center grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-8">
             {properties.content.map(property => (
-              <div key={property.id} className="h-full">
+              <div key={property.id}   className="w-full flex justify-center items-center transform transition duration-200 hover:scale-[1.02]">
                 <PropertyCard
                   property={{
                     ...property,

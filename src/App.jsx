@@ -12,6 +12,7 @@ import Login from "./routes/Login.jsx";
 import ProtectedRoutes from "./routes/ProtectedRoutes.jsx";
 import Forbidden from "./routes/Forbidden.jsx";
 import RegistrerUser from './Components/RegistrerUser.jsx';
+import ScrollToTop from './Components/ScrollToTop';
 
 export default function App() {
     const location = useLocation();
@@ -32,8 +33,9 @@ export default function App() {
         <ProductProvider>
             <ToastProvider>
                 <div className="min-h-screen flex flex-col">
+                    <ScrollToTop />
                     {!shouldHideLayout && <Header/>}
-                    <div className={`flex-grow ${!shouldHideLayout ? 'pt-20' : ''}`}>
+                    <div className="flex-grow">
                         <Routes>
                             <Route path={routes.login} element={<Login/>}/>
                             <Route path={routes.register} element={<RegistrerUser/>}/>
