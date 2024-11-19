@@ -3,6 +3,7 @@ import Button from "./Button"
 import InputField from "./InputField"
 import { useState } from "react";
 import { useToast } from "../contexts/ToastContext";
+import "../styles/registrerUser.css"
 
 const RegistrerUser = () => {
 
@@ -20,12 +21,57 @@ const RegistrerUser = () => {
         password: ""
     })
 
+    const [errorList, setErrorList] = useState({})
+
+    const validateUser = (field, value) =>{
+        
+        switch(field){
+            case "firstName":
+            case "lastName":
+                if (!/^[a-zA-Z\s]+$/.test(value) && value.trim()) return 'Solo letras y espacios.';
+                break; 
+
+            case "identificationNumber":
+                if (!value.trim()) return 'El DNI es obligatorio.';
+                if (!/^\d{8}$/.test(value)) return 'Debe tener 10 dígitos.';
+                break; 
+                
+            case "phoneNumber":
+                if (!/^\d{10}$/.test(value)) return 'Debe tener 10 dígitos.';
+                break; 
+
+            case "email":
+                if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value))
+                    return 'Correo no válido.';
+                  break;
+
+            case "password":
+                if (value.length < 6) return 'Debe tener al menos 6 caracteres.';
+                break;
+
+              default:
+                break;
+        }
+
+
+    }
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setRegisterForm({...registerForm, [name]: value})
+
+        const messageError = validateUser(name, value);
+        setErrorList({ ...errorList, [name]: messageError });
+    }
+    
     const handleCancel = () => {
         navigate("/login")
     }
+    
 
     const handleSave = async() => {
-        try {
+        
+       try {
             const response = await fetch(`http://100.29.91.166:8080/roomly-services/api/v1/auth/register`, {
                 method: "POST",
                 body: JSON.stringify(registerForm),
@@ -41,8 +87,10 @@ const RegistrerUser = () => {
             console.log(err);
         } finally{
             setLoading(false)
-        }
+        } 
     }
+
+    
 
     return (
         <>
@@ -51,87 +99,105 @@ const RegistrerUser = () => {
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
             </div>
         }
-        <div className="flex flex-col justify-center gap-14 p-12 lg:p-32">
-            <h2 className="text-2xl md:text-3xl text-center md:text-left font-bold text-primaryHover">Registro de usuario</h2>
-            <div className="w-3/4">
-                <InputField 
-                    label="Nombre"
-                    name="name"
-                    type="name"
-                    placeholder="Ingresa tu nombre"
-                    onChange={(e) => setRegisterForm({...registerForm, firstName: e.target.value})}
-                    value={registerForm.firstName}
-                    required
-                />
+        <div className="container-user flex flex-row justify-center h-screen">
+            <div className=" img-re bg-cover w-3/6 relative"
+                 style={{backgroundImage: 'url(/images/login_bg.jpg)'}}>
+                <img className=" img-ab absolute left-[35%] top-[40%]" src="/images/logo_primary_light.png" alt="roomly" width={150}/>
+            </div>
 
-                <InputField
-                    label="Apellido"
-                    name="lastName"
-                    type="lastName"
-                    placeholder="Ingresa tu apellido"
-                    onChange={(e) => setRegisterForm({...registerForm, lastName: e.target.value})}
-                    value={registerForm.lastName}
-                    required
-                />
-                <div style={{marginBottom: "15px"}}>
-                    <label htmlFor="DNI" className="block text-gray-700 text-sm">DNI</label>
-                    <select className="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"name="" id="">
-                    
-                        <option value="1">DNI</option>
-                        
-                    </select>
-                </div>
-                
-
-                <InputField
-                    
-                    label="Numero de documento"
-                    name="numero de documento"
-                    type="number"
-                    placeholder="Ingresa tu número de documento"
-                    value={registerForm.identificationNumber}
-                    onChange={(e) => setRegisterForm({...registerForm, identificationNumber: e.target.value})}
-                    required
-                />
-
-                <InputField
-                    
-                    label="Numero de teléfono"
-                    name="numerodetelefono"
-                    type="number"
-                    placeholder="Ingresa tu número de teléfono"
-                    value={registerForm.phoneNumber}
-                    onChange={(e) => setRegisterForm({...registerForm, phoneNumber: e.target.value})}
-                    required
-                />
-
-                <InputField
-                    label="Email"
-                    name="email"
-                    type="email"
-                    placeholder="Ingresa tu email"
-                    onChange={(e) => setRegisterForm({...registerForm, email: e.target.value})}
-                    value={registerForm.email}
-                    required
-                />
-
-                <InputField
-                    label="Password"
-                    name="password"
-                    type="password"
-                    placeholder="Ingresa tu contraseña"
-                    value={registerForm.password}
-                    onChange={(e) => setRegisterForm({...registerForm, password: e.target.value})}
-                    required
-                />
-                <div className="gao-x-4"  style={{width: "10em", display: "grid", gridTemplateColumns: "10em 10em", columnGap: "1em"}}>
-                    <Button type="primary"
-                        label="Registrarse" onClick={handleSave}/>
-                    <Button type="secondary" label="Volver" onClick={handleCancel} />
+            <div className=" container-form w-3/6 pt-6 pl-16 pr-16">
+                <div>
+                    <div className="flex flex-col gap-4">
+                        <h2 className=" h2-res text-2xl text-center font-bold text-primaryHover">Registro de
+                            usuario</h2>
                     </div>
                 </div>
-            
+                <div className="flex flex-col gap-5 pt-3.5">
+                    <InputField 
+                        label="Nombre"
+                        name="firstName"
+                        type="name"
+                        placeholder="Ingresa tu nombre"
+                        onChange={(e) => handleChange(e)}
+                        value={registerForm.firstName}
+                        required
+                    />
+                    {errorList["firstName"] && <p style={{ color: 'red' }}>{errorList["firstName"]}</p>}
 
+
+                    <InputField
+                        label="Apellido"
+                        name="lastName"
+                        type="lastName"
+                        placeholder="Ingresa tu apellido"
+                        onChange={(e) => handleChange(e)}
+                        value={registerForm.lastName}
+                        required
+                    />
+                    {errorList["lastName"] && <p style={{ color: 'red' }}>{errorList["lastName"]}</p>}
+
+                    <div style={{marginBottom: "15px"}}>
+                        <label htmlFor="DNI" className="block text-gray-700 text-sm">DNI</label>
+                        <select className="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"name="" id="">
+
+                            <option value="1">DNI</option>
+                            
+                        </select>
+                    </div>
+            
+                    <InputField
+                        
+                        label="Numero de documento"
+                        name="identificationNumber"
+                        type="number"
+                        placeholder="Ingresa tu número de documento"
+                        onChange={(e) => handleChange(e)}
+                        value={registerForm.identificationNumber}
+                        required
+                    />
+
+                    <InputField
+                        
+                        label="Numero de teléfono"
+                        name="phoneNumber"
+                        type="number"
+                        placeholder="Ingresa tu número de teléfono"
+                        onChange={(e) => handleChange(e)}
+                        value={registerForm.phoneNumber}
+                        required
+                    />
+                    {errorList["phoneNumber"] && <p style={{ color: 'red', paddingBottom: "20px", fontSize: "12px"}}>{errorList["phoneNumber"]}</p>}
+
+                    <InputField
+                        label="Email"
+                        name="email"
+                        type="email"
+                        placeholder="Ingresa tu email"
+                        onChange={(e) => handleChange(e)}
+                        value={registerForm.email}
+                        required
+                    />
+                
+                    <InputField
+                        label="Password"
+                        name="password"
+                        type="password"
+                        placeholder="Ingresa tu contraseña"
+                        value={registerForm.password}
+                        onChange={(e) => handleChange(e)}
+                        required
+                    />
+
+                </div>
+                <div className="btn-res gao-x-4 pt-8 pb-10"  style={{width: "10em", display: "grid", gridTemplateColumns: "10em 10em", columnGap: "1em"}}>
+                    <Button type="primary"
+                        disabled={Object.values(errorList).some((error) => error || loading)}
+                        label="Registrarse" onClick={handleSave}/>
+                    <Button type="secondary" label="Volver" onClick={handleCancel} />
+                </div>
+                    
+            
+            </div>
         </div>
         </>
     )
