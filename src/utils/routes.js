@@ -11,4 +11,5 @@ export const routes = {
     login: '/login',
     register: '/register',
     forbidden: '/forbidden',
+    myBookings: '/my-bookings',
 }
