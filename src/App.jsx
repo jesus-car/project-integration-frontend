@@ -13,6 +13,7 @@ import ProtectedRoutes from "./routes/ProtectedRoutes.jsx";
 import Forbidden from "./routes/Forbidden.jsx";
 import RegistrerUser from './Components/RegistrerUser.jsx';
 import ScrollToTop from './Components/ScrollToTop';
+import MyBookings from "./routes/MyBookings.jsx";
 
 export default function App() {
     const location = useLocation();
@@ -50,6 +51,7 @@ export default function App() {
                             {/* Agrupación de rutas protegidas */}
                             <Route element={<ProtectedRoutes allowedRoles={["ROLE_ADMIN", "ROLE_OWNER"]} />}>
                                 <Route path={routes.administration} element={<Administration/>}/>
+                                <Route path={routes.myBookings} element={<MyBookings/>}/>
                                 {/* Agrega más rutas protegidas */}
                             </Route>
 
