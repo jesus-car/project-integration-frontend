@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { FaBed, FaBath, FaUsers, FaMapMarkerAlt } from 'react-icons/fa';
 import { locationService } from '../services/locationService';
 import { formatPrice } from '../utils/formatters';
+import { AiTwotoneHeart } from "react-icons/ai";
+import "../styles/propertyCard.css"
 
 const PropertyCard = ({ property }) => {
     const [countryName, setCountryName] = useState('');
@@ -31,6 +33,7 @@ const PropertyCard = ({ property }) => {
                         overflow-hidden flex flex-col group">
             <Link to={`/properties/${property.id}`} className="h-full flex flex-col">
                 <div className="relative h-48 overflow-hidden">
+                
                     <img 
                         src={property.mainPhotoUrl} 
                         alt={property.name}
@@ -38,7 +41,13 @@ const PropertyCard = ({ property }) => {
                     />
                     <div className="absolute top-0 right-0 bg-primary text-white px-3 py-1 m-2 rounded-full text-sm font-medium">
                         {formatPrice(property.pricePerNight)}
+                        
+                    </div >
+                        
+                    <div className="fa-heart absolute top-0 right-0 px-3 py-1 m-2 text-3xl left-0">
+                        <AiTwotoneHeart />
                     </div>
+                      
                 </div>
                 
                 <div className="p-4 flex-grow flex flex-col">
