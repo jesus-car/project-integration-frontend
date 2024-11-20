@@ -2,12 +2,42 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../contexts/AuthContext';
 import { routes } from '../utils/routes';
+import {IoIosArrowDown, IoIosArrowUp} from "react-icons/io";
+import {userHasAccess} from "../utils/utils.js";
+import {MdAdminPanelSettings, MdLibraryBooks, MdLogout} from "react-icons/md";
 
 const UserMenu = ({ user, isScrolled, isHome }) => {
     const [isOpen, setIsOpen] = useState(false);
     const menuRef = useRef(null);
     const navigate = useNavigate();
     const { logout } = useAuthContext();
+
+
+    const options = [
+        {
+            label: "Panel de administración",
+            onClick: () => navigate(routes.administrationHome),
+            requiredRoles: ['ROLE_ADMIN', 'ROLE_OWNER'],
+            icon: <MdAdminPanelSettings />
+        },
+        {
+            label: "Mis reservas",
+            onClick: () => navigate(routes.myBookings),
+            requiredRoles: ['ROLE_ADMIN', 'ROLE_OWNER'],
+            icon: <MdLibraryBooks />
+
+        },
+        {
+            label: "Cerrar sesión",
+            labelClass: "text-red-600",
+            onClick: logout,
+            icon: <MdLogout />
+        }
+    ];
+
+    const allowedOptions = options.filter(option => {
+        return !option.requiredRoles || userHasAccess(user, option.requiredRoles);
+    });
 
     const getRoleDescription = (roleName) => {
         switch (roleName) {
@@ -33,10 +63,7 @@ const UserMenu = ({ user, isScrolled, isHome }) => {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
-    const handleLogout = () => {
-        logout();
-        navigate('/login');
-    };
+
 
     return (
         <div className="relative" ref={menuRef}>
@@ -57,14 +84,11 @@ const UserMenu = ({ user, isScrolled, isHome }) => {
                         {getRoleDescription(user.role)}
                     </span>
                 </div>
-                <svg
-                    className={`w-4 h-4 text-gray-600 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
+                {isOpen ? (
+                    <IoIosArrowUp className="text-lg text-primaryHover" />
+                ) : (
+                    <IoIosArrowDown className="text-lg text-primaryHover" />
+                )}
             </button>
 
             {/* Menú desplegable */}
@@ -93,28 +117,17 @@ const UserMenu = ({ user, isScrolled, isHome }) => {
                 </div>
 
                 {/* Opciones del menú */}
-                <div className="p-2">
-                    {user.role === 'ROLE_ADMIN' && (
-                        <button
-                            onClick={() => navigate(routes.administrationHome)}
-                            className="w-full text-left py-2 px-4 rounded-lg hover:bg-primary/10 transition-colors flex items-center gap-3 text-primaryHover"
-                        >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
-                            </svg>
-                            Panel de administración
-                        </button>
-                    )}
 
-                    <button
-                        onClick={handleLogout}
-                        className="w-full text-left py-2 px-4 rounded-lg hover:bg-red-50 transition-colors flex items-center gap-3 text-red-600"
-                    >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                        </svg>
-                        Cerrar sesión
-                    </button>
+                <div className="p-2">
+                    {allowedOptions.map((option, index) => (
+                        <button
+                            key={index}
+                            onClick={option.onClick}
+                            className={`w-full text-left py-2 px-4 rounded-lg hover:bg-primary/10 transition-colors flex items-center gap-3 ${ option.labelClass || 'text-primaryHover' }`}>
+                            {option.icon}
+                            {option.label}
+                        </button>
+                    ))}
                 </div>
             </div>
         </div>

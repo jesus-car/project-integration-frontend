@@ -469,3 +469,26 @@ export const detail = {
     features: []
 
 };
+
+export const policies = [
+    {
+        id: 1,
+        title: "Cancelación",
+        description: "Cancelación gratuita hasta 24 horas antes de la llegada."
+    },
+    {
+        id: 2,
+        title: "Mascotas",
+        description: "Tus mascotas son bienvenidas en este lugar."
+    },
+    {
+        id: 3,
+        title: "Fumadores",
+        description: "No se permite fumar en este alojamiento."
+    },
+    {
+        id: 4,
+        title: "Fiestas",
+        description: "No se permiten fiestas o eventos."
+    }
+]
