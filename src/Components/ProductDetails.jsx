@@ -19,6 +19,7 @@ import { MdOutlineBedroomParent } from 'react-icons/md';
 import { LuBath } from 'react-icons/lu';
 import ImageSlider from './ImageSlider';
 import { formatPrice } from '../utils/formatters';
+import {policies} from "../utils/fakeData.js";
 
 const defaultIcon = new Icon({
   iconUrl: markerIcon,
@@ -304,6 +305,18 @@ const ProductDetails = () => {
                   <p className="text-gray-500">No se pudo cargar el mapa</p>
                 </div>
               )}
+            </div>
+          </div>
+
+          <div className="py-8">
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">Políticas del alojamiento</h3>
+            <div className="text-gray-600 grid grid-cols-1 md:grid-cols-2 gap-5">
+              {policies.map((policy, index) => (
+                  <div key={index} className="mb-4">
+                    <p className="text-gray-900 font-semibold">{policy.title}</p>
+                    <p>{policy.description}</p>
+                  </div>
+              ))}
             </div>
           </div>
         </div>
