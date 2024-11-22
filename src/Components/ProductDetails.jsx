@@ -21,6 +21,7 @@ import ImageSlider from './ImageSlider';
 import { formatPrice } from '../utils/formatters';
 import {policies} from "../utils/fakeData.js";
 import { AiTwotoneHeart } from "react-icons/ai";
+import { useAuthContext } from '../contexts/AuthContext';
 
 const defaultIcon = new Icon({
   iconUrl: markerIcon,
@@ -101,6 +102,8 @@ const ProductDetails = () => {
     cleaning: 50,
     total: 0
   });
+  const [like, setLike] = useState(false);
+  const authContext = useAuthContext();
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -163,6 +166,13 @@ const ProductDetails = () => {
     calculateCosts(checkIn, date);
   };
 
+  const toggleLike = (e) => {
+    e.preventDefault();
+    console.log(authContext);
+    setLike(!like);
+};
+
+
   
 
   return (
@@ -183,7 +193,7 @@ const ProductDetails = () => {
             <button className="hover:bg-gray-100 p-2 rounded-full transition-colors">
               <FaArrowLeftLong onClick={() => navigate(-1)} className="w-5 h-5 text-gray-700"/>
             </button>
-            <div className="text-2xl flex flex-row items-center gap-x-2.5">
+            <div onClick={toggleLike} className={`${!like ? "fa-heart-no" : "fa-heart"} text-2xl flex flex-row items-center gap-x-2.5 cursor-pointer`}>
                 <AiTwotoneHeart className="w-4 h-4 text-[#91b07c] "/>
                 <span className='text-sm'>Guardar</span>
                 

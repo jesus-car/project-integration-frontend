@@ -7,4 +7,5 @@ export const API_URLS = {
   FILTERED_PROPERTIES: `${API_BASE_URL}/properties/filter`,
   LOGIN: `${API_BASE_URL}/auth/login`,
   ROLES: `${API_BASE_URL}/roles/all`,
+  FAVORITES: `${API_BASE_URL}/favorites`
 };

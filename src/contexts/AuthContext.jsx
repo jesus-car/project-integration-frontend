@@ -4,6 +4,7 @@ import {useNavigate} from "react-router-dom";
 import {routes} from "../utils/routes.js";
 import {decodeJWT, isTokenExpired} from "../utils/utils.js";
 import {roleService} from "../services/roleService.js";
+import { favoriteService } from '../services/favoriteService.js';
 
 export const AuthContext = createContext();
 
@@ -12,7 +13,10 @@ export const AuthProvider = ({children}) => {
     const [user, setUser] = useState(null);
     const [roles, setRoles] = useState([]);
     const [error, setError] = useState('');
+    const [favorites, setFavorites] = useState('');
+
     const [loading, setLoading] = useState(true);
+    
     const navigate = useNavigate();
 
     const clearError = () => setError('');
@@ -29,6 +33,28 @@ export const AuthProvider = ({children}) => {
         }
         fetchRoles();
     }, []);
+
+    useEffect(() => {
+        if(user){
+            fetchFavorites();
+        }
+
+    }, [user])
+
+    const fetchFavorites = async () => {
+        try {
+            const response = await favoriteService.getFavoritesByUser(user.id);
+            setFavorites(response.data);
+        } catch (error) {
+            setError(error.message);
+        }finally{
+            setLoading(false);
+        }
+    }
+
+    const refreshFavorites = async() => {
+        await fetchFavorites();
+    }
 
     const fetchRoles = async () => {
         try {
@@ -72,7 +98,7 @@ export const AuthProvider = ({children}) => {
 
 
     return (
-        <AuthContext.Provider value={{user, roles, error, clearError, login, logout, loading}}>
+        <AuthContext.Provider value={{user, roles, error, favorites, refreshFavorites, clearError, login, logout, loading}}>
             {children}
         </AuthContext.Provider>
     )

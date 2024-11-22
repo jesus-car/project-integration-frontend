@@ -21,6 +21,7 @@ const RegistrerUser = () => {
         password: ""
     })
 
+
     const [errorList, setErrorList] = useState({})
 
     const validateUser = (field, value) =>{
@@ -46,7 +47,12 @@ const RegistrerUser = () => {
                   break;
 
             case "password":
-                if (value.length < 6) return 'Debe tener al menos 6 caracteres.';
+                if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(value)){
+                    return 'La contraseña debe tener al menos una letra mayúscula, una minúscula, un número y un carácter';
+                }
+                if (value.length < 8) {
+                    return "Debe tener al menos 8 caracteres.";
+                  }  
                 break;
 
               default:
@@ -178,6 +184,7 @@ const RegistrerUser = () => {
                         required
                     />
                 
+                    <div className="input-field">
                     <InputField
                         label="Password"
                         name="password"
@@ -185,9 +192,11 @@ const RegistrerUser = () => {
                         placeholder="Ingresa tu contraseña"
                         value={registerForm.password}
                         onChange={(e) => handleChange(e)}
-                        required
-                    />
+                                            />
+                    {errorList["password"] && <p style={{ color: 'red', paddingBottom: "0px", fontSize: "12px"}}>{errorList["password"]}</p>}
 
+                    </div>
+                    
                 </div>
                 <div className="btn-res gao-x-4 pt-8 pb-10"  style={{width: "10em", display: "grid", gridTemplateColumns: "10em 10em", columnGap: "1em"}}>
                     <Button type="primary"
