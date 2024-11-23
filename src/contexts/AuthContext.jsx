@@ -13,7 +13,7 @@ export const AuthProvider = ({children}) => {
     const [user, setUser] = useState(null);
     const [roles, setRoles] = useState([]);
     const [error, setError] = useState('');
-    const [favorites, setFavorites] = useState('');
+    const [favorites, setFavorites] = useState([]);
 
     const [loading, setLoading] = useState(true);
     
@@ -43,7 +43,7 @@ export const AuthProvider = ({children}) => {
 
     const fetchFavorites = async () => {
         try {
-            const response = await favoriteService.getFavoritesByUser(user.id);
+            const response = await favoriteService.getFavoritesByUser();
             setFavorites(response.data);
         } catch (error) {
             setError(error.message);

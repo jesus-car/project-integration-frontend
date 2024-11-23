@@ -5,6 +5,8 @@ import { routes } from '../utils/routes';
 import {IoIosArrowDown, IoIosArrowUp} from "react-icons/io";
 import {userHasAccess} from "../utils/utils.js";
 import {MdAdminPanelSettings, MdLibraryBooks, MdLogout} from "react-icons/md";
+import { label } from 'framer-motion/client';
+import { AiTwotoneHeart } from "react-icons/ai";
 
 const UserMenu = ({ user, isScrolled, isHome }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -26,6 +28,12 @@ const UserMenu = ({ user, isScrolled, isHome }) => {
             requiredRoles: ['ROLE_ADMIN', 'ROLE_OWNER'],
             icon: <MdLibraryBooks />
 
+        },
+        {
+            label:"Mis favoritos",
+            onClick: () => navigate(routes.favs),
+            requiredRoles: ['ROLE_USER'],
+            icon: <AiTwotoneHeart/>
         },
         {
             label: "Cerrar sesión",

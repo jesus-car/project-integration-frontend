@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { routes } from "../utils/routes.js";
 import Button from "./Button.jsx";
 import { useAuthContext } from '../contexts/AuthContext.jsx';
+import { AiTwotoneHeart } from "react-icons/ai";
 
 const MobileMenu = ({ user, goTo, isOpen, onClose }) => {
     const getRoleDescription = (roleName) => {
@@ -27,7 +28,7 @@ const MobileMenu = ({ user, goTo, isOpen, onClose }) => {
     const {logout} = useAuthContext();
     const handleLogout = () => {
         logout();
-        navigate("/login");
+        handleNavigation("/login");
     };
 
     return (
@@ -97,6 +98,13 @@ const MobileMenu = ({ user, goTo, isOpen, onClose }) => {
                                         </button>
                                     )}
                                     
+                                    <button
+                                        onClick={() => handleNavigation(routes.favs)}
+                                        className="w-full text-left py-3 px-4 rounded-lg hover:bg-primary/10 transition-colors flex items-center gap-3 text-primaryHover"
+                                    >
+                                        <AiTwotoneHeart/>
+                                        Mis favoritos
+                                    </button>
                                     <button
                                         onClick={() => handleLogout()}
                                         className="w-full text-left py-3 px-4 rounded-lg hover:bg-red-50 transition-colors flex items-center gap-3 text-red-600"

@@ -21,7 +21,9 @@ import ImageSlider from './ImageSlider';
 import { formatPrice } from '../utils/formatters';
 import {policies} from "../utils/fakeData.js";
 import { AiTwotoneHeart } from "react-icons/ai";
-import { useAuthContext } from '../contexts/AuthContext';
+import { AuthContext, useAuthContext } from '../contexts/AuthContext';
+import { routes } from '../utils/routes.js';
+import { favoriteService } from '../services/favoriteService.js';
 
 const defaultIcon = new Icon({
   iconUrl: markerIcon,
@@ -166,10 +168,20 @@ const ProductDetails = () => {
     calculateCosts(checkIn, date);
   };
 
-  const toggleLike = (e) => {
+  const toggleLike = async(e) => {
     e.preventDefault();
-    console.log(authContext);
-    setLike(!like);
+    if(authContext.user){
+      if(authContext.favorites.some(x => x.id == detail.id)){
+          await favoriteService.removeFavorite(detail.id);
+      }else{
+          await favoriteService.addFavorite(detail.id);
+
+      }
+      await authContext.refreshFavorites();
+    }else{
+      navigate(routes.login)
+    }
+    
 };
 
 
@@ -193,7 +205,7 @@ const ProductDetails = () => {
             <button className="hover:bg-gray-100 p-2 rounded-full transition-colors">
               <FaArrowLeftLong onClick={() => navigate(-1)} className="w-5 h-5 text-gray-700"/>
             </button>
-            <div onClick={toggleLike} className={`${!like ? "fa-heart-no" : "fa-heart"} text-2xl flex flex-row items-center gap-x-2.5 cursor-pointer`}>
+            <div onClick={toggleLike} className={`${!authContext.favorites.some(x => x.id === detail.id)  ? "fa-heart-no" : "fa-heart"} text-2xl flex flex-row items-center gap-x-2.5 cursor-pointer`}>
                 <AiTwotoneHeart className="w-4 h-4 text-[#91b07c] "/>
                 <span className='text-sm'>Guardar</span>
                 

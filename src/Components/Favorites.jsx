@@ -1,17 +1,18 @@
 import { useEffect, useState } from "react"
-import { properties } from "../utils/fakeData"
 import PropertyCard from "./PropertyCard"
 import { FaArrowLeftLong } from 'react-icons/fa6';
 import { useNavigate } from "react-router-dom";
+import { useAuthContext } from "../contexts/AuthContext";
 
 
 const Favorites = () => {
   const [listFav, setlistFav] = useState([]);
   const navigate = useNavigate();
+  const authContext = useAuthContext();
 
   useEffect(() => {
-    setlistFav(properties);
-  }, [])
+    setlistFav(authContext.favorites);
+  }, [authContext.favorites])
 
   return (
     <div className="mt-12 flex flex-col">
@@ -20,7 +21,7 @@ const Favorites = () => {
         <h2 className="text-3xl font-semibold">Mis favoritos</h2>
       </div>
 
-      <div className="mt-12 w-full flex flex-wrap gap-y-14 gap-x-16 ml-[60px]">
+      <div className="mt-12 w-full flex flex-wrap gap-y-14 gap-x-16 pl-[60px]">
         {listFav.map((property, i) => 
           <div key={i} className="w-[300px]">
               <PropertyCard key={i} property={property} />
