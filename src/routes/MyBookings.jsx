@@ -7,10 +7,13 @@ import {FaArrowLeftLong, FaLocationDot} from "react-icons/fa6";
 import {GrStatusGoodSmall} from "react-icons/gr";
 import {formatPrice} from "../utils/formatters.js";
 import {calculateNights} from "../utils/utils.js";
+import ReviewPropertyModal from "../Components/modals/ReviewPropertyModal.jsx";
 
 const MyBookings = () => {
 
     const [bookings, setBookings] = useState([]);
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const {user} = useAuthContext();
 
@@ -51,6 +54,17 @@ const MyBookings = () => {
         navigate('/');
     }
 
+
+    const confirmReview = async (reviewData) => {
+        setIsModalOpen(false);
+        console.log(reviewData);
+    }
+
+    const cancelReview = () => {
+        setIsModalOpen(false);
+    }
+
+
     return (
         <div className="mx-auto px-12 md:px-20 lg:px-52">
             <h2 className="text-3xl font-semibold text-gray-900 py-6">Mis reservas</h2>
@@ -68,76 +82,70 @@ const MyBookings = () => {
                 </div>
                 :
                 <div className="grid grid-cols-1 gap-5">
-                    {
-                        bookings.map((booking) => (
-                            <div key={booking.id}
-                                 className="border rounded-2xl px-5 py-8 flex flex-col md:flex-row items-center gap-10">
-                                <div className="w-full md:w-72">
-                                    <img src={booking.property.mainPhotoUrl} alt={booking.property.name}
-                                         className="object-cover aspect-square rounded-lg"/>
-                                </div>
-                                <div className="text-gray-600 grid grid-cols-1 md:grid-cols-3 md:gap-10 w-full">
-                                    <div className="h-full flex flex-col gap-2 col-span-2">
-                                        <p className="text-xl font-semibold text-black">{booking.property.name}</p>
-
-                                        <div className="flex items-center gap-2">
-                                            <FaLocationDot/>
-                                            <p> {booking.property.city.name}, {booking.property.city.country.name}</p>
-                                        </div>
-
-                                        <div className="flex gap-4 mt-5">
-                                            <p>{calculateNights(booking.startDate, booking.endDate)} {calculateNights(booking.startDate, booking.endDate) > 1 ? 'noches' : 'noche'}</p>
-                                            |
-                                            <p> {booking.numGuest} {booking.numGuest > 1 ? 'huéspedes' : 'huésped'}</p>
-                                        </div>
-
-                                        <p className="font-semibold ">Precio
-                                            total: {formatPrice(booking.totalPrice)}</p>
-
-                                        <div className="mt-5">
-                                            <p>Ingreso: {booking.startDate}</p>
-                                            <p>Salida: {booking.endDate}</p>
-                                        </div>
-                                    </div>
-
-                                    <div
-                                        className="flex md:flex-col-reverse items-end justify-between text-right w-full gap-10">
-
-
-                                        <div>
-
-                                             <span className="cursor-pointer underline text-sm"
-                                                   onClick={() => navigate(`/properties/${booking.property.id}`)}>
-                                                 Ver detalles de la propiedad
-                                             </span>
-                                        </div>
-
-                                        <div className="text-right text-black font-semibold flex flex-col gap-3">
-                                            <div className="flex items-center gap-3 text-xl justify-end">
-                                                <p>{statusMap[booking.status].text}</p>
-                                                <GrStatusGoodSmall color={statusMap[booking.status].color}/>
-                                            </div>
-
-                                            {
-                                                booking.status === 'COMPLETED' ?
-                                                    <span
-                                                        className="cursor-pointer text-center text-white bg-primary rounded-2xl p-2"
-                                                        onClick={() => navigate(`/properties/${booking.property.id}`)}>
-                                                         Califica tu estadía
-                                                    </span> : null
-                                            }
-
-                                        </div>
-
-
-                                    </div>
-                                </div>
-
+                    {bookings.map((booking) => (
+                        <div key={booking.id}
+                             className="border rounded-2xl px-5 py-8 flex flex-col md:flex-row items-center gap-10">
+                            <div className="w-full md:w-72">
+                                <img src={booking.property.mainPhotoUrl} alt={booking.property.name}
+                                     className="object-cover aspect-square rounded-lg"/>
                             </div>
-                        ))
-                    }
+                            <div className="text-gray-600 grid grid-cols-1 md:grid-cols-3 md:gap-10 w-full">
+                                <div className="h-full flex flex-col gap-2 col-span-2">
+                                    <p className="text-xl font-semibold text-black">{booking.property.name}</p>
+
+                                    <div className="flex items-center gap-2">
+                                        <FaLocationDot/>
+                                        <p> {booking.property.city.name}, {booking.property.city.country.name}</p>
+                                    </div>
+
+                                    <div className="flex gap-4 mt-5">
+                                        <p>{calculateNights(booking.startDate, booking.endDate)} {calculateNights(booking.startDate, booking.endDate) > 1 ? 'noches' : 'noche'}</p>
+                                        |
+                                        <p> {booking.numGuest} {booking.numGuest > 1 ? 'huéspedes' : 'huésped'}</p>
+                                    </div>
+
+                                    <p className="font-semibold ">Precio
+                                        total: {formatPrice(booking.totalPrice)}</p>
+
+                                    <div className="mt-5">
+                                        <p>Ingreso: {booking.startDate}</p>
+                                        <p>Salida: {booking.endDate}</p>
+                                    </div>
+                                </div>
+
+                                <div
+                                    className="flex md:flex-col-reverse items-end justify-between text-right w-full gap-10">
+
+                                    <div>
+                                         <span className="cursor-pointer underline text-sm"
+                                               onClick={() => navigate(`/properties/${booking.property.id}`)}>
+                                             Ver detalles de la propiedad
+                                         </span>
+                                    </div>
+
+                                    <div className="text-right text-black font-semibold flex flex-col gap-3">
+                                        <div className="flex items-center gap-3 text-xl justify-end">
+                                            <p>{statusMap[booking.status].text}</p>
+                                            <GrStatusGoodSmall color={statusMap[booking.status].color}/>
+                                        </div>
+
+                                        {booking.status === 'COMPLETED' ?
+                                            <span
+                                                className="cursor-pointer text-center text-white bg-primary rounded-2xl p-2"
+                                                onClick={() => setIsModalOpen(true)}>
+                                                 Califica tu estadía
+                                            </span> : null
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    ))}
                 </div>
             }
+
+            <ReviewPropertyModal onConfirm={confirmReview} onCancel={cancelReview} isOpen={isModalOpen}/>
         </div>
     );
 };
