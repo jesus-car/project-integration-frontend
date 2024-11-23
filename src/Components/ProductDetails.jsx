@@ -20,6 +20,10 @@ import { LuBath } from 'react-icons/lu';
 import ImageSlider from './ImageSlider';
 import { formatPrice } from '../utils/formatters';
 import {policies} from "../utils/fakeData.js";
+import { AiTwotoneHeart } from "react-icons/ai";
+import { AuthContext, useAuthContext } from '../contexts/AuthContext';
+import { routes } from '../utils/routes.js';
+import { favoriteService } from '../services/favoriteService.js';
 
 const defaultIcon = new Icon({
   iconUrl: markerIcon,
@@ -100,6 +104,8 @@ const ProductDetails = () => {
     cleaning: 50,
     total: 0
   });
+  const [like, setLike] = useState(false);
+  const authContext = useAuthContext();
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -162,6 +168,25 @@ const ProductDetails = () => {
     calculateCosts(checkIn, date);
   };
 
+  const toggleLike = async(e) => {
+    e.preventDefault();
+    if(authContext.user){
+      if(authContext.favorites.some(x => x.id == detail.id)){
+          await favoriteService.removeFavorite(detail.id);
+      }else{
+          await favoriteService.addFavorite(detail.id);
+
+      }
+      await authContext.refreshFavorites();
+    }else{
+      navigate(routes.login)
+    }
+    
+};
+
+
+  
+
   return (
 <div className="mx-auto xs:px-4 sm:px-12 lg:px-14 xl:px-16 2xl:px-32 flex align-center flex-col container-detail">
 
@@ -176,9 +201,17 @@ const ProductDetails = () => {
               <span className="underline">{detail.city.name}, {detail.city.country.name}</span>
             </div>
           </div>
-          <button className="hover:bg-gray-100 p-2 rounded-full transition-colors">
-            <FaArrowLeftLong onClick={() => navigate(-1)} className="w-5 h-5 text-gray-700"/>
-          </button>
+          <div className='flex flex-col items-center'>
+            <button className="hover:bg-gray-100 p-2 rounded-full transition-colors">
+              <FaArrowLeftLong onClick={() => navigate(-1)} className="w-5 h-5 text-gray-700"/>
+            </button>
+            <div onClick={toggleLike} className={`${!authContext.favorites.some(x => x.id === detail.id)  ? "fa-heart-no" : "fa-heart"} text-2xl flex flex-row items-center gap-x-2.5 cursor-pointer`}>
+                <AiTwotoneHeart className="w-4 h-4 text-[#91b07c] "/>
+                <span className='text-sm'>Guardar</span>
+                
+            </div>
+          </div>
+          
         </div>
 
         <div className="detail-img mt-2 gap-x-2 gap-y-2">

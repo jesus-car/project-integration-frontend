@@ -1,12 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaBed, FaBath, FaUsers, FaMapMarkerAlt } from 'react-icons/fa';
 import { locationService } from '../services/locationService';
 import { formatPrice } from '../utils/formatters';
+import { AiTwotoneHeart } from "react-icons/ai";
+import "../styles/propertyCard.css"
+import { favoriteService } from '../services/favoriteService';
+import { useAuthContext } from '../contexts/AuthContext';
+import { routes } from '../utils/routes';
 
 const PropertyCard = ({ property }) => {
     const [countryName, setCountryName] = useState('');
     const [cityName, setCityName] = useState('');
+    
+    const [like, setLike] = useState(false);
+    const authContext = useAuthContext();
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchLocationData = async () => {
@@ -25,12 +34,29 @@ const PropertyCard = ({ property }) => {
         fetchLocationData();
     }, [property.countryId, property.cityId]);
 
+    const toggleLike = async(e) => {
+        e.preventDefault();
+        if(authContext.user){
+            if(authContext.favorites.some(x => x.id == property.id)){
+                await favoriteService.removeFavorite(property.id);
+            }else{
+                await favoriteService.addFavorite(property.id);
+
+            }
+            await authContext.refreshFavorites();
+        }else{
+            navigate(routes.login);
+        }
+    };
+    
+
     return (
         <div className="h-full max-w-[400px] bg-white rounded-xl shadow-[0_3px_10px_rgb(0,0,0,0.2)] 
                         hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-300 
                         overflow-hidden flex flex-col group">
             <Link to={`/properties/${property.id}`} className="h-full flex flex-col">
                 <div className="relative h-48 overflow-hidden">
+                
                     <img 
                         src={property.mainPhotoUrl} 
                         alt={property.name}
@@ -38,7 +64,14 @@ const PropertyCard = ({ property }) => {
                     />
                     <div className="absolute top-0 right-0 bg-primary text-white px-3 py-1 m-2 rounded-full text-sm font-medium">
                         {formatPrice(property.pricePerNight)}
+                        
+                    </div >
+                        
+                    <div className={`${!authContext.favorites.some(x => x.id === property.id) ? "fa-heart-no" : "fa-heart"} absolute top-0 right-0 px-3 py-1 m-2 text-3xl left-0`}>
+                        <AiTwotoneHeart onClick={toggleLike}                    
+                        />
                     </div>
+                      
                 </div>
                 
                 <div className="p-4 flex-grow flex flex-col">

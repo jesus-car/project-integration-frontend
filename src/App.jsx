@@ -14,6 +14,7 @@ import Forbidden from "./routes/Forbidden.jsx";
 import RegistrerUser from './Components/RegistrerUser.jsx';
 import ScrollToTop from './Components/ScrollToTop';
 import MyBookings from "./routes/MyBookings.jsx";
+import Favorites from './Components/Favorites.jsx';
 
 export default function App() {
     const location = useLocation();
@@ -54,6 +55,7 @@ export default function App() {
                                 <Route path={routes.myBookings} element={<MyBookings/>}/>
                                 {/* Agrega más rutas protegidas */}
                             </Route>
+                            <Route path={routes.favs} element={<Favorites />} />
 
                         </Routes>
                     </div>

@@ -2,6 +2,9 @@
 .container-form{
     overflow-y: auto;
 }
+.input-field .mb-4 {
+    margin-bottom: 0px;
+}
 
 @media (max-width: 930px){
     .btn-res{
