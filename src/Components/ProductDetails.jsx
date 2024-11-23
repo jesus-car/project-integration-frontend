@@ -342,7 +342,7 @@ const ProductDetails = () => {
           </div>
 
           <div className="py-8">
-            <h3 className="text-xl font-semibold text-gray-900 mb-4">Políticas del alojamiento</h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">Políticas de reserva</h3>
             <div className="text-gray-600 grid grid-cols-1 md:grid-cols-2 gap-5">
               {policies.map((policy, index) => (
                   <div key={index} className="mb-4">
