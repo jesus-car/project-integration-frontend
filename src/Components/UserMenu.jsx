@@ -32,7 +32,7 @@ const UserMenu = ({ user, isScrolled, isHome }) => {
         {
             label:"Mis favoritos",
             onClick: () => navigate(routes.favs),
-            requiredRoles: ['ROLE_USER'],
+            requiredRoles: ['ROLE_USER', 'ROLE_ADMIN'],
             icon: <AiTwotoneHeart/>
         },
         {

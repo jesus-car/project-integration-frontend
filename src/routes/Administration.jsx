@@ -12,6 +12,8 @@ import EditFeature from './EditFeature';
 import ListFeature from '../Components/ListFeature';
 import Users from "./Users.jsx";
 import ProtectedRoutes from "./ProtectedRoutes.jsx";
+import Category from './Category.jsx';
+
 
 const Administration = () => {
   const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 1025);
@@ -137,6 +139,8 @@ const Administration = () => {
             <Route path='/feature' element={<Features/>}>
             </Route>
             <Route path='/edit-feature/:id' element={<EditFeature/>}></Route>
+
+            <Route path='/category' element={<Category/>}></Route>
 
           </Routes>
         </div>

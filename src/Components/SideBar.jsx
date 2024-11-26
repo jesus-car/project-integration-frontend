@@ -36,6 +36,13 @@ const Sidebar = () => {
       icon: FaPlusCircle
     },
     {
+      title:'Categorias',
+      path:'/administration/category',
+      icon: FaList
+
+    },
+
+    {
       title:'Carasteristicas',
       path:'/administration/feature',
       icon: FaList
@@ -46,6 +53,7 @@ const Sidebar = () => {
       path: '/administration/add-feature',
       icon: FaPlusCircle
     },
+    
 
     {
       title: 'Usuarios',
