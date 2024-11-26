@@ -26,6 +26,9 @@ import {routes} from '../utils/routes.js';
 import {favoriteService} from '../services/favoriteService.js';
 import DoubleCalendar from "./DoubleCalendar.jsx";
 import {calculateNights} from "../utils/utils.js";
+import Button from "./Button.jsx";
+import {bookingService} from "../services/bookingService.js";
+import {useToast} from "../contexts/ToastContext.jsx";
 
 const defaultIcon = new Icon({
     iconUrl: markerIcon,
@@ -93,11 +96,13 @@ const ProductDetails = () => {
     const [openImg, setOpenImg] = useState(false);
     const [loading, setLoading] = useState(true);
     const [detail, setDetail] = useState(null);
+    const [reservedDates, setReservedDates] = useState([]);
     const [checkIn, setCheckIn] = useState(null);
     const [checkOut, setCheckOut] = useState(null);
     const [guests, setGuests] = useState(1);
     const {id} = useParams();
     const navigate = useNavigate();
+    const toast = useToast();
     const [coordinates, setCoordinates] = useState(null);
     const [mapLoading, setMapLoading] = useState(true);
     const [totalNights, setTotalNights] = useState(0);
@@ -128,8 +133,26 @@ const ProductDetails = () => {
             setTimeout(() => {
                 setLoading(false);
             }, 1000);
-        });
+        }).catch(error => {
+            toast.error('Error consultando información de la propiedad. Inténtalo de nuevo más tarde');
+            navigate(routes.home);
+        })
     }, [id]);
+
+    useEffect(() => {
+        if (!detail) return;
+        let reservedDates = [];
+        detail.bookings.forEach(booking => {
+            if (booking.status === 'COMPLETED') return;
+            const range = {
+                startDate: booking.startDate,
+                endDate: booking.endDate,
+            };
+            reservedDates.push(range);
+        })
+        setReservedDates(reservedDates);
+    }, [detail]);
+
 
     useEffect(() => {
         if (detail) {
@@ -180,6 +203,25 @@ const ProductDetails = () => {
         }
 
     };
+
+    const booking = async () => {
+        if (!checkIn || !checkOut || !guests) {
+            toast.error("Por favor, completa todos los campos");
+            return;
+        }
+        const body = {
+            propertyId: detail.id,
+            userId: authContext.user.sub,
+            startDate: checkIn,
+            endDate: checkOut,
+            totalPrice: totalCost.total,
+            numGuest: guests,
+        }
+
+        await bookingService.bookingProperty(body);
+        toast.success("Propiedad reservada con éxito");
+        navigate(routes.myBookings);
+    }
 
 
     return (
@@ -368,13 +410,10 @@ const ProductDetails = () => {
                             </div>
                         </div>
 
-                        <div className="border rounded-xl">
+                        <div className="border rounded-xl mb-3">
                             <div className="p-4">
                                 <DoubleCalendar
-                                    occupiedRanges={[
-                                        {startDate: "2024-12-10", endDate: "2024-12-13"},
-                                        {startDate: "2024-11-28", endDate: "2024-12-02"},
-                                    ]}
+                                    occupiedRanges={reservedDates}
                                     onDateChange={handleDateChange}
                                 />
                             </div>
@@ -395,9 +434,7 @@ const ProductDetails = () => {
                             </div>
                         </div>
 
-                        <button className="w-full bg-[#91b07c] text-white py-3 rounded-lg mt-4 font-semibold">
-                            Reservar
-                        </button>
+                        <Button label="Reservar"  type="primary" onClick={() => booking()} />
 
                         <div className="mt-4">
                             {totalNights > 0 && (
