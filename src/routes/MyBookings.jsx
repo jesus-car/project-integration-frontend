@@ -8,6 +8,8 @@ import {GrStatusGoodSmall} from "react-icons/gr";
 import {formatPrice} from "../utils/formatters.js";
 import {calculateNights} from "../utils/utils.js";
 import ReviewPropertyModal from "../Components/modals/ReviewPropertyModal.jsx";
+import {reviewService} from "../services/reviewService.js";
+import {useToast} from "../contexts/ToastContext.jsx";
 
 const MyBookings = () => {
 
@@ -15,21 +17,32 @@ const MyBookings = () => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
 
+    const [selectedBooking, setSelectedBooking] = useState(null);
+
     const {user} = useAuthContext();
 
     const navigate = useNavigate();
 
+    const toast = useToast();
+
     useEffect(() => {
-        const fetchUserProperties = async () => {
+        const fetchUserBookings = async () => {
             try {
                 const response = await bookingService.getUserBookings(user.sub);
-                setBookings(response);
+                setBookings(response.data);
             } catch (error) {
                 console.error(error);
             }
         }
-        fetchUserProperties();
+        fetchUserBookings();
     }, []);
+
+    useEffect(() => {
+        if (selectedBooking) {
+            setIsModalOpen(true);
+        }
+    }, [selectedBooking]);
+
 
     const statusMap = {
         'PENDING': {
@@ -56,8 +69,16 @@ const MyBookings = () => {
 
 
     const confirmReview = async (reviewData) => {
+        const body = {
+            ...reviewData,
+            userId: user.sub,
+            propertyId: selectedBooking.propertyId
+        }
+
+        await reviewService.createReview(body);
+        toast.success("Gracias por tu calificación");
         setIsModalOpen(false);
-        console.log(reviewData);
+        setSelectedBooking(null);
     }
 
     const cancelReview = () => {
@@ -83,7 +104,7 @@ const MyBookings = () => {
                 :
                 <div className="grid grid-cols-1 gap-5">
                     {bookings.map((booking) => (
-                        <div key={booking.id}
+                        <div key={booking.userId + booking.property.id + booking.startDate}
                              className="border rounded-2xl px-5 py-8 flex flex-col md:flex-row items-center gap-10">
                             <div className="w-full md:w-72">
                                 <img src={booking.property.mainPhotoUrl} alt={booking.property.name}
@@ -118,7 +139,7 @@ const MyBookings = () => {
 
                                     <div>
                                          <span className="cursor-pointer underline text-sm"
-                                               onClick={() => navigate(`/properties/${booking.property.id}`)}>
+                                               onClick={() => navigate(`/properties/${booking.propertyId}`)}>
                                              Ver detalles de la propiedad
                                          </span>
                                     </div>
@@ -132,7 +153,7 @@ const MyBookings = () => {
                                         {booking.status === 'COMPLETED' ?
                                             <span
                                                 className="cursor-pointer text-center text-white bg-primary rounded-2xl p-2"
-                                                onClick={() => setIsModalOpen(true)}>
+                                                onClick={() => setSelectedBooking(booking)}>
                                                  Califica tu estadía
                                             </span> : null
                                         }
