@@ -472,23 +472,33 @@ export const detail = {
 
 export const policies = [
     {
-        id: 1,
-        title: "Cancelación",
-        description: "Cancelación gratuita hasta 24 horas antes de la llegada."
-    },
-    {
-        id: 2,
-        title: "Mascotas",
-        description: "Tus mascotas son bienvenidas en este lugar."
+        id: 7,
+        title: "Entrada y salida",
+        description: "El check-in es a partir de las 15:00 y el check-out es antes de las 12:00. Pueden aplicarse cargos por check-in o check-out fuera de horario."
     },
     {
         id: 3,
-        title: "Fumadores",
-        description: "No se permite fumar en este alojamiento."
+        title: "Pagos",
+        description: "Los precios incluyen tarifas e impuestos. Los pagos se realizan al reservar y pueden requerir un depósito de seguridad."
+    },
+    {
+        id: 5,
+        title: "Limpieza",
+        description: "La limpieza del alojamiento está incluida en el precio. Si necesitas limpieza adicional, puedes solicitarla durante tu estancia."
+    },
+    {
+        id: 9,
+        title: "Daños",
+        description: "Cualquier daño causado durante la estancia será responsabilidad del huésped, y se podrán aplicar cargos adicionales."
     },
     {
         id: 4,
-        title: "Fiestas",
-        description: "No se permiten fiestas o eventos."
-    }
+        title: "Privacidad",
+        description: "Protegemos tus datos personales y los usamos solo para el funcionamiento seguro de la plataforma."
+    },
+    {
+        id: 6,
+        title: "Reseñas",
+        description: "Solo usuarios con reservas confirmadas pueden dejar reseñas. Comentarios ofensivos serán eliminados."
+    },
 ]

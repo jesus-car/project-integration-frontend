@@ -73,3 +73,25 @@ export const isTokenExpired = (token) => {
     // todo: por ahora retornar false mientras se valida zona horaria
     return false;
 }
+
+export function calculateNights(startDate, endDate) {
+    // Convertir las fechas de formato AAAA-MM-DD a objetos Date
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    // Validar que las fechas sean válidas
+    if (isNaN(start) || isNaN(end)) {
+        throw new Error("Las fechas proporcionadas no son válidas.");
+    }
+
+    // Asegurarse de que la fecha de inicio no sea posterior a la fecha de fin
+    if (start >= end) {
+        throw new Error("La fecha de inicio debe ser anterior a la fecha de fin.");
+    }
+
+    // Calcular la diferencia en milisegundos entre las dos fechas
+    const diffInMs = end - start;
+
+    // Convertir la diferencia de milisegundos a días (1 día = 24 * 60 * 60 * 1000)
+    return diffInMs / (1000 * 60 * 60 * 24);
+}

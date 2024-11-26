@@ -64,7 +64,6 @@ const Users = () => {
 
         setIsModalOpen(false);
         setSelectedUser(null);
-        // Llamar a la API para cambiar el rol
     };
 
     const cancelChange = () => {
