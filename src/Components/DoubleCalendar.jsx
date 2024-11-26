@@ -10,7 +10,6 @@ import {
     eachDayOfInterval,
     isBefore,
 } from "date-fns";
-import es from "date-fns/locale/es";
 import Calendar from "./Calendar.jsx";
 
 const DoubleCalendar = ({ occupiedRanges = [], onDateChange }) => {

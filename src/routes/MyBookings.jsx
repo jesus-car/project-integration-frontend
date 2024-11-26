@@ -103,8 +103,8 @@ const MyBookings = () => {
                 </div>
                 :
                 <div className="grid grid-cols-1 gap-5">
-                    {bookings.map((booking) => (
-                        <div key={booking.userId + booking.property.id + booking.startDate}
+                    {bookings.map((booking, index) => (
+                        <div key={index}
                              className="border rounded-2xl px-5 py-8 flex flex-col md:flex-row items-center gap-10">
                             <div className="w-full md:w-72">
                                 <img src={booking.property.mainPhotoUrl} alt={booking.property.name}
