@@ -48,7 +48,7 @@ const RegistrerUser = () => {
 
             case "password":
                 if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(value)){
-                    return 'La contraseña debe tener al menos una letra mayúscula, una minúscula, un número y un carácter';
+                    return 'Debe tener al menos una letra mayúscula, una minúscula, un número, un carácter y una longitud minima de 8';
                 }
                 if (value.length < 8) {
                     return "Debe tener al menos 8 caracteres.";
