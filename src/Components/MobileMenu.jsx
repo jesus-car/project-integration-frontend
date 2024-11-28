@@ -3,6 +3,7 @@ import { routes } from "../utils/routes.js";
 import Button from "./Button.jsx";
 import { useAuthContext } from '../contexts/AuthContext.jsx';
 import { AiTwotoneHeart } from "react-icons/ai";
+import {MdAdminPanelSettings, MdLibraryBooks, MdLogout} from "react-icons/md";
 
 const MobileMenu = ({ user, goTo, isOpen, onClose }) => {
     const getRoleDescription = (roleName) => {
@@ -91,15 +92,20 @@ const MobileMenu = ({ user, goTo, isOpen, onClose }) => {
                                             onClick={() => handleNavigation(routes.administrationHome)}
                                             className="w-full text-left py-3 px-4 rounded-lg hover:bg-primary/10 transition-colors flex items-center gap-3 text-primaryHover"
                                         >
-                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
-                                            </svg>
+                                            <MdAdminPanelSettings/>
                                             Panel de administración
                                         </button>
 
-                                        
+
                                     )}
-                                    
+                                    <button
+                                        onClick={() => handleNavigation(routes.myBookings)}
+                                        className="w-full text-left py-3 px-4 rounded-lg hover:bg-primary/10 transition-colors flex items-center gap-3 text-primaryHover"
+                                    >
+                                        <MdLibraryBooks />
+                                        Mis reservas
+                                    </button>
+
                                     <button
                                         onClick={() => handleNavigation(routes.favs)}
                                         className="w-full text-left py-3 px-4 rounded-lg hover:bg-primary/10 transition-colors flex items-center gap-3 text-primaryHover"
@@ -111,9 +117,7 @@ const MobileMenu = ({ user, goTo, isOpen, onClose }) => {
                                         onClick={() => handleLogout()}
                                         className="w-full text-left py-3 px-4 rounded-lg hover:bg-red-50 transition-colors flex items-center gap-3 text-red-600"
                                     >
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                                        </svg>
+                                        <MdLogout/>
                                         Cerrar sesión
                                     </button>
                                 </div>

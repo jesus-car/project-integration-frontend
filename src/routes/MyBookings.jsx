@@ -135,7 +135,7 @@ const MyBookings = () => {
                                 </div>
 
                                 <div
-                                    className="flex md:flex-col-reverse items-end justify-between text-right w-full gap-10">
+                                    className="flex flex-col-reverse items-end justify-between text-right w-full gap-10">
 
                                     <div>
                                          <span className="cursor-pointer underline text-sm"
