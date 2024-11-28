@@ -7,5 +7,9 @@ export const API_URLS = {
   FILTERED_PROPERTIES: `${API_BASE_URL}/properties/filter`,
   LOGIN: `${API_BASE_URL}/auth/login`,
   ROLES: `${API_BASE_URL}/roles/all`,
-  FAVORITES: `${API_BASE_URL}/favorites`
+  FAVORITES: `${API_BASE_URL}/favorites`,
+  BOOKING: `${API_BASE_URL}/bookings/reserve`,
+  MY_BOOKINGS: `${API_BASE_URL}/bookings/by-user-id`,
+  REVIEWS_RATE: `${API_BASE_URL}/reviews/rate`,
+  REVIEWS: `${API_BASE_URL}/reviews`,
 };
