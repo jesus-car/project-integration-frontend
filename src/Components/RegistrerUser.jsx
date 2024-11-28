@@ -34,7 +34,7 @@ const RegistrerUser = () => {
 
             case "identificationNumber":
                 if (!value.trim()) return 'El DNI es obligatorio.';
-                if (!/^\d{8}$/.test(value)) return 'Debe tener 10 dígitos.';
+                if (!/^\d{8}$/.test(value)) return 'Debe tener 8 dígitos.';
                 break; 
                 
             case "phoneNumber":
@@ -48,7 +48,7 @@ const RegistrerUser = () => {
 
             case "password":
                 if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(value)){
-                    return 'La contraseña debe tener al menos una letra mayúscula, una minúscula, un número y un carácter';
+                    return 'Debe tener al menos una letra mayúscula, una minúscula, un número, un carácter y una longitud minima de 8';
                 }
                 if (value.length < 8) {
                     return "Debe tener al menos 8 caracteres.";
@@ -150,6 +150,7 @@ const RegistrerUser = () => {
                             
                         </select>
                     </div>
+                    <div className="input-field">
             
                     <InputField
                         
@@ -161,6 +162,10 @@ const RegistrerUser = () => {
                         value={registerForm.identificationNumber}
                         required
                     />
+                    {errorList["identificationNumber"] && <p style={{ color: 'red', fontSize: "12px"}}>{errorList["identificationNumber"]}</p>}
+
+                    </div>
+                    <div className="input-field">
 
                     <InputField
                         
@@ -172,7 +177,8 @@ const RegistrerUser = () => {
                         value={registerForm.phoneNumber}
                         required
                     />
-                    {errorList["phoneNumber"] && <p style={{ color: 'red', paddingBottom: "20px", fontSize: "12px"}}>{errorList["phoneNumber"]}</p>}
+                    {errorList["phoneNumber"] && <p style={{ color: 'red', fontSize: "12px"}}>{errorList["phoneNumber"]}</p>}
+                    </div>
 
                     <InputField
                         label="Email"
