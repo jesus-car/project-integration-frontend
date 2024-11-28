@@ -96,6 +96,8 @@ const MobileMenu = ({ user, goTo, isOpen, onClose }) => {
                                             </svg>
                                             Panel de administración
                                         </button>
+
+                                        
                                     )}
                                     
                                     <button

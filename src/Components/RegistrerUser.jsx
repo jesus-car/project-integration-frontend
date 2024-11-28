@@ -111,7 +111,7 @@ const RegistrerUser = () => {
                 <img className=" img-ab absolute left-[35%] top-[40%]" src="/images/logo_primary_light.png" alt="roomly" width={150}/>
             </div>
 
-            <div className=" container-form w-3/6 pt-6 pl-16 pr-16">
+            <div className=" container-form w-3/6 pt-16 pl-16 pr-16">
                 <div>
                     <div className="flex flex-col gap-4">
                         <h2 className=" h2-res text-2xl text-center font-bold text-primaryHover">Registro de
@@ -161,6 +161,7 @@ const RegistrerUser = () => {
                         onChange={(e) => handleChange(e)}
                         value={registerForm.identificationNumber}
                         required
+                        
                     />
                     {errorList["identificationNumber"] && <p style={{ color: 'red', fontSize: "12px"}}>{errorList["identificationNumber"]}</p>}
 

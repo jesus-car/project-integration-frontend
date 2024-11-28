@@ -61,7 +61,7 @@
 
 .main-content {
   @apply pt-[72px];
-}
+} 
 
 .home-content {
   @apply pt-0;
