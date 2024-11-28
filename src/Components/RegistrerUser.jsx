@@ -150,6 +150,7 @@ const RegistrerUser = () => {
                             
                         </select>
                     </div>
+                    <div className="input-field">
             
                     <InputField
                         
@@ -162,7 +163,10 @@ const RegistrerUser = () => {
                         required
                         
                     />
-                   {errorList["identificationNumber"] && <p style={{ color: 'red', paddingBottom: "20px", fontSize: "12px"}}>{errorList["identificationNumber"]}</p>}
+                    {errorList["identificationNumber"] && <p style={{ color: 'red', fontSize: "12px"}}>{errorList["identificationNumber"]}</p>}
+
+                    </div>
+                    <div className="input-field">
 
                     <InputField
                         
@@ -174,7 +178,8 @@ const RegistrerUser = () => {
                         value={registerForm.phoneNumber}
                         required
                     />
-                    {errorList["phoneNumber"] && <p style={{ color: 'red', paddingBottom: "20px", fontSize: "12px"}}>{errorList["phoneNumber"]}</p>}
+                    {errorList["phoneNumber"] && <p style={{ color: 'red', fontSize: "12px"}}>{errorList["phoneNumber"]}</p>}
+                    </div>
 
                     <InputField
                         label="Email"

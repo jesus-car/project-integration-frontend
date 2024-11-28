@@ -18,7 +18,7 @@ import Favorites from './Components/Favorites.jsx';
 
 export default function App() {
     const location = useLocation();
-    const isHome = location.pathname === '/' || location.pathname === '/home';
+    const isHome = location.pathname === '/' || location.pathname === '/home' || location.pathname === '/login' || location.pathname === '/register';
     
     // Define rutas que deben ocultar Header y Footer
     const noLayoutRoutes = [
