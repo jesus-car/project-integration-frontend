@@ -35,10 +35,17 @@ const Sidebar = () => {
       path: '/administration/add-property',
       icon: FaPlusCircle
     },
+  
     {
       title:'Categorias',
       path:'/administration/category',
       icon: FaList
+
+    },
+    {
+      title:'Añadir Categorias',
+      path:'/administration/add-category',
+      icon: FaPlusCircle
 
     },
 

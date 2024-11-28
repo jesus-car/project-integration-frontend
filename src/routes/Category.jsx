@@ -1,14 +1,21 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { features } from "../utils/fakeData";
 import { getAllCategories } from "../services/categoryService";
 
 const Category = () => {
-    const navigate = useNavigate(); 
+    /* const navigate = useNavigate();  */
     const [showDeleteModal, setShowDeleteModal] = useState(false); 
     const [currentDelete, setCurrentDelete] = useState();
-    const [categories, setCategories] = useState();
+    const [categories, setCategories] = useState([]);
+    const navigate = useNavigate();
 
+    /* const handleEdit = (categoryId) => {
+        navigate(`/administration/edit-category/${categoryId}`);
+    }; */
+
+    const handleEdit = () => {
+        navigate(`/administration/edit-feature`);
+    };
     
     useEffect(() => {
         fetchCategories();
@@ -60,15 +67,35 @@ const Category = () => {
             <thead className="bg-gray-50">
                 <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Imagen
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Nombre
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Descripción
                 </th>
                 </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
                 {categories.map((category) => (
                 <tr key={category.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                        <img
+                            src={category.imageUrl}
+                            alt={category.name}
+                            className="h-16 w-16 object-cover rounded"
+                        />
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap">{category.name}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{category.description}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    <button
+                         onClick={() => handleEdit()}
+                        className="text-indigo-600 hover:text-indigo-900 mr-4"
+                    >
+                        Editar
+                    </button>
                     <button
                         onClick={() => {setShowDeleteModal(true); setCurrentDelete(category.id)}}
                         className="text-red-600 hover:text-red-900"
