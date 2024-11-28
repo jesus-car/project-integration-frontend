@@ -1,20 +1,22 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { getAllCategories } from "../services/categoryService";
+import { categoryService, getAllCategories } from "../services/categoryService";
+import { useToast } from "../contexts/ToastContext";
 
 const Category = () => {
     /* const navigate = useNavigate();  */
     const [showDeleteModal, setShowDeleteModal] = useState(false); 
     const [currentDelete, setCurrentDelete] = useState();
     const [categories, setCategories] = useState([]);
+    const { success } = useToast();
     const navigate = useNavigate();
 
     /* const handleEdit = (categoryId) => {
         navigate(`/administration/edit-category/${categoryId}`);
     }; */
 
-    const handleEdit = () => {
-        navigate(`/administration/edit-feature`);
+    const handleEdit = (id) => {
+        navigate(`/administration/edit-category/${id}`);
     };
     
     useEffect(() => {
@@ -25,10 +27,13 @@ const Category = () => {
        let result = await getAllCategories();
        setCategories(result);
     }
-    const onDelete = () => {
+    const onDelete = async() => {
         if(currentDelete){
-            /* onDeleteFeature(currentDelete); */
+            await categoryService.deleteCategory(currentDelete);
             setShowDeleteModal(false);
+            success('Categoria eliminada exitosamente');
+
+            await fetchCategories()
         }
     }
 
@@ -37,7 +42,7 @@ const Category = () => {
         <div className="bg-white rounded-lg p-6 max-w-sm mx-4">
             <h3 className="text-lg font-bold mb-4">Confirmar eliminación</h3>
             <p className="mb-6">
-            ¿Estás seguro de que deseas eliminar ?  Esta categoría esta asociada a varias porpiedades.
+            ¿Estás seguro de que deseas eliminar? Esta categoría esta asociada a varias porpiedades.
             </p>
             <div className="flex justify-end gap-4">
             <button
@@ -91,7 +96,7 @@ const Category = () => {
                     <td className="px-6 py-4 whitespace-nowrap">{category.description}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
                     <button
-                         onClick={() => handleEdit()}
+                         onClick={() => handleEdit(category.id)}
                         className="text-indigo-600 hover:text-indigo-900 mr-4"
                     >
                         Editar
