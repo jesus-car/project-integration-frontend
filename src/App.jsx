@@ -18,7 +18,8 @@ import Favorites from './Components/Favorites.jsx';
 
 export default function App() {
     const location = useLocation();
-    const isHome = location.pathname === '/' || location.pathname === '/home' || location.pathname === '/login' || location.pathname === '/register';
+    const noNavbarRoutes = ['/', '/home', '/login', '/register'];
+    const noNavbar = noNavbarRoutes.includes(location.pathname) || location.pathname.startsWith('/administration');
     
     // Define rutas que deben ocultar Header y Footer
     const noLayoutRoutes = [
@@ -39,7 +40,7 @@ export default function App() {
                 <div className="min-h-screen flex flex-col">
                     <ScrollToTop />
                     {!shouldHideLayout && <Header/>}
-                    <div className={`flex-grow ${isHome ? 'home-content' : 'main-content'}`} >
+                    <div className={`flex-grow ${noNavbar ? 'home-content' : 'main-content'}`} >
                         <Routes>
                             <Route path={routes.login} element={<Login/>}/>
                             <Route path={routes.register} element={<RegistrerUser/>}/>
