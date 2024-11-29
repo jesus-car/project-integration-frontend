@@ -51,7 +51,7 @@ const MobileMenu = ({ user, goTo, isOpen, onClose }) => {
                 <div className="flex flex-col h-full">
                     {!user ? (
                         <div className="flex flex-col gap-4 p-8">
-                            <img className="w-16 mb-4" src='/public/images/logo_primary_base.png' alt="Roomify" />
+                            <img className="w-16 mb-4" src='/public/images/logo_primary_base.png' alt="Roomly" />
                             <Button 
                                 type="secondary"
                                 label="Registrarse"
@@ -126,7 +126,7 @@ const MobileMenu = ({ user, goTo, isOpen, onClose }) => {
                             {/* Footer del menú */}
                             <div className="p-6 border-t border-gray-200">
                                 <div className="text-xs text-gray-500 text-center">
-                                    © 2024 Roomify. Todos los derechos reservados.
+                                    © 2024 Roomly. Todos los derechos reservados.
                                 </div>
                             </div>
                         </div>

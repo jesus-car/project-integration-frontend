@@ -11,8 +11,9 @@ import {
     isBefore,
 } from "date-fns";
 import Calendar from "./Calendar.jsx";
+import { es } from 'date-fns/locale';
 
-const DoubleCalendar = ({ occupiedRanges = [], onDateChange }) => {
+const DoubleCalendar = ({ occupiedRanges = [], onDateChange, initialDates = null }) => {
     const [currentMonth, setCurrentMonth] = useState(new Date());
     const [selectedDates, setSelectedDates] = useState({
         startDate: null,
@@ -52,45 +53,43 @@ const DoubleCalendar = ({ occupiedRanges = [], onDateChange }) => {
     };
 
     const handleDateClick = (day) => {
-        if (isDayOccupied(day)) return; // No permite seleccionar días ocupados
-        if (isBefore(day, new Date())) return; // No permite seleccionar días anteriores al día actual
+        if (isDayOccupied(day)) return;
+        if (isBefore(day, new Date())) return;
 
         if (!selectedDates.startDate || selectedDates.endDate) {
-            const newStartDate = day;
-            setSelectedDates({ startDate: newStartDate, endDate: null });
-
-            // Convertir la fecha de inicio al formato AAAA-MM-DD
+            setSelectedDates({ startDate: day, endDate: null });
             onDateChange({
-                startDate: format(newStartDate, "yyyy-MM-dd"),
+                startDate: day,
                 endDate: null,
             });
         }
         else if (selectedDates.startDate && !selectedDates.endDate) {
-            const newEndDate = day;
-
-            // Verificar si el rango seleccionado contiene días ocupados
-            if (isRangeOccupied(selectedDates.startDate, newEndDate)) {
+            if (isRangeOccupied(selectedDates.startDate, day)) {
                 alert("El rango seleccionado contiene días ocupados. Selecciona otro rango.");
-                return; // No se permite la selección de este rango
+                return;
             }
 
-            // Validación de que la fecha de inicio y la fecha de fin no sean el mismo día
-            if (isSameDay(selectedDates.startDate, newEndDate)) {
+            if (isSameDay(selectedDates.startDate, day)) {
                 alert("La fecha de inicio y la fecha de fin no pueden ser el mismo día.");
-                return; // No permite seleccionar el mismo día como inicio y fin
+                return;
             }
 
-            setSelectedDates({ ...selectedDates, endDate: newEndDate });
-            setIsCalendarOpen(false);
-
-            // Convertir las fechas seleccionadas al formato AAAA-MM-DD
+            setSelectedDates(prev => ({ ...prev, endDate: day }));
             onDateChange({
-                startDate: format(selectedDates.startDate, "yyyy-MM-dd"),
-                endDate: format(newEndDate, "yyyy-MM-dd"),
+                startDate: selectedDates.startDate,
+                endDate: day,
             });
         }
     };
 
+    useEffect(() => {
+        if (initialDates) {
+            setSelectedDates({
+                startDate: initialDates.startDate ? new Date(initialDates.startDate) : null,
+                endDate: initialDates.endDate ? new Date(initialDates.endDate) : null
+            });
+        }
+    }, [initialDates]);
 
     // Genera los días del mes, ajustando para que empiece en lunes
     const generateDays = (month) => {
@@ -137,12 +136,10 @@ const DoubleCalendar = ({ occupiedRanges = [], onDateChange }) => {
         return "bg-white hover:bg-gray-200";
     };
 
-    const formattedStartDate = selectedDates.startDate
-        ? format(selectedDates.startDate, "dd/MM/yyyy")
-        : "Fecha inicio";
-    const formattedEndDate = selectedDates.endDate
-        ? format(selectedDates.endDate, "dd/MM/yyyy")
-        : "Fecha fin";
+    const formattedDate = (date) => {
+        if (!date) return "Agregar fecha";
+        return format(date, "MMMM dd", { locale: es });
+    };
 
     const handleClearDates = () => {
         setSelectedDates({ startDate: null, endDate: null });
@@ -153,56 +150,106 @@ const DoubleCalendar = ({ occupiedRanges = [], onDateChange }) => {
         <div className="relative w-full" ref={calendarRef}>
             {/* Input que despliega el calendario */}
             <div
-                className="flex justify-between items-center border p-2 rounded cursor-pointer"
+                className="flex items-center border border-gray-300 rounded-lg cursor-pointer hover:border-gray-400 
+                         transition-colors divide-x h-[42px] bg-white"
                 onClick={() => setIsCalendarOpen((prev) => !prev)}
             >
-                <span>{`${formattedStartDate} - ${formattedEndDate}`}</span>
-                <span className="text-gray-600">▼</span>
+                {/* Check in */}
+                <div className="flex-1 px-2 ">
+                    <div className="flex flex-col">
+                        <span className="text-center text-xs font-medium text-gray-800">Fecha entrada</span>
+                        <span className="text-center text-sm text-gray-600">
+                            {formattedDate(selectedDates.startDate)}
+                        </span>
+                    </div>
+                </div>
+
+                {/* Check out */}
+                <div className="flex-1 px-2 ">
+                    <div className="flex flex-col">
+                        <span className="text-center text-xs font-medium text-gray-800">Fecha salida</span>
+                        <span className="text-center text-sm text-gray-600">
+                            {formattedDate(selectedDates.endDate)}
+                        </span>
+                    </div>
+                </div>
             </div>
 
             {/* Calendario */}
             {isCalendarOpen && (
-                <div className="absolute -top-20 md:top-12 right-0 bg-white border rounded shadow-lg z-50">
-                    <div className="flex items-center justify-between w-full px-4 pt-2">
-                        <button
-                            onClick={handlePrevMonth}
-                            className={`text-gray-700 ${currentMonth.getMonth() === new Date().getMonth() && currentMonth.getFullYear() === new Date().getFullYear() ? "cursor-not-allowed" : ""}`}
-                            disabled={currentMonth.getMonth() === new Date().getMonth() && currentMonth.getFullYear() === new Date().getFullYear()} // Deshabilitar si estamos en el mes actual
+                <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+                    <div 
+                        className="absolute bg-white rounded-lg shadow-xl p-4"
+                        style={{
+                            maxWidth: '800px',
+                            width: '95%',
+                            maxHeight: '90vh',
+                            overflowY: 'auto'
+                        }}
+                    >
+                        {/* Botón de cerrar */}
+                        <button 
+                            onClick={() => setIsCalendarOpen(false)}
+                            className="absolute right-3 top-1 text-gray-500 hover:text-gray-700 z-10"
                         >
-                            ←
+                            ✕
                         </button>
-                        <button onClick={handleNextMonth} className="text-gray-700">
-                            →
-                        </button>
-                    </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 pt-0 w-max">
-                        {/* Mes actual */}
-                        <Calendar
-                            month={currentMonth}
-                            onDateClick={handleDateClick}
-                            selectedDates={selectedDates}
-                            getDayClassName={getDayClassName}
-                            generateDays={generateDays}
-                        />
+                        <div className="flex items-center justify-between w-full px-4 pt-2">
+                            <button
+                                onClick={handlePrevMonth}
+                                className={`text-gray-700 text-[2rem] hover:bg-gray-200 rounded-full h-[42px] w-[42px] flex items-center justify-center ${
+                                    currentMonth.getMonth() === new Date().getMonth() && 
+                                    currentMonth.getFullYear() === new Date().getFullYear() 
+                                        ? "cursor-not-allowed" 
+                                        : ""
+                                }`}
+                                disabled={
+                                    currentMonth.getMonth() === new Date().getMonth() && 
+                                    currentMonth.getFullYear() === new Date().getFullYear()
+                                }
+                            >
+                                <span className="block mb-[.3rem]">←</span>
+                            </button>
+                            <button onClick={handleNextMonth} className="text-gray-700 text-[2rem] hover:bg-gray-200 rounded-full h-[42px] w-[42px] flex items-center justify-center">
+                                <span className="block mb-[.3rem]">→</span>
+                            </button>
+                        </div>
 
-                        {/* Mes siguiente */}
-                        <Calendar
-                            month={addMonths(currentMonth, 1)}
-                            onDateClick={handleDateClick}
-                            selectedDates={selectedDates}
-                            getDayClassName={getDayClassName}
-                            generateDays={generateDays}
-                        />
-                    </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4">
+                            {/* Mes actual */}
+                            <Calendar
+                                month={currentMonth}
+                                onDateClick={handleDateClick}
+                                selectedDates={selectedDates}
+                                getDayClassName={getDayClassName}
+                                generateDays={generateDays}
+                            />
 
-                    <div className="p-4 text-center">
-                        <button
-                            onClick={handleClearDates}
-                            className="text-red-500 hover:text-red-700"
-                        >
-                            Limpiar fechas
-                        </button>
+                            {/* Mes siguiente */}
+                            <Calendar
+                                month={addMonths(currentMonth, 1)}
+                                onDateClick={handleDateClick}
+                                selectedDates={selectedDates}
+                                getDayClassName={getDayClassName}
+                                generateDays={generateDays}
+                            />
+                        </div>
+
+                        <div className="flex justify-center gap-4 pt-4 border-t">
+                            <button
+                                onClick={handleClearDates}
+                                className="px-4 py-2 text-red-500 hover:text-red-700"
+                            >
+                                Limpiar fechas
+                            </button>
+                            <button
+                                onClick={() => setIsCalendarOpen(false)}
+                                className="px-4 py-2 text-primary hover:text-primary/80"
+                            >
+                                Aplicar
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

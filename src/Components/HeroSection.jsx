@@ -12,6 +12,7 @@ const HeroSection = () => {
     city: '',
     country: '',
     category: '',
+    dates: { startDate: null, endDate: null }
   });
 
   const [countries, setCountries] = useState([]);
@@ -52,20 +53,19 @@ const HeroSection = () => {
     }
   };
 
-  const handleSearch = async () => {
+  const handleSearch = async (filters) => {
     try {
-      const filters = {
-        cityId: search.city,
-        countryId: search.country,
-        categoryId: search.category,
+      const searchFilters = {
+        cityId: filters.cityId,
+        countryId: filters.countryId,
+        categoryId: filters.categoryId,
+        startDate: filters.startDate,
+        endDate: filters.endDate
       };
-
-      const results = await filterProperties(filters);
 
       navigate('/properties', {
         state: {
-          filterResults: results,
-          appliedFilters: filters,
+          appliedFilters: searchFilters,
         },
       });
     } catch (error) {
@@ -108,7 +108,7 @@ const HeroSection = () => {
         transition={{ duration: 0.8 }}
         className="relative z-10 w-full h-full flex items-center justify-center"
       >
-        <div className="w-full max-w-5xl mx-auto px-4 sm:px-8 md:px-12">
+        <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-8 md:px-12">
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}

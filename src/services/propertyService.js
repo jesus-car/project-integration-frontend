@@ -18,7 +18,9 @@ export const filterProperties = async (filters = {}, page = 0, size = 10) => {
                 body: JSON.stringify({
                     cityId: filters.cityId ? parseInt(filters.cityId) : null,
                     countryId: filters.countryId ? parseInt(filters.countryId) : null,
-                    categoryId: filters.categoryId ? parseInt(filters.categoryId) : null
+                    categoryId: filters.categoryId ? parseInt(filters.categoryId) : null,
+                    startDate: filters.startDate || null,
+                    endDate: filters.endDate || null
                 })
             }
         );

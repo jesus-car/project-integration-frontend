@@ -31,6 +31,10 @@ const Properties = () => {
     city: appliedFilters?.cityId || '',
     country: appliedFilters?.countryId || '',
     category: categoryId || appliedFilters?.categoryId || '',
+    dates: {
+      startDate: appliedFilters?.startDate || null,
+      endDate: appliedFilters?.endDate || null
+    }
   });
 
   const initialCategories = location.state?.selectedCategories || [];
@@ -157,17 +161,15 @@ const Properties = () => {
     }
   };
 
-  const handleSearch = async () => {
+  const handleSearch = async (filters) => {
     try {
-      const filters = {
-        cityId: search.city,
-        countryId: search.country,
-        categoryId: search.category,
-      };
-
       navigate('/properties', {
         state: {
-          appliedFilters: filters,
+          appliedFilters: {
+            ...filters,
+            startDate: filters.startDate,
+            endDate: filters.endDate
+          },
         },
         replace: true,
       });
