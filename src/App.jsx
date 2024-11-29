@@ -55,8 +55,10 @@ export default function App() {
                                 <Route path={routes.administration} element={<Administration/>}/>
                                 {/* Agrega más rutas protegidas */}
                             </Route>
-                            <Route path={routes.favs} element={<Favorites />} />
-                            <Route path={routes.myBookings} element={<MyBookings/>}/>
+                            <Route element={<ProtectedRoutes allowedRoles={["ROLE_ADMIN", "ROLE_OWNER", "ROLE_USER"]} />}>
+                                <Route path={routes.favs} element={<Favorites />} />
+                                <Route path={routes.myBookings} element={<MyBookings/>}/>
+                            </Route>
 
                         </Routes>
                     </div>
