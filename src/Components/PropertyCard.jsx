@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaBed, FaBath, FaUsers, FaMapMarkerAlt } from 'react-icons/fa';
+import { FaBed, FaBath, FaUsers, FaMapMarkerAlt, FaStar } from 'react-icons/fa';
 import { locationService } from '../services/locationService';
 import { formatPrice } from '../utils/formatters';
 import { AiTwotoneHeart } from "react-icons/ai";
@@ -8,10 +8,13 @@ import "../styles/propertyCard.css"
 import { favoriteService } from '../services/favoriteService';
 import { useAuthContext } from '../contexts/AuthContext';
 import { routes } from '../utils/routes';
+import { propertyService } from '../services/propertyService';
 
 const PropertyCard = ({ property }) => {
+    
     const [countryName, setCountryName] = useState('');
     const [cityName, setCityName] = useState('');
+    const [propertyDetails, setPropertyDetails] = useState(null);
     
     const [like, setLike] = useState(false);
     const authContext = useAuthContext();
@@ -33,6 +36,20 @@ const PropertyCard = ({ property }) => {
 
         fetchLocationData();
     }, [property.countryId, property.cityId]);
+
+    useEffect(() => {
+        const fetchPropertyDetails = async () => {
+            try {
+                const details = await propertyService.getPropertyById(property.id);
+                console.log(details);
+                setPropertyDetails(details);
+            } catch (error) {
+                console.error('Error fetching property details:', error);
+            }
+        };
+
+        fetchPropertyDetails();
+    }, [property.id]);
 
     const toggleLike = async(e) => {
         e.preventDefault();
@@ -76,16 +93,35 @@ const PropertyCard = ({ property }) => {
                 
                 <div className="p-4 flex-grow flex flex-col">
                     <div className="flex-grow">
+                          {propertyDetails && (
+                            <div className="flex items-end justify-end gap-2 ml-auto">
+                                <div className="flex gap-1">
+                                    {[...Array(5)].map((_, index) => (
+                                        <FaStar
+                                            key={index}
+                                            className={`w-3 h-3 ${
+                                                index < Math.round(propertyDetails.averageRating)
+                                                    ? 'text-[#91b07c]'
+                                                    : 'text-gray-300'
+                                            }`}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                         <div className="flex items-start justify-between mb-2">
                             <h3 className="text-lg font-semibold text-gray-800 line-clamp-1">
                                 {property.name}
                             </h3>
+                                              
                         </div>
                         
-                        <div className="flex items-center text-gray-600 text-sm mb-3">
+                        <div className="flex items-center text-gray-600 text-sm mb-2">
                             <FaMapMarkerAlt className="text-primary mr-1" />
                             <span>{cityName && countryName ? `${cityName}, ${countryName}` : 'Cargando ubicación...'}</span>
                         </div>
+
+
                         
                         <p className="text-gray-600 text-sm mb-4 line-clamp-2">
                             {property.description}

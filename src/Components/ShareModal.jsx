@@ -126,7 +126,7 @@ const ShareModal = ({ isOpen, onClose, property }) => {
                             />
                         </div>
 
-                        <div className="grid grid-cols-1 gap-2 mt-4">
+                        <div className="grid grid-cols-2 sm:grid-cols-2 gap-2 mt-4">
                             {shareButtons.map((button, index) => (
                                 <button
                                     key={index}
@@ -134,7 +134,7 @@ const ShareModal = ({ isOpen, onClose, property }) => {
                                     className="flex items-center gap-3 w-full p-3 hover:bg-gray-100 rounded-lg transition-colors text-left"
                                 >
                                     {button.icon}
-                                    <span>{button.label}</span>
+                                    <span className="text-sm">{button.label}</span>
                                 </button>
                             ))}
                         </div>
