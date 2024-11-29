@@ -50,12 +50,13 @@ const Home = () => {
     const fetchProperties = async () => {
       try {
         // Obtener 8 propiedades para la sección principal
-        const response = await propertyService.getFilteredProperties({}, 0, 8);
-        setProperties(response);
+        const principalProperties = await propertyService.getFilteredProperties({}, 0, 12);
+        console.log(principalProperties);
+        setProperties(principalProperties);
         
         // Seleccionar 4 propiedades aleatorias para recomendados
-        if (response.content && response.content.length > 0) {
-          const randomProperties = getRandomItems(response.content, 4);
+        if (principalProperties.content && principalProperties.content.length > 0) {
+          const randomProperties = principalProperties.content.slice(8, 12);
           setRecommendedProperties(randomProperties);
         }
       } catch (error) {
@@ -110,7 +111,7 @@ const Home = () => {
             </div>
           ) : (
             <div className="mx-auto justify-items-center grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {properties.content?.map(property => (
+              {properties.content?.slice(0, 8).map(property => (
                 <div key={property.id} className="transform transition duration-200 hover:scale-[1.02]">
                   <PropertyCard 
                     property={{

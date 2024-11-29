@@ -29,6 +29,8 @@ import {calculateNights} from "../utils/utils.js";
 import Button from "./Button.jsx";
 import {bookingService} from "../services/bookingService.js";
 import {useToast} from "../contexts/ToastContext.jsx";
+import ShareModal from './ShareModal.jsx';
+import { IoShareOutline } from 'react-icons/io5';
 
 const defaultIcon = new Icon({
     iconUrl: markerIcon,
@@ -113,6 +115,7 @@ const ProductDetails = () => {
     });
     const [like, setLike] = useState(false);
     const authContext = useAuthContext();
+    const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
@@ -239,18 +242,28 @@ const ProductDetails = () => {
                             <span className="underline">{detail.city.name}, {detail.city.country.name}</span>
                         </div>
                     </div>
-                    <div className='flex flex-col items-center'>
-                        <button className="hover:bg-gray-100 p-2 rounded-full transition-colors">
-                            <FaArrowLeftLong onClick={() => navigate(-1)} className="w-5 h-5 text-gray-700"/>
-                        </button>
-                        <div onClick={toggleLike}
-                             className={`${!authContext.favorites.some(x => x.id === detail.id) ? "fa-heart-no" : "fa-heart"} text-2xl flex flex-row items-center gap-x-2.5 cursor-pointer`}>
-                            <AiTwotoneHeart className="w-4 h-4 text-[#91b07c] "/>
-                            <span className='text-sm'>Guardar</span>
-
+                    <div className="flex items-center gap-3">
+                        <div 
+                            onClick={() => setIsShareModalOpen(true)}
+                            className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 rounded-lg cursor-pointer transition-colors"
+                        >
+                            <IoShareOutline className="w-4 h-4 text-gray-600"/>
+                            <span className="text-sm font-medium text-gray-600">Compartir</span>
                         </div>
+                        <div 
+                            onClick={toggleLike}
+                            className={`flex items-center gap-2 px-4 py-2 hover:bg-gray-100 rounded-lg cursor-pointer transition-colors`}
+                        >
+                            <AiTwotoneHeart className={`w-4 h-4 ${authContext.favorites.some(x => x.id === detail.id) ? 'text-[#91b07c]' : 'text-gray-600'}`}/>
+                            <span className="text-sm font-medium text-gray-600">Guardar</span>
+                        </div>
+                        <button 
+                            className="p-2 hover:bg-gray-100 rounded-full transition-colors ml-2"
+                            onClick={() => navigate(-1)}
+                        >
+                            <FaArrowLeftLong className="w-5 h-5 text-gray-600"/>
+                        </button>
                     </div>
-
                 </div>
 
                 <div className="detail-img mt-2 gap-x-2 gap-y-2">
@@ -274,7 +287,7 @@ const ProductDetails = () => {
                         ))}
                         <div
                             onClick={handleOpenImg}
-                            className="more-img cursor-pointer bg-white w-44 h-8 flex flex-row items-center rounded-md gap-x-4 pl-8 justify-self-end absolute bottom-5 mr-5"
+                            className="more-img cursor-pointer bg-white w-44 h-8 flex flex-row items-center rounded-md gap-x-4 pl-8 justify-self-end absolute bottom-5 mr-5 z-0"
                         >
                             <TfiLayoutGrid2Alt/>
                             <button>Más fotos</button>
@@ -363,7 +376,7 @@ const ProductDetails = () => {
                                     center={[coordinates.lat, coordinates.lng]}
                                     zoom={13}
                                     scrollWheelZoom={false}
-                                    className="h-[400px] rounded-lg"
+                                    className="h-[400px] rounded-lg z-0"
                                 >
                                     <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
                                     <Marker position={[coordinates.lat, coordinates.lng]} icon={defaultIcon}>
@@ -464,6 +477,12 @@ const ProductDetails = () => {
                     onClose={handleCloseImg}
                 />
             )}
+
+            <ShareModal 
+                isOpen={isShareModalOpen}
+                onClose={() => setIsShareModalOpen(false)}
+                property={detail}
+            />
         </div>
     );
 };
