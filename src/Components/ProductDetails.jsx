@@ -1,6 +1,7 @@
 import {FaArrowLeftLong} from 'react-icons/fa6';
 import {TfiLayoutGrid2Alt} from 'react-icons/tfi';
 import {FaStar} from 'react-icons/fa6';
+import { FaCheckCircle } from "react-icons/fa";
 import {useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
 import {propertyService} from '../services/propertyService';
@@ -31,6 +32,8 @@ import {bookingService} from "../services/bookingService.js";
 import {useToast} from "../contexts/ToastContext.jsx";
 import ShareModal from './ShareModal.jsx';
 import { IoShareOutline } from 'react-icons/io5';
+import ReviewPropertyModal from './modals/ReviewPropertyModal';
+import { reviewService } from '../services/reviewService';
 
 const defaultIcon = new Icon({
     iconUrl: markerIcon,
@@ -116,6 +119,10 @@ const ProductDetails = () => {
     const [like, setLike] = useState(false);
     const authContext = useAuthContext();
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+    const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+    const [userHasBooked, setUserHasBooked] = useState(false);
+    const [userHasReviewed, setUserHasReviewed] = useState(false);
+    const { user } = useAuthContext();
 
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
@@ -173,6 +180,30 @@ const ProductDetails = () => {
         }
     }, [detail]);
 
+    useEffect(() => {
+        if (user && detail) {
+            const fetchUserBookings = async () => {
+                try {
+                    const response = await bookingService.getUserBookings(user.sub);
+                    const hasCompletedBooking = response.data.some(booking => 
+                        booking.propertyId === detail.id && booking.status === 'CONFIRMED'
+                    );
+                    setUserHasBooked(hasCompletedBooking);
+
+                    const hasReviewed = detail.reviews.some(review => 
+                        review.userId === parseInt(user.sub)
+                    );
+                    setUserHasReviewed(hasReviewed);
+                } catch (error) {
+                    console.error('Error fetching user bookings:', error);
+                    setUserHasBooked(false);
+                }
+            };
+
+            fetchUserBookings();
+        }
+    }, [user, detail]);
+
     if (loading || !detail) return <Spinner/>;
 
     const getInitials = (firstName, lastName) => {
@@ -226,23 +257,38 @@ const ProductDetails = () => {
         navigate(routes.myBookings);
     }
 
+    const handleReviewSubmit = async ({ rating, comment }) => {
+        try {
+            const review = {
+                propertyId: detail.id,
+                userId: user.sub,
+                comment,
+                rating: rating.toString(),
+                date: new Date().toISOString()
+            };
+
+            await reviewService.createReview(review);
+            toast.success('Reseña enviada con éxito');
+            propertyService.getPropertyById(id).then(property => {
+                setDetail(property);
+            });
+        } catch (error) {
+            toast.error('Error al enviar la reseña');
+        }
+    };
 
     return (
         <div
             className="mx-auto xs:px-4 sm:px-12 lg:px-14 xl:px-16 2xl:px-32 flex align-center flex-col container-detail">
 
             <div className="relative">
-                <div className="flex justify-between items-center py-6">
-                    <div className="flex flex-col gap-2">
-                        <h1 className="text-3xl font-semibold text-gray-900">{detail.name}</h1>
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <FaStar className="w-4 h-4 text-[#91b07c]"/>
-                            <span>4.9</span>
-                            <span>·</span>
-                            <span className="underline">{detail.city.name}, {detail.city.country.name}</span>
-                        </div>
+                <div className="flex flex-col sm:flex-row justify-between items-start gap-4 py-6">
+                    <div className="w-full sm:w-auto">
+                        <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900">{detail.name}</h1>
+                       
                     </div>
-                    <div className="flex items-center gap-3">
+
+                    <div className="flex w-full sm:w-auto justify-center gap-2">
                         <div 
                             onClick={() => setIsShareModalOpen(true)}
                             className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 rounded-lg cursor-pointer transition-colors"
@@ -252,13 +298,13 @@ const ProductDetails = () => {
                         </div>
                         <div 
                             onClick={toggleLike}
-                            className={`flex items-center gap-2 px-4 py-2 hover:bg-gray-100 rounded-lg cursor-pointer transition-colors`}
+                            className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 rounded-lg cursor-pointer transition-colors"
                         >
                             <AiTwotoneHeart className={`w-4 h-4 ${authContext.favorites.some(x => x.id === detail.id) ? 'text-[#91b07c]' : 'text-gray-600'}`}/>
                             <span className="text-sm font-medium text-gray-600">Guardar</span>
                         </div>
                         <button 
-                            className="p-2 hover:bg-gray-100 rounded-full transition-colors ml-2"
+                            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                             onClick={() => navigate(-1)}
                         >
                             <FaArrowLeftLong className="w-5 h-5 text-gray-600"/>
@@ -320,6 +366,43 @@ const ProductDetails = () => {
                             </div>
                         </div>
                     </div>
+
+                    <div className="py-6 border-b">
+                        <div className="flex flex-col gap-4">
+                            <h3 className="text-xl font-semibold text-gray-900">Calificaciones y opiniones</h3>
+                            
+                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                <div className="flex items-center gap-4">
+                                    <span className="text-4xl font-semibold">{Number(detail.averageRating).toFixed(1)}</span>
+                                    <div className="flex flex-col gap-1">
+                                        <div className="flex gap-1">
+                                            {[...Array(5)].map((_, index) => (
+                                                <FaStar
+                                                    key={index}
+                                                    className={`w-5 h-5 ${
+                                                        index < Math.round(detail.averageRating)
+                                                            ? 'text-[#91b07c]'
+                                                            : 'text-gray-300'
+                                                    }`}
+                                                />
+                                            ))}
+                                        </div>
+                                        <span className="text-sm text-gray-600">Calificación general</span>
+                                    </div>
+                                </div>
+                                
+                                <div className="flex flex-col items-start sm:items-end">
+                                    <span className="text-lg font-medium text-gray-900">{detail.totalRatings} reseñas</span>
+                                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                                        <span>Todas verificadas</span>
+                                        <FaCheckCircle className="w-4 h-4 text-[#91b07c]" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
 
                     <div className="grid grid-cols-4 gap-2 py-8 border-b xs:grid-cols-2">
                         <div className="flex flex-col items-center text-center">
@@ -395,6 +478,71 @@ const ProductDetails = () => {
                         </div>
                     </div>
 
+                    <div className="py-8 border-b">
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                            <div className="flex items-center gap-4">
+                                <h3 className="text-xl font-semibold text-gray-900">
+                                    {detail.totalRatings} reseñas
+                                </h3>
+                                <div className="flex items-center gap-2">
+                                    <FaStar className="w-5 h-5 text-[#91b07c]" />
+                                    <span className="font-medium">
+                                        {Number(detail.averageRating).toFixed(1)}
+                                    </span>
+                                </div>
+                            </div>
+                            {user ? (
+                                userHasBooked && !userHasReviewed ? (
+                                    <button
+                                        onClick={() => setIsReviewModalOpen(true)}
+                                        className="w-full sm:w-auto px-4 py-2 bg-[#91b07c] text-white rounded-lg hover:bg-[#91b07c]/90 transition-colors"
+                                    >
+                                        Valorar propiedad
+                                    </button>
+                                ) : userHasReviewed ? (
+                                    <span className="text-sm text-gray-500">Ya has valorado esta propiedad</span>
+                                ) : (
+                                    <span className="text-sm text-gray-500">Reserva para poder valorar</span>
+                                )
+                            ) : (
+                                <span className="text-sm text-gray-500">Inicia sesión para valorar</span>
+                            )}
+                        </div>
+
+                        <div className="grid grid-cols-1 gap-4">
+                            {detail.reviews.map((review, index) => (
+                                <div key={index} className="flex flex-col gap-3 p-6 border rounded-lg bg-white hover:shadow-md transition-shadow">
+                                    <div className="flex items-start justify-between">
+                                        <div className="flex items-start sm:items-center gap-4">
+                                            <div className="w-12 h-12 rounded-full bg-[#91b07c] flex items-center justify-center text-white font-semibold shrink-0">
+                                                {review.username.charAt(0).toUpperCase()}
+                                            </div>
+                                            <div className="min-w-0">
+                                                <p className="font-medium text-base truncate">
+                                                    {review.username}
+                                                </p>
+                                                <p className="text-sm text-gray-500">
+                                                    {new Date(review.date).toLocaleDateString('es-ES', {
+                                                        year: 'numeric',
+                                                        month: 'long',
+                                                        day: 'numeric'
+                                                    })}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-1 ml-4 shrink-0">
+                                            <FaStar className="w-5 h-5 text-[#91b07c]" />
+                                            <span className="text-base font-medium">{review.rating}</span>
+                                        </div>
+                                    </div>
+                                    <p className="text-base text-gray-600 break-words mt-2">
+                                        {review.comment}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
                     <div className="py-8">
                         <h3 className="text-xl font-semibold text-gray-900 mb-4">Políticas de reserva</h3>
                         <div className="text-gray-600 grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -417,10 +565,7 @@ const ProductDetails = () => {
                 </span>
                                 <span className="text-gray-500 text-base">noche</span>
                             </div>
-                            <div className="flex items-center gap-1 text-sm">
-                                <FaStar className="text-[#91b07c] w-4 h-4"/>
-                                <span className="font-medium">4.9</span>
-                            </div>
+
                         </div>
 
                         <div className="border rounded-xl mb-3">
@@ -482,6 +627,13 @@ const ProductDetails = () => {
                 isOpen={isShareModalOpen}
                 onClose={() => setIsShareModalOpen(false)}
                 property={detail}
+            />
+
+            <ReviewPropertyModal
+                isOpen={isReviewModalOpen}
+                onClose={() => setIsReviewModalOpen(false)}
+                onSubmit={handleReviewSubmit}
+                propertyName={detail.name}
             />
         </div>
     );
