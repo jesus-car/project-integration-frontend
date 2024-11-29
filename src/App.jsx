@@ -53,10 +53,10 @@ export default function App() {
                             {/* Agrupación de rutas protegidas */}
                             <Route element={<ProtectedRoutes allowedRoles={["ROLE_ADMIN", "ROLE_OWNER"]} />}>
                                 <Route path={routes.administration} element={<Administration/>}/>
-                                <Route path={routes.myBookings} element={<MyBookings/>}/>
                                 {/* Agrega más rutas protegidas */}
                             </Route>
                             <Route path={routes.favs} element={<Favorites />} />
+                            <Route path={routes.myBookings} element={<MyBookings/>}/>
 
                         </Routes>
                     </div>

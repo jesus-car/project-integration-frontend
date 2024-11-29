@@ -25,7 +25,7 @@ const UserMenu = ({ user, isScrolled, isHome }) => {
         {
             label: "Mis reservas",
             onClick: () => navigate(routes.myBookings),
-            requiredRoles: ['ROLE_ADMIN', 'ROLE_OWNER'],
+            requiredRoles: ['ROLE_USER', 'ROLE_ADMIN', 'ROLE_OWNER'],
             icon: <MdLibraryBooks />
 
         },
