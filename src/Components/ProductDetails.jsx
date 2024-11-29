@@ -274,7 +274,7 @@ const ProductDetails = () => {
                         ))}
                         <div
                             onClick={handleOpenImg}
-                            className="more-img cursor-pointer bg-white w-44 h-8 flex flex-row items-center rounded-md gap-x-4 pl-8 justify-self-end absolute bottom-5 mr-5"
+                            className="more-img cursor-pointer bg-white w-44 h-8 flex flex-row items-center rounded-md gap-x-4 pl-8 justify-self-end absolute bottom-5 mr-5 z-0"
                         >
                             <TfiLayoutGrid2Alt/>
                             <button>Más fotos</button>
@@ -363,7 +363,7 @@ const ProductDetails = () => {
                                     center={[coordinates.lat, coordinates.lng]}
                                     zoom={13}
                                     scrollWheelZoom={false}
-                                    className="h-[400px] rounded-lg"
+                                    className="h-[400px] rounded-lg z-0"
                                 >
                                     <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
                                     <Marker position={[coordinates.lat, coordinates.lng]} icon={defaultIcon}>
