@@ -12,6 +12,8 @@ import {
 } from "date-fns";
 import Calendar from "./Calendar.jsx";
 import { es } from 'date-fns/locale';
+import { Dialog } from '@headlessui/react'
+import { IoClose } from 'react-icons/io5'
 
 const DoubleCalendar = ({ occupiedRanges = [], onDateChange, initialDates = null }) => {
     const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -20,18 +22,6 @@ const DoubleCalendar = ({ occupiedRanges = [], onDateChange, initialDates = null
         endDate: null,
     });
     const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-    const calendarRef = useRef();
-
-    // Manejo de clics fuera del calendario
-    useEffect(() => {
-        const handleOutsideClick = (event) => {
-            if (calendarRef.current && !calendarRef.current.contains(event.target)) {
-                setIsCalendarOpen(false);
-            }
-        };
-        document.addEventListener("mousedown", handleOutsideClick);
-        return () => document.removeEventListener("mousedown", handleOutsideClick);
-    }, []);
 
     // Verifica si un día está ocupado
     const isDayOccupied = (day) => {
@@ -116,22 +106,15 @@ const DoubleCalendar = ({ occupiedRanges = [], onDateChange, initialDates = null
 
     // Estilo de los días seleccionados u ocupados
     const getDayClassName = (day) => {
-        if (isBefore(day, new Date())) return "bg-gray-200 text-gray-400 cursor-not-allowed"; // Días anteriores deshabilitados
-        if (selectedDates.startDate && isBefore(day, selectedDates.startDate)) return "bg-gray-200 text-gray-400 cursor-not-allowed"; // Días anteriores a la fecha de inicio deshabilitados
-        if (isDayOccupied(day)) return "bg-red-200 text-red-600 cursor-not-allowed"; // Días ocupados
-        if (
-            isSameDay(day, selectedDates.startDate) ||
-            isSameDay(day, selectedDates.endDate)
-        )
+        if (isBefore(day, new Date())) return "bg-gray-200 text-gray-400 cursor-not-allowed";
+        if (selectedDates.startDate && isBefore(day, selectedDates.startDate)) return "bg-gray-200 text-gray-400 cursor-not-allowed";
+        if (isDayOccupied(day)) return "bg-red-200 text-red-600 cursor-not-allowed";
+        if (isSameDay(day, selectedDates.startDate) || isSameDay(day, selectedDates.endDate))
             return "bg-blue-500 text-white";
-        if (
-            selectedDates.startDate &&
-            selectedDates.endDate &&
-            isWithinInterval(day, {
-                start: selectedDates.startDate,
-                end: selectedDates.endDate,
-            })
-        )
+        if (selectedDates.startDate && selectedDates.endDate && isWithinInterval(day, {
+            start: selectedDates.startDate,
+            end: selectedDates.endDate,
+        }))
             return "bg-blue-100";
         return "bg-white hover:bg-gray-200";
     };
@@ -143,19 +126,20 @@ const DoubleCalendar = ({ occupiedRanges = [], onDateChange, initialDates = null
 
     const handleClearDates = () => {
         setSelectedDates({ startDate: null, endDate: null });
-        setIsCalendarOpen(false); // Cerrar el calendario al limpiar las fechas
+        onDateChange({ startDate: null, endDate: null });
+        setIsCalendarOpen(false);
     };
 
     return (
-        <div className="relative w-full" ref={calendarRef}>
+        <div className="relative w-full">
             {/* Input que despliega el calendario */}
             <div
                 className="flex items-center border border-gray-300 rounded-lg cursor-pointer hover:border-gray-400 
                          transition-colors divide-x h-[42px] bg-white"
-                onClick={() => setIsCalendarOpen((prev) => !prev)}
+                onClick={() => setIsCalendarOpen(true)}
             >
                 {/* Check in */}
-                <div className="flex-1 px-2 ">
+                <div className="flex-1 px-2">
                     <div className="flex flex-col">
                         <span className="text-center text-xs font-medium text-gray-800">Fecha entrada</span>
                         <span className="text-center text-sm text-gray-600">
@@ -165,7 +149,7 @@ const DoubleCalendar = ({ occupiedRanges = [], onDateChange, initialDates = null
                 </div>
 
                 {/* Check out */}
-                <div className="flex-1 px-2 ">
+                <div className="flex-1 px-2">
                     <div className="flex flex-col">
                         <span className="text-center text-xs font-medium text-gray-800">Fecha salida</span>
                         <span className="text-center text-sm text-gray-600">
@@ -175,33 +159,22 @@ const DoubleCalendar = ({ occupiedRanges = [], onDateChange, initialDates = null
                 </div>
             </div>
 
-            {/* Calendario */}
-            {isCalendarOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-                    <div 
-                        className="absolute bg-white rounded-lg shadow-xl p-4"
-                        style={{
-                            maxWidth: '800px',
-                            width: '95%',
-                            maxHeight: '90vh',
-                            overflowY: 'auto'
-                        }}
-                    >
-                        {/* Botón de cerrar */}
-                        <button 
-                            onClick={() => setIsCalendarOpen(false)}
-                            className="absolute right-3 top-1 text-gray-500 hover:text-gray-700 z-10"
-                        >
-                            ✕
-                        </button>
-
-                        <div className="flex items-center justify-between w-full px-4 pt-2">
+            <Dialog 
+                open={isCalendarOpen} 
+                onClose={() => setIsCalendarOpen(false)}
+                className="relative z-50"
+            >
+                <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+                
+                <div className="fixed inset-0 flex items-center justify-center p-4">
+                    <Dialog.Panel className="bg-white rounded-xl shadow-xl p-6 max-w-2xl w-full mx-4 my-4 relative">
+                        <div className="flex items-center justify-between mb-6">
                             <button
                                 onClick={handlePrevMonth}
-                                className={`text-gray-700 text-[2rem] hover:bg-gray-200 rounded-full h-[42px] w-[42px] flex items-center justify-center ${
+                                className={`text-gray-700 hover:bg-gray-100 rounded-full h-[42px] w-[42px] flex items-center justify-center ${
                                     currentMonth.getMonth() === new Date().getMonth() && 
                                     currentMonth.getFullYear() === new Date().getFullYear() 
-                                        ? "cursor-not-allowed" 
+                                        ? "cursor-not-allowed text-gray-300" 
                                         : ""
                                 }`}
                                 disabled={
@@ -209,11 +182,27 @@ const DoubleCalendar = ({ occupiedRanges = [], onDateChange, initialDates = null
                                     currentMonth.getFullYear() === new Date().getFullYear()
                                 }
                             >
-                                <span className="block mb-[.3rem]">←</span>
+                                <span className="text-[2rem] mb-[.3rem]">←</span>
                             </button>
-                            <button onClick={handleNextMonth} className="text-gray-700 text-[2rem] hover:bg-gray-200 rounded-full h-[42px] w-[42px] flex items-center justify-center">
-                                <span className="block mb-[.3rem]">→</span>
-                            </button>
+                            
+                            <Dialog.Title className="text-base font-semibold">
+                                Seleccionar fechas
+                            </Dialog.Title>
+                            
+                            <div className="flex items-center gap-2">
+                                <button 
+                                    onClick={handleNextMonth} 
+                                    className="text-gray-700 hover:bg-gray-100 rounded-full h-[42px] w-[42px] flex items-center justify-center"
+                                >
+                                    <span className="text-[2rem] mb-[.3rem]">→</span>
+                                </button>
+                                <button
+                                    onClick={() => setIsCalendarOpen(false)}
+                                    className="hover:bg-gray-100 rounded-full h-[32px] w-[32px] flex items-center justify-center"
+                                >
+                                    <IoClose className="w-5 h-5" />
+                                </button>
+                            </div>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4">
@@ -236,23 +225,23 @@ const DoubleCalendar = ({ occupiedRanges = [], onDateChange, initialDates = null
                             />
                         </div>
 
-                        <div className="flex justify-center gap-4 pt-4 border-t">
+                        <div className="flex justify-between items-center pt-4 border-t px-4">
                             <button
                                 onClick={handleClearDates}
-                                className="px-4 py-2 text-red-500 hover:text-red-700"
+                                className="text-sm font-medium underline hover:no-underline text-gray-600"
                             >
                                 Limpiar fechas
                             </button>
                             <button
                                 onClick={() => setIsCalendarOpen(false)}
-                                className="px-4 py-2 text-primary hover:text-primary/80"
+                                className="bg-[#222222] text-white px-6 py-3 rounded-lg hover:bg-[#000000] transition-colors text-sm font-medium"
                             >
                                 Aplicar
                             </button>
                         </div>
-                    </div>
+                    </Dialog.Panel>
                 </div>
-            )}
+            </Dialog>
         </div>
     );
 };

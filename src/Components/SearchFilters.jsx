@@ -10,6 +10,7 @@ import {
 import { IoClose } from 'react-icons/io5';
 import DoubleCalendar from './DoubleCalendar';
 import { format } from 'date-fns';
+import { Dialog } from '@headlessui/react'
 
 const SearchFilters = ({
   search,
@@ -265,19 +266,24 @@ const SearchFilters = ({
         </div>
       </div>
 
-      {showFiltersModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-70 z-[99999] flex items-center justify-center">
-          <div
-            ref={modalRef}
-            className="bg-white rounded-xl shadow-xl p-6 max-w-2xl w-full mx-4 my-4 max-h-[90vh] relative"
-          >
+      <Dialog 
+        open={showFiltersModal} 
+        onClose={() => setShowFiltersModal(false)}
+        className="relative z-50"
+      >
+        <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+        
+        <div className="fixed inset-0 flex items-center justify-center p-4">
+          <Dialog.Panel className="bg-white rounded-xl shadow-xl p-6  w-[500px] mx-4 my-4 max-h-[90vh] relative">
             <div className="flex justify-between items-center mb-6 border-b pb-4">
-              <h2 className="text-xl font-semibold">Filtros</h2>
+              <Dialog.Title className="text-xl font-semibold">
+                Filtros
+              </Dialog.Title>
               <button
                 onClick={() => setShowFiltersModal(false)}
-                className="p-2 hover:bg-gray-100 rounded-full"
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
               >
-                <IoClose className="text-xl" />
+                <IoClose className="w-5 h-5" />
               </button>
             </div>
 
@@ -364,9 +370,9 @@ const SearchFilters = ({
                 Aplicar filtros
               </button>
             </div>
-          </div>
+          </Dialog.Panel>
         </div>
-      )}
+      </Dialog>
     </div>
   );
 };
