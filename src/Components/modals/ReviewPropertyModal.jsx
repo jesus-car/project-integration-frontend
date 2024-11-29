@@ -1,102 +1,99 @@
-import Button from "../Button.jsx";
-import { useEffect, useState } from "react";
-import { FaStar } from "react-icons/fa6";
+import { Dialog } from '@headlessui/react';
+import { IoClose } from 'react-icons/io5';
+import { FaStar } from 'react-icons/fa';
+import { useState } from 'react';
+import Button from '../Button';
+import { useToast } from '../../contexts/ToastContext';
 
-const ReviewPropertyModal = ({ onConfirm, onCancel, isOpen }) => {
-    const maxCommentLength = 500;
+const ReviewPropertyModal = ({ isOpen = false, onClose = () => {}, onSubmit, propertyName }) => {
+    const [rating, setRating] = useState(0);
+    const [hover, setHover] = useState(0);
+    const [comment, setComment] = useState('');
+    const toast = useToast();
 
-    const [reviewForm, setReviewForm] = useState({
-        rating: 0,
-        comment: ""
-    });
-
-    const [error, setError] = useState("");
-
-    const handleStarClick = (rating) => {
-        setReviewForm({ ...reviewForm, rating });
-        setError("");
-    };
-
-    const handleConfirm = () => {
-        if (reviewForm.rating === 0) {
-            setError("Por favor selecciona al menos una estrella para calificar");
+    const handleSubmit = () => {
+        if (rating === 0) {
+            toast.error('Por favor, selecciona una calificación');
             return;
         }
-
-        onConfirm(reviewForm);
+        if (!comment.trim()) {
+            toast.error('Por favor, escribe un comentario');
+            return;
+        }
+        onSubmit({ rating, comment });
+        setRating(0);
+        setComment('');
+        onClose();
     };
 
-    useEffect(() => {
-        if (!isOpen) {
-            setReviewForm({
-                rating: 0,
-                comment: ""
-            });
-            setError("");
-        }
-    }, [isOpen]);
-
     return (
-        <div
-            className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 ${
-                isOpen ? "" : "hidden"
-            }`}
+        <Dialog 
+            open={isOpen} 
+            onClose={onClose} 
+            className="relative z-50"
         >
-            <div className="bg-white rounded-lg shadow-lg p-6 w-11/12 sm:w-96">
-                <h2 className="text-xl font-semibold mb-4 text-center">
-                    Califica tu experiencia en este lugar
-                </h2>
-                <div className="mt-6">
-                    <div className="flex justify-center items-center gap-2">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                            <button
-                                key={star}
-                                type="button"
-                                onClick={() => handleStarClick(star)}
-                                className={`text-3xl ${
-                                    reviewForm.rating >= star
-                                        ? "text-yellow-500"
-                                        : "text-gray-400"
-                                }`}
-                            >
-                                <FaStar />
-                            </button>
-                        ))}
+            <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+            
+            <div className="fixed inset-0 flex items-center justify-center p-4">
+                <Dialog.Panel className="w-full max-w-md rounded-2xl bg-white p-6">
+                    <div className="flex items-center justify-between mb-6">
+                        <Dialog.Title className="text-lg font-semibold">
+                            Valorar propiedad
+                        </Dialog.Title>
+                        <button
+                            onClick={onClose}
+                            className="rounded-full p-1 hover:bg-gray-100 transition-colors"
+                        >
+                            <IoClose className="w-5 h-5" />
+                        </button>
                     </div>
-                    {error && (
-                        <p className="text-sm text-red-500 mt-2 text-center">
-                            {error}
-                        </p>
-                    )}
-                </div>
-                <div className="mt-6">
-                    <label className="block text-gray-700 text-sm font-bold mb-2">
-                        Comentarios
-                    </label>
-                    <textarea
-                        className="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline h-32 resize-none"
-                        name="comment"
-                        placeholder="Escribe aquí tus comentarios si lo deseas"
-                        maxLength={maxCommentLength}
-                        value={reviewForm.comment}
-                        onChange={(e) =>
-                            setReviewForm({ ...reviewForm, comment: e.target.value })
-                        }
-                    />
-                    <p className="text-sm text-gray-500 mt-1 text-right">
-                        {reviewForm.comment.length}/{maxCommentLength}
-                    </p>
-                </div>
-                <div className="flex gap-10 mt-6">
-                    <Button onClick={onCancel} type="secondary" label="Cancelar" />
-                    <Button
-                        onClick={handleConfirm}
-                        type="primary"
-                        label="Confirmar"
-                    />
-                </div>
+
+                    <div className="mb-6">
+                        <h3 className="text-sm font-medium text-gray-700 mb-2">
+                            {propertyName}
+                        </h3>
+                        <div className="flex gap-2 mb-4 justify-center">
+                            {[...Array(5)].map((_, index) => {
+                                const ratingValue = index + 1;
+                                return (
+                                    <FaStar
+                                        key={index}
+                                        className={`w-8 h-8 cursor-pointer transition-colors ${
+                                            ratingValue <= (hover || rating)
+                                                ? 'text-[#91b07c]'
+                                                : 'text-gray-300'
+                                        }`}
+                                        onClick={() => setRating(ratingValue)}
+                                        onMouseEnter={() => setHover(ratingValue)}
+                                        onMouseLeave={() => setHover(0)}
+                                    />
+                                );
+                            })}
+                        </div>
+                        <textarea
+                            value={comment}
+                            onChange={(e) => setComment(e.target.value)}
+                            placeholder="Cuéntanos tu experiencia..."
+                            className="w-full p-3 border rounded-lg text-sm min-h-[100px] focus:ring-2 focus:ring-[#91b07c] focus:border-transparent"
+                        />
+                    </div>
+
+                    <div className="flex justify-end gap-4">
+                        <button
+                            onClick={onClose}
+                            className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                        >
+                            Cancelar
+                        </button>
+                        <Button
+                            label="Enviar reseña"
+                            type="primary"
+                            onClick={handleSubmit}
+                        />
+                    </div>
+                </Dialog.Panel>
             </div>
-        </div>
+        </Dialog>
     );
 };
 
