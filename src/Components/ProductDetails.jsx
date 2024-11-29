@@ -208,6 +208,12 @@ const ProductDetails = () => {
     };
 
     const booking = async () => {
+        if (!authContext.user) {
+            toast.error("Inicia sesión para reservar esta propiedad");
+            navigate(routes.login);
+            return
+        }
+
         if (!checkIn || !checkOut || !guests) {
             toast.error("Por favor, completa todos los campos");
             return;
