@@ -8,6 +8,7 @@ import PropertyCardSkeleton from '../Components/PropertyCardSkeleton';
 import CategorySkeletonCard from '../Components/CategorySkeletonCard';
 import { getAllCategories } from '../services/categoryService';
 import { useNavigate } from 'react-router-dom';
+import WhatsApp from '../Components/WhatsApp';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -249,6 +250,7 @@ const Home = () => {
             </div>
           )}
         </section>
+        <WhatsApp/>
       </div>
     </>
   );

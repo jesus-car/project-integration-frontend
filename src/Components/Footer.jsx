@@ -17,7 +17,7 @@ const Footer = () => {
             </p>
           </div>
 
-          <div className="flex justify-center space-x-4">
+          <div className="flex justify-center space-x-4 mr-8">
             <a
               target="_blank"
               rel="noopener noreferrer"

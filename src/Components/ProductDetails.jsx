@@ -34,6 +34,7 @@ import ShareModal from './ShareModal.jsx';
 import { IoShareOutline } from 'react-icons/io5';
 import ReviewPropertyModal from './modals/ReviewPropertyModal';
 import { reviewService } from '../services/reviewService';
+import WhatsApp from './WhatsApp.jsx';
 
 const defaultIcon = new Icon({
     iconUrl: markerIcon,
@@ -641,6 +642,7 @@ const ProductDetails = () => {
                 onSubmit={handleReviewSubmit}
                 propertyName={detail.name}
             />
+            <WhatsApp/>
         </div>
     );
 };
