@@ -31,6 +31,7 @@ import {bookingService} from "../services/bookingService.js";
 import {useToast} from "../contexts/ToastContext.jsx";
 import ShareModal from './ShareModal.jsx';
 import { IoShareOutline } from 'react-icons/io5';
+import WhatsApp from './WhatsApp.jsx';
 
 const defaultIcon = new Icon({
     iconUrl: markerIcon,
@@ -483,6 +484,7 @@ const ProductDetails = () => {
                 onClose={() => setIsShareModalOpen(false)}
                 property={detail}
             />
+            <WhatsApp/>
         </div>
     );
 };
