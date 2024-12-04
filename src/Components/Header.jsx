@@ -9,7 +9,6 @@ import { useEffect, useState } from 'react';
 const Header = () => {
     const navigate = useNavigate();
     const {user} = useAuthContext();
-    console.log(user);
     const location = useLocation();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
