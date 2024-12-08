@@ -95,3 +95,8 @@ export function calculateNights(startDate, endDate) {
     // Convertir la diferencia de milisegundos a días (1 día = 24 * 60 * 60 * 1000)
     return diffInMs / (1000 * 60 * 60 * 24);
 }
+
+export function formatDateToString(date) {
+    const options = {year: 'numeric', month: 'long', day: 'numeric'};
+    return new Date(date).toLocaleDateString('es-ES', options);
+}
