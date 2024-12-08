@@ -35,6 +35,7 @@ import { IoShareOutline } from 'react-icons/io5';
 import ReviewPropertyModal from './modals/ReviewPropertyModal';
 import { reviewService } from '../services/reviewService';
 import WhatsApp from './WhatsApp.jsx';
+import BookingModal from "./modals/BookingModal.jsx";
 
 const defaultIcon = new Icon({
     iconUrl: markerIcon,
@@ -119,6 +120,7 @@ const ProductDetails = () => {
     });
     const [like, setLike] = useState(false);
     const authContext = useAuthContext();
+    const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);
     const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
     const [userHasBooked, setUserHasBooked] = useState(false);
@@ -239,7 +241,7 @@ const ProductDetails = () => {
 
     };
 
-    const booking = async () => {
+    const validateBookingBeforeOpenModal = () => {
         if (!authContext.user) {
             toast.error("Inicia sesión para reservar esta propiedad");
             navigate(routes.login);
@@ -250,6 +252,12 @@ const ProductDetails = () => {
             toast.error("Por favor, completa todos los campos");
             return;
         }
+
+        setIsBookingModalOpen(true);
+    }
+
+    const booking = async () => {
+
         const body = {
             propertyId: detail.id,
             userId: authContext.user.sub,
@@ -599,7 +607,7 @@ const ProductDetails = () => {
                             </div>
                         </div>
 
-                        <Button label="Reservar"  type="primary" onClick={() => booking()} />
+                        <Button label="Reservar"  type="primary" onClick={() =>validateBookingBeforeOpenModal()} />
 
                         <div className="mt-4">
                             {totalNights > 0 && (
@@ -642,6 +650,21 @@ const ProductDetails = () => {
                 onSubmit={handleReviewSubmit}
                 propertyName={detail.name}
             />
+
+            <BookingModal
+                isOpen={isBookingModalOpen}
+                onCancel={() => setIsBookingModalOpen(false)}
+                onSubmit={() => booking()}
+                bookingDetails={{
+                    detail,
+                    checkIn,
+                    checkOut,
+                    guests,
+                    totalCost,
+                    user
+                }}
+            />
+
             <WhatsApp/>
         </div>
     );
