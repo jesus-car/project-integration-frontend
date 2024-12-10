@@ -3,6 +3,7 @@ import PropertyCard from "./PropertyCard"
 import { FaArrowLeftLong } from 'react-icons/fa6';
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../contexts/AuthContext";
+import WhatsApp from "./WhatsApp";
 
 
 const Favorites = () => {
@@ -42,6 +43,7 @@ const Favorites = () => {
       </div>
       </div>
     }
+    <WhatsApp/>
       </>
         
   )
