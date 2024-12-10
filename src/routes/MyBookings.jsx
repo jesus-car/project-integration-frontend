@@ -10,6 +10,7 @@ import {calculateNights} from "../utils/utils.js";
 import ReviewPropertyModal from "../Components/modals/ReviewPropertyModal.jsx";
 import {reviewService} from "../services/reviewService.js";
 import {useToast} from "../contexts/ToastContext.jsx";
+import WhatsApp from "../Components/WhatsApp.jsx";
 
 const MyBookings = () => {
 
@@ -165,8 +166,9 @@ const MyBookings = () => {
                     ))}
                 </div>
             }
-
+             <WhatsApp/>
             <ReviewPropertyModal onConfirm={confirmReview} onCancel={cancelReview} isOpen={isModalOpen}/>
+           
         </div>
     );
 };
