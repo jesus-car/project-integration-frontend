@@ -12,4 +12,5 @@ export const routes = {
     register: '/register',
     forbidden: '/forbidden',
     myBookings: '/my-bookings',
+    bookingConfirmation: '/booking-confirmation',
 }

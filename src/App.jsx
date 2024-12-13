@@ -15,6 +15,7 @@ import RegistrerUser from './Components/RegistrerUser.jsx';
 import ScrollToTop from './Components/ScrollToTop';
 import MyBookings from "./routes/MyBookings.jsx";
 import Favorites from './Components/Favorites.jsx';
+import BookingConfirmation from './routes/BookingConfirmation';
 
 export default function App() {
     const location = useLocation();
@@ -59,6 +60,7 @@ export default function App() {
                                 <Route path={routes.favs} element={<Favorites />} />
                                 <Route path={routes.myBookings} element={<MyBookings/>}/>
                             </Route>
+                            <Route path={routes.bookingConfirmation} element={<BookingConfirmation />} />
 
                         </Routes>
                     </div>
