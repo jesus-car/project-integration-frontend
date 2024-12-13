@@ -257,7 +257,6 @@ const ProductDetails = () => {
     }
 
     const booking = async () => {
-
         const body = {
             propertyId: detail.id,
             userId: authContext.user.sub,
@@ -267,9 +266,35 @@ const ProductDetails = () => {
             numGuest: guests,
         }
 
-        await bookingService.bookingProperty(body);
-        toast.success("Propiedad reservada con éxito");
-        navigate(routes.myBookings);
+        try {
+            const response = await bookingService.bookingProperty(body);
+            console.log('Respuesta del servidor:', response);
+            
+            navigate(routes.bookingConfirmation, { 
+                state: {
+                    propertyName: detail.name,
+                    checkIn,
+                    checkOut,
+                    guests,
+                    totalCost,
+                    bookingId: response.id
+                }
+            });
+            
+        } catch (error) {
+            console.error('Error en la reserva:', error);
+            
+            if (error.response?.status === 409) {
+                const details = error.response.data.details;
+                if (details && details.length > 0) {
+                    toast.error(details[0]);
+                } else {
+                    toast.error("Las fechas seleccionadas no están disponibles");
+                }
+            } else {
+                toast.error("Ha ocurrido un error al realizar la reserva. Por favor, inténtalo de nuevo.");
+            }
+        }
     }
 
     const handleReviewSubmit = async ({ rating, comment }) => {
