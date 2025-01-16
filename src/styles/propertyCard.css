@@ -1,0 +1,19 @@
+.fa-heart-no svg path:nth-child(1){
+    fill: white;
+
+}
+
+.fa-heart-no svg path:nth-child(2){
+    fill: rgba(0, 0, 0, 0.5);
+
+}
+
+.fa-heart svg path:nth-child(1){
+    fill: white;
+
+}
+
+.fa-heart svg path:nth-child(2){
+    fill: red;
+
+}

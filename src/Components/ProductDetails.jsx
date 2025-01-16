@@ -1,0 +1,698 @@
+import {FaArrowLeftLong} from 'react-icons/fa6';
+import {TfiLayoutGrid2Alt} from 'react-icons/tfi';
+import {FaStar} from 'react-icons/fa6';
+import { FaCheckCircle } from "react-icons/fa";
+import {useEffect, useState} from 'react';
+import {useNavigate, useParams} from 'react-router-dom';
+import {propertyService} from '../services/propertyService';
+import Spinner from './Spinner';
+import '../styles/productDetail.css';
+import {GetIcon} from './ListFeature';
+import {MapContainer, TileLayer, Marker, Popup} from 'react-leaflet';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import 'leaflet/dist/leaflet.css';
+import {Icon} from 'leaflet';
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+import {IoPeopleOutline, IoBedOutline} from 'react-icons/io5';
+import {MdOutlineBedroomParent} from 'react-icons/md';
+import {LuBath} from 'react-icons/lu';
+import ImageSlider from './ImageSlider';
+import {formatPrice} from '../utils/formatters';
+import {policies} from "../utils/fakeData.js";
+import {AiTwotoneHeart} from "react-icons/ai";
+import {AuthContext, useAuthContext} from '../contexts/AuthContext';
+import {routes} from '../utils/routes.js';
+import {favoriteService} from '../services/favoriteService.js';
+import DoubleCalendar from "./DoubleCalendar.jsx";
+import {calculateNights} from "../utils/utils.js";
+import Button from "./Button.jsx";
+import {bookingService} from "../services/bookingService.js";
+import {useToast} from "../contexts/ToastContext.jsx";
+import ShareModal from './ShareModal.jsx';
+import { IoShareOutline } from 'react-icons/io5';
+import ReviewPropertyModal from './modals/ReviewPropertyModal';
+import { reviewService } from '../services/reviewService';
+import WhatsApp from './WhatsApp.jsx';
+import BookingModal from "./modals/BookingModal.jsx";
+
+const defaultIcon = new Icon({
+    iconUrl: markerIcon,
+    shadowUrl: markerShadow,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41],
+});
+
+const getCoordinates = async (address, city, country) => {
+    try {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        const searchQuery = `${address}, ${city}, ${country}`;
+        const response = await fetch(
+            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}`,
+            {
+                headers: {
+                    'Accept-Language': 'es',
+                    'User-Agent': 'TuAplicacion/1.0'
+                }
+            }
+        );
+        const data = await response.json();
+
+        if (data && data.length > 0) {
+            return {
+                lat: parseFloat(data[0].lat),
+                lng: parseFloat(data[0].lon)
+            };
+        }
+
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        const cityResponse = await fetch(
+            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+                `${city}, ${country}`
+            )}`,
+            {
+                headers: {
+                    'Accept-Language': 'es',
+                    'User-Agent': 'TuAplicacion/1.0'
+                }
+            }
+        );
+        const cityData = await cityResponse.json();
+
+        if (cityData && cityData.length > 0) {
+            return {
+                lat: parseFloat(cityData[0].lat),
+                lng: parseFloat(cityData[0].lon)
+            };
+        }
+
+        throw new Error('No se encontraron coordenadas');
+    } catch (error) {
+        console.error('Error getting coordinates:', error);
+        return null;
+    }
+};
+
+const ProductDetails = () => {
+    const [open, setOpen] = useState(false);
+    const [openImg, setOpenImg] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [detail, setDetail] = useState(null);
+    const [reservedDates, setReservedDates] = useState([]);
+    const [checkIn, setCheckIn] = useState(null);
+    const [checkOut, setCheckOut] = useState(null);
+    const [guests, setGuests] = useState(1);
+    const {id} = useParams();
+    const navigate = useNavigate();
+    const toast = useToast();
+    const [coordinates, setCoordinates] = useState(null);
+    const [mapLoading, setMapLoading] = useState(true);
+    const [totalNights, setTotalNights] = useState(0);
+    const [totalCost, setTotalCost] = useState({
+        nights: 0,
+        cleaning: 50,
+        total: 0
+    });
+    const [like, setLike] = useState(false);
+    const authContext = useAuthContext();
+    const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+    const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+    const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+    const [userHasBooked, setUserHasBooked] = useState(false);
+    const [userHasReviewed, setUserHasReviewed] = useState(false);
+    const { user } = useAuthContext();
+
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+    const handleOpenImg = () => setOpenImg(true);
+    const handleCloseImg = () => setOpenImg(false);
+
+    const handleDateChange = (dates) => {
+        setCheckIn(dates.startDate);
+        setCheckOut(dates.endDate);
+        if (dates.startDate && dates.endDate) {
+            calculateCosts(dates.startDate, dates.endDate);
+        }
+    };
+
+    useEffect(() => {
+        propertyService.getPropertyById(id).then(property => {
+            setDetail(property);
+            setTimeout(() => {
+                setLoading(false);
+            }, 1000);
+        }).catch(error => {
+            toast.error('Error consultando información de la propiedad. Inténtalo de nuevo más tarde');
+            navigate(routes.home);
+        })
+    }, [id]);
+
+    useEffect(() => {
+        if (!detail) return;
+        let reservedDates = [];
+        detail.bookings.forEach(booking => {
+            if (booking.status === 'COMPLETED') return;
+            const range = {
+                startDate: booking.startDate,
+                endDate: booking.endDate,
+            };
+            reservedDates.push(range);
+        })
+        setReservedDates(reservedDates);
+    }, [detail]);
+
+
+    useEffect(() => {
+        if (detail) {
+            setMapLoading(true);
+            getCoordinates(
+                detail.exactAddress,
+                detail.city.name,
+                detail.city.country.name
+            ).then(coords => {
+                if (coords) {
+                    setCoordinates(coords);
+                }
+                setMapLoading(false);
+            });
+        }
+    }, [detail]);
+
+    useEffect(() => {
+        if (user && detail) {
+            const fetchUserBookings = async () => {
+                try {
+                    const response = await bookingService.getUserBookings(user.sub);
+                    const hasCompletedBooking = response.data.some(booking => 
+                        booking.propertyId === detail.id && booking.status === 'CONFIRMED'
+                    );
+                    setUserHasBooked(hasCompletedBooking);
+
+                    const hasReviewed = detail.reviews.some(review => 
+                        review.userId === parseInt(user.sub)
+                    );
+                    setUserHasReviewed(hasReviewed);
+                } catch (error) {
+                    console.error('Error fetching user bookings:', error);
+                    setUserHasBooked(false);
+                }
+            };
+
+            fetchUserBookings();
+        }
+    }, [user, detail]);
+
+    if (loading || !detail) return <Spinner/>;
+
+    const getInitials = (firstName, lastName) => {
+        return `${firstName?.charAt(0) || ''}${lastName?.charAt(0) || ''}`.toUpperCase();
+    };
+
+    const calculateCosts = (checkInDate, checkOutDate) => {
+        const totalNights = calculateNights(checkInDate, checkOutDate);
+        const nightsCost = totalNights * detail.pricePerNight;
+        const cleaningCost = 50;
+        const totalCost = nightsCost + cleaningCost;
+        setTotalCost({
+            nights: nightsCost,
+            cleaning: cleaningCost,
+            total: totalCost
+        })
+    };
+
+    const toggleLike = async (e) => {
+        e.preventDefault();
+        if (authContext.user) {
+            if (authContext.favorites.some(x => x.id == detail.id)) {
+                await favoriteService.removeFavorite(detail.id);
+            } else {
+                await favoriteService.addFavorite(detail.id);
+
+            }
+            await authContext.refreshFavorites();
+        } else {
+            navigate(routes.login)
+        }
+
+    };
+
+    const validateBookingBeforeOpenModal = () => {
+        if (!authContext.user) {
+            toast.error("Inicia sesión para reservar esta propiedad");
+            navigate(routes.login);
+            return
+        }
+
+        if (!checkIn || !checkOut || !guests) {
+            toast.error("Por favor, completa todos los campos");
+            return;
+        }
+
+        setIsBookingModalOpen(true);
+    }
+
+    const booking = async () => {
+        const body = {
+            propertyId: detail.id,
+            userId: authContext.user.sub,
+            startDate: checkIn,
+            endDate: checkOut,
+            totalPrice: totalCost.total,
+            numGuest: guests,
+        }
+
+        try {
+            const response = await bookingService.bookingProperty(body);
+            console.log('Respuesta del servidor:', response);
+            
+            navigate(routes.bookingConfirmation, { 
+                state: {
+                    propertyName: detail.name,
+                    checkIn,
+                    checkOut,
+                    guests,
+                    totalCost,
+                    bookingId: response.id
+                }
+            });
+            
+        } catch (error) {
+            console.error('Error en la reserva:', error);
+            
+            if (error.response?.status === 409) {
+                const details = error.response.data.details;
+                if (details && details.length > 0) {
+                    toast.error(details[0]);
+                } else {
+                    toast.error("Las fechas seleccionadas no están disponibles");
+                }
+            } else {
+                toast.error("Ha ocurrido un error al realizar la reserva. Por favor, inténtalo de nuevo.");
+            }
+        }
+    }
+
+    const handleReviewSubmit = async ({ rating, comment }) => {
+        try {
+            const review = {
+                propertyId: detail.id,
+                userId: user.sub,
+                comment,
+                rating: rating.toString(),
+                date: new Date().toISOString()
+            };
+
+            await reviewService.createReview(review);
+            toast.success('Reseña enviada con éxito');
+            propertyService.getPropertyById(id).then(property => {
+                setDetail(property);
+            });
+        } catch (error) {
+            toast.error('Error al enviar la reseña');
+        }
+    };
+
+    return (
+        <div
+            className="mx-auto xs:px-4 sm:px-12 lg:px-14 xl:px-16 2xl:px-32 flex align-center flex-col container-detail">
+
+            <div className="relative">
+                <div className="flex flex-col sm:flex-row justify-between items-start gap-4 py-6">
+                    <div className="w-full sm:w-auto">
+                        <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900">{detail.name}</h1>
+                       
+                    </div>
+
+                    <div className="flex w-full sm:w-auto justify-center gap-2">
+                        <div 
+                            onClick={() => setIsShareModalOpen(true)}
+                            className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 rounded-lg cursor-pointer transition-colors"
+                        >
+                            <IoShareOutline className="w-4 h-4 text-gray-600"/>
+                            <span className="text-sm font-medium text-gray-600">Compartir</span>
+                        </div>
+                        <div 
+                            onClick={toggleLike}
+                            className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 rounded-lg cursor-pointer transition-colors"
+                        >
+                            <AiTwotoneHeart className={`w-4 h-4 ${authContext.favorites.some(x => x.id === detail.id) ? 'text-[#91b07c]' : 'text-gray-600'}`}/>
+                            <span className="text-sm font-medium text-gray-600">Guardar</span>
+                        </div>
+                        <button 
+                            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                            onClick={() => navigate(-1)}
+                        >
+                            <FaArrowLeftLong className="w-5 h-5 text-gray-600"/>
+                        </button>
+                    </div>
+                </div>
+
+                <div className="detail-img mt-2 gap-x-2 gap-y-2">
+                    <div className="grid grid-cols-2 gap-4">
+                        <img
+                            className="col-span-2 w-full object-cover rounded-lg h-96 img-prin cursor-pointer"
+                            src={detail.mainPhotoUrl}
+                            alt="Principal"
+                            onClick={handleOpenImg}
+                        />
+                    </div>
+                    <div className="grid grid-cols-2 grid-rows-2 gap-2">
+                        {detail.photoUrls.slice(0, 4).map((url, index) => (
+                            <img
+                                key={index}
+                                src={url}
+                                alt={`Secondary ${index + 1}`}
+                                className="w-96 object-cover rounded-lg h-[188px] img-secun cursor-pointer"
+                                onClick={handleOpenImg}
+                            />
+                        ))}
+                        <div
+                            onClick={handleOpenImg}
+                            className="more-img cursor-pointer bg-white w-44 h-8 flex flex-row items-center rounded-md gap-x-4 pl-8 justify-self-end absolute bottom-5 mr-5 z-0"
+                        >
+                            <TfiLayoutGrid2Alt/>
+                            <button>Más fotos</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="flex flex-col lg:flex-row gap-12 mt-8">
+                <div className="w-full lg:w-[60%] xl:w-[2/3]">
+                    <div className="flex items-center justify-between py-6 border-b">
+                        <div className="flex items-center gap-4">
+                            {detail.owner.photoUrl ? (
+                                <img
+                                    src={detail.owner.photoUrl}
+                                    alt="Host"
+                                    className="w-12 h-12 rounded-full object-cover"
+                                />
+                            ) : (
+                                <div
+                                    className="w-12 h-12 rounded-full bg-[#91b07c] flex items-center justify-center text-white font-semibold">
+                                    {getInitials(detail.owner.firstName, detail.owner.lastName)}
+                                </div>
+                            )}
+                            <div>
+                                <p className="text-lg font-medium text-gray-900 xs:text-[1rem]">
+                                    Anfitrión: {detail.owner.firstName} {detail.owner.lastName}
+                                </p>
+                                <p className="text-sm text-gray-500">Miembro desde 2023</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="py-6 border-b">
+                        <div className="flex flex-col gap-4">
+                            <h3 className="text-xl font-semibold text-gray-900">Calificaciones y opiniones</h3>
+                            
+                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                <div className="flex items-center gap-4">
+                                    <span className="text-4xl font-semibold">{Number(detail.averageRating).toFixed(1)}</span>
+                                    <div className="flex flex-col gap-1">
+                                        <div className="flex gap-1">
+                                            {[...Array(5)].map((_, index) => (
+                                                <FaStar
+                                                    key={index}
+                                                    className={`w-5 h-5 ${
+                                                        index < Math.round(detail.averageRating)
+                                                            ? 'text-[#91b07c]'
+                                                            : 'text-gray-300'
+                                                    }`}
+                                                />
+                                            ))}
+                                        </div>
+                                        <span className="text-sm text-gray-600">Calificación general</span>
+                                    </div>
+                                </div>
+                                
+                                <div className="flex flex-col items-start sm:items-end">
+                                    <span className="text-lg font-medium text-gray-900">{detail.totalRatings} reseñas</span>
+                                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                                        <span>Todas verificadas</span>
+                                        <FaCheckCircle className="w-4 h-4 text-[#91b07c]" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <div className="grid grid-cols-4 gap-2 py-8 border-b xs:grid-cols-2">
+                        <div className="flex flex-col items-center text-center">
+                            <IoPeopleOutline className="w-6 h-6 sm:w-6 sm:h-6  text-gray-700 mb-2"/>
+                            <p className="text-sm  font-medium text-gray-700">{detail.maxCapacity} huéspedes</p>
+                        </div>
+                        <div className="flex flex-col items-center text-center">
+                            <MdOutlineBedroomParent className="w-6 h-6 sm:w-6 sm:h-6  text-gray-700 mb-2"/>
+                            <p className="text-sm  font-medium text-gray-700">{detail.numRooms} dormitorios</p>
+                        </div>
+                        <div className="flex flex-col items-center text-center">
+                            <IoBedOutline className="w-6 h-6 sm:w-6 sm:h-6  text-gray-700 mb-2"/>
+                            <p className="text-sm  font-medium text-gray-700">{detail.numBeds} camas</p>
+                        </div>
+                        <div className="flex flex-col items-center text-center">
+                            <LuBath className="w-6 h-6 sm:w-6 sm:h-6  text-gray-700 mb-2"/>
+                            <p className="text-sm  font-medium text-gray-700">{detail.numBathrooms} baños</p>
+                        </div>
+                    </div>
+
+                    <div className="py-8 border-b">
+                        <h3 className="text-xl font-semibold text-gray-900 mb-4">Sobre este espacio</h3>
+                        <p className="text-gray-600 leading-relaxed">{detail.description}</p>
+                    </div>
+
+                    <div className="py-8 border-b">
+                        <h3 className="text-xl font-semibold text-gray-900 mb-6">Características que ofrece este
+                            lugar</h3>
+                        <div className="grid grid-cols-2 xs:grid-cols-1 gap-y-4 gap-x-8">
+                            {detail.features.map((feature, key) => (
+                                <div key={key} className="feature-item flex items-center gap-4 p-2">
+                                    <div className="feature-icon xs:w-8 xs:h-8">
+                                        {GetIcon(feature.iconName)}
+                                    </div>
+                                    <span className="text-gray-600 xs:text-sm">{feature.name}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="py-8 border-b">
+                        <h3 className="text-xl font-semibold text-gray-900 mb-4">Ubicación</h3>
+                        <p className="text-gray-600 mb-4">
+                            {detail.exactAddress}, {detail.city.name}, {detail.city.country.name}
+                        </p>
+                        <div className="map-container shadow-sm">
+                            {mapLoading ? (
+                                <div className="h-[400px] flex items-center justify-center bg-gray-100 rounded-lg">
+                                    <Spinner/>
+                                </div>
+                            ) : coordinates ? (
+                                <MapContainer
+                                    key={`${coordinates.lat}-${coordinates.lng}`}
+                                    center={[coordinates.lat, coordinates.lng]}
+                                    zoom={13}
+                                    scrollWheelZoom={false}
+                                    className="h-[400px] rounded-lg z-0"
+                                >
+                                    <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>
+                                    <Marker position={[coordinates.lat, coordinates.lng]} icon={defaultIcon}>
+                                        <Popup>
+                                            {detail.exactAddress}
+                                            <br/>
+                                            {detail.city.name}, {detail.city.country.name}
+                                        </Popup>
+                                    </Marker>
+                                </MapContainer>
+                            ) : (
+                                <div className="h-[400px] flex items-center justify-center bg-gray-100 rounded-lg">
+                                    <p className="text-gray-500">No se pudo cargar el mapa</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="py-8 border-b">
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                            <div className="flex items-center gap-4">
+                                <h3 className="text-xl font-semibold text-gray-900">
+                                    {detail.totalRatings} reseñas
+                                </h3>
+                                <div className="flex items-center gap-2">
+                                    <FaStar className="w-5 h-5 text-[#91b07c]" />
+                                    <span className="font-medium">
+                                        {Number(detail.averageRating).toFixed(1)}
+                                    </span>
+                                </div>
+                            </div>
+                            {user ? (
+                                userHasBooked && !userHasReviewed ? (
+                                    <button
+                                        onClick={() => setIsReviewModalOpen(true)}
+                                        className="w-full sm:w-auto px-4 py-2 bg-[#91b07c] text-white rounded-lg hover:bg-[#91b07c]/90 transition-colors"
+                                    >
+                                        Valorar propiedad
+                                    </button>
+                                ) : userHasReviewed ? (
+                                    <span className="text-sm text-gray-500">Ya has valorado esta propiedad</span>
+                                ) : (
+                                    <span className="text-sm text-gray-500">Reserva para poder valorar</span>
+                                )
+                            ) : (
+                                <span className="text-sm text-gray-500">Inicia sesión para valorar</span>
+                            )}
+                        </div>
+
+                        <div className="grid grid-cols-1 gap-4">
+                            {detail.reviews.map((review, index) => (
+                                <div key={index} className="flex flex-col gap-3 p-6 border rounded-lg bg-white hover:shadow-md transition-shadow">
+                                    <div className="flex items-start justify-between">
+                                        <div className="flex items-start sm:items-center gap-4">
+                                            <div className="w-12 h-12 rounded-full bg-[#91b07c] flex items-center justify-center text-white font-semibold shrink-0">
+                                                {review.username.charAt(0).toUpperCase()}
+                                            </div>
+                                            <div className="min-w-0">
+                                                <p className="font-medium text-base truncate">
+                                                    {review.username}
+                                                </p>
+                                                <p className="text-sm text-gray-500">
+                                                    {new Date(review.date).toLocaleDateString('es-ES', {
+                                                        year: 'numeric',
+                                                        month: 'long',
+                                                        day: 'numeric'
+                                                    })}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-1 ml-4 shrink-0">
+                                            <FaStar className="w-5 h-5 text-[#91b07c]" />
+                                            <span className="text-base font-medium">{review.rating}</span>
+                                        </div>
+                                    </div>
+                                    <p className="text-base text-gray-600 break-words mt-2">
+                                        {review.comment}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="py-8">
+                        <h3 className="text-xl font-semibold text-gray-900 mb-4">Políticas de reserva</h3>
+                        <div className="text-gray-600 grid grid-cols-1 md:grid-cols-2 gap-5">
+                            {policies.map((policy, index) => (
+                                <div key={index} className="mb-4">
+                                    <p className="text-gray-900 font-semibold">{policy.title}</p>
+                                    <p>{policy.description}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                <div className=" lg:w-[40%] xl:w-[1/3] mx-auto">
+                    <div className="sticky top-24 border rounded-xl shadow-lg p-6 bg-white">
+                        <div className="flex justify-between items-center mb-6">
+                            <div className="flex items-baseline gap-1">
+                <span className="text-2xl font-semibold text-gray-900">
+                  {formatPrice(detail.pricePerNight)}
+                </span>
+                                <span className="text-gray-500 text-base">noche</span>
+                            </div>
+
+                        </div>
+
+                        <div className="border rounded-xl mb-3">
+                            <div className="p-4">
+                                <DoubleCalendar
+                                    occupiedRanges={reservedDates}
+                                    onDateChange={handleDateChange}
+                                />
+                            </div>
+
+                            <div className="border-t p-4">
+                                <label className="block text-xs font-bold">HUÉSPEDES</label>
+                                <select
+                                    value={guests}
+                                    onChange={e => setGuests(e.target.value)}
+                                    className="w-full mt-1 p-2"
+                                >
+                                    {[...Array(detail.maxCapacity)].map((_, i) => (
+                                        <option key={i + 1} value={i + 1}>
+                                            {i + 1} huésped{i !== 0 ? 'es' : ''}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
+
+                        <Button label="Reservar"  type="primary" onClick={() =>validateBookingBeforeOpenModal()} />
+
+                        <div className="mt-4">
+                            {totalNights > 0 && (
+                                <div className="flex justify-between py-2">
+                  <span className="underline">
+                    {formatPrice(detail.pricePerNight)} x {totalNights} noches
+                  </span>
+                                    <span>{formatPrice(totalCost.nights)}</span>
+                                </div>
+                            )}
+                            <div className="flex justify-between py-2">
+                                <span className="underline">Gastos de limpieza</span>
+                                <span>{formatPrice(totalCost.cleaning)}</span>
+                            </div>
+                            <div className="flex justify-between py-2 border-t mt-4">
+                                <span className="font-semibold">Total</span>
+                                <span className="font-semibold">{formatPrice(totalCost.total)}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {openImg && (
+                <ImageSlider
+                    images={[detail.mainPhotoUrl, ...detail.photoUrls]}
+                    onClose={handleCloseImg}
+                />
+            )}
+
+            <ShareModal 
+                isOpen={isShareModalOpen}
+                onClose={() => setIsShareModalOpen(false)}
+                property={detail}
+            />
+
+            <ReviewPropertyModal
+                isOpen={isReviewModalOpen}
+                onClose={() => setIsReviewModalOpen(false)}
+                onSubmit={handleReviewSubmit}
+                propertyName={detail.name}
+            />
+
+            <BookingModal
+                isOpen={isBookingModalOpen}
+                onCancel={() => setIsBookingModalOpen(false)}
+                onSubmit={() => booking()}
+                bookingDetails={{
+                    detail,
+                    checkIn,
+                    checkOut,
+                    guests,
+                    totalCost,
+                    user
+                }}
+            />
+
+            <WhatsApp/>
+        </div>
+    );
+};
+
+export default ProductDetails;

@@ -1,0 +1,8 @@
+@media(max-width: 500px){
+    .whatsapp{
+        width: 55px !important;
+        right: 20px !important;
+        bottom: 20px !important;
+
+    }
+}

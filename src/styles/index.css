@@ -1,0 +1,90 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+
+* {
+  scrollbar-width: thin; /* Para Firefox (grosor de la barra de scroll) */
+  scrollbar-color: #9E6552 #f0f0f0; /* Para Firefox (color de la barra y del fondo de la barra de scroll) */
+}
+
+/* Para navegadores basados en WebKit (Chrome, Safari, etc.) */
+::-webkit-scrollbar {
+  width: 8px; /* El grosor de la barra de scroll */
+  height: 8px; /* El grosor del scroll horizontal */
+}
+
+::-webkit-scrollbar-track {
+  background: #F4F0E3; /* Fondo del track de la barra de scroll (donde se mueve el thumb) */
+  border-radius: 10px; /* Bordes redondeados del track */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #F4F0E3; /* Color de la barra de desplazamiento */
+  border-radius: 10px; /* Bordes redondeados del thumb */
+  border: 2px solid #f0f0f0; /* Añade un borde fino alrededor del thumb */
+}
+
+
+
+@media (max-width: 1000px) {
+  .modal-2{
+    width: 100%;
+  }
+
+  .container-detail{
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (max-width: 1200px) {
+  .container-detail{
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+.header-container.scrolled {
+  @apply bg-base shadow-md;
+}
+
+.header-container.scrolled img,
+.header-container.scrolled .flex.items-center {
+  opacity: 1 !important;
+}
+
+.main-content {
+  @apply pt-[72px];
+} 
+
+.home-content {
+  @apply pt-0;
+}
+
+.header-transparent {
+  background-color: transparent;
+  transition: 0.3s ease;
+}
+
+@keyframes subtle-zoom {
+  from {
+    transform: scale(1.1) translate(0, 0);
+  }
+  to {
+    transform: scale(1.15) translate(-1%, -1%);
+  }
+}
+
+.text-shadow-lg {
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.text-shadow-sm {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
